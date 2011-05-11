@@ -11,7 +11,7 @@
 ## Why?
 
   * We want to put the art back into front end development, and allow creative coders to focus on more beautiful things than cross-browser development, or copying and pasting old XHTML, CSS, JS, etc.
-  * Code.js running the Fase.js and Site.js modules provide HTML5 *without* hiccups.
+  * Code( [ Fase, Site ], function () { provides HTML5 *without* hiccups.
   
 ## Want to Contribute?
   
@@ -20,36 +20,26 @@
   
 ## What's it like?
 
-    (function() {
-    
-    	_import('com.fasejs.text.TextField');
-    	_import('com.fasejs.text.TextFormat');
-    	_import('com.fasejs.net.URLLoader');
-    
-    	window.onFaseReady = function() {
-    
-    		// logo
-    		var logoField = new TextField();
-    		logoField.addChild('logo');
-    		logoField.text('Fase.js');
-    		logoField.x(30);
-    		logoField.y(30);
-    		var h1Format = new TextFormat();
-    		h1Format.font('"Helvetica Neue", Helvetica, Tahoma');
-    		h1Format.fontSize(72);
-    		h1Format.letterSpacing(-1);
-    		h1Format.color('#000');
-    		h1Format.textShadow('#fff');
-    		h1Format.fontWeight('bold');
-    		logoField.setTextFormat(h1Format);
-    		
-    		var SFWeather = new URLLoader();
-    		SFWeather.URLRequest = 'http://www.google.com/ig/api?weather=San+Francisco';
-    		SFWeather.load();
-    		
-    	};
-    	
-    })();
-  
+/*!
+ *
+ * Sprite.js
+ * com.fasejs.display.Sprite
+ *
+ * http://fasejs.com/
+ *
+ * Copyright 2011, Neuromantic Industries & For Sure, Rad!
+ * Licensed under the MIT license.
+ *
+ */
+
+_class( 'Sprite' )._extends( 'DisplayObject', {
+	_graphics : null,
+	graphics : function () {//read only
+		return this._graphics || ( this._graphics = new Graphics( this ) );
+		init : function(name){
+			this.name(name);
+		}
+	},
+});
   * *[http://FaseJS.com/](http://FaseJS.com/)*
   * *[http://twitter.com/NeuromanticLLC/](http://twitter.com/NeuromanticLLC/)*
