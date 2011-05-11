@@ -21,15 +21,15 @@
   * `git clone git@github.com:FaseJS/fasejs.git`.
   
 ## What's it like?
- /*!
- *
- * Site.js
- * http://fasejs.com/
- *
- * Copyright 2011, Neuromantic Industries & For Sure, Rad!
- * Licensed under the MIT license.
- *
- */
+    /*!
+     *
+     * Site.js
+     * http://fasejs.com/
+     *
+     * Copyright 2011, Neuromantic Industries & For Sure, Rad!
+     * Licensed under the MIT license.
+     *
+     */
     (function() {
         window.onload = function () {
             Code( [ Fase, Browser ], function(){
