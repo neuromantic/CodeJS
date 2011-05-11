@@ -9,9 +9,8 @@
  */
 (function() {
 	window.onload = function () {
-		console.log('site loaded');
-		Code( [ Fase ], function(){
-			_trace('site');
+		Code( [ Fase, Browser,  ], function(){
+			_trace( 'Site.js loaded.' );
 			var stage = window.document.getElementById( 'stage' );
 			 stage = new Stage( stage );
 			 header = new TextField();
@@ -26,7 +25,7 @@
 			stage.addChild( message );
 			var traceLeaves = function( branch, leaves ) {
 				var n = 0;
-				leaf = function(branch, leaves ){return branch[leaves]}
+				leaf = function(branch, leaves ){return branch[ leaves ] };
 				while( ( leaf =  branch[ leaves ] )  &&  n++ < branch[ leaves ].length ) {
 					_trace( leaf );
 					traceLeaves( leaf, leaves );
