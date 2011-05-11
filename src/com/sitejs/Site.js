@@ -1,6 +1,6 @@
  /*!
  *
- * Site.js
+ * Code.js
  * http://fasejs.com/
  *
  * Copyright 2011, Neuromantic Industries & For Sure, Rad!
@@ -9,15 +9,12 @@
  */
 (function() {
 	window.onload = function () {
-		Code( [ Fase, Browser,  ], function(){
-			_trace( 'Site.js loaded.' );
-			var stage = window.document.getElementById( 'stage' );
-			 stage = new Stage( stage );
-			 header = new TextField();
-			header.text( 'Neuromantic makes software.' )
+		Code( [ Fase, Browser, Site  ], function(){
+			var site = new Site (window);
+			site.stage = new Stage(document.body);
+			header = new TextField( 'Code.js' );
 			stage.addChild( header );
-			subhead = new TextField();
-			subhead.text( 'Contact us:' );
+			subhead = new TextField('Class / Object : Development Environment.');
 			stage.addChild( subhead );
 			 email = new EmailInput( 'enter your email' );
 			stage.addChild( email );
