@@ -1,20 +1,21 @@
-# Fase.js
+# Code.js
 
-## This is *really* cool
+## Welcome to Web 3.0
  
- **Fast ActionScript Emulation for JavaScript**
+ **Class / Object Development Evironment for Javascript**
  
-  * FaseJS seeks to create a dialect of javascript that will make it natural for AS3 programmers to transition into Web standards.
+  * Code.js is a dialect of javascript that will make it natural for AS3 programmers to transition into Web standards.
   * The project aims to be truly cross-browser under the hood, so users will only need to think about their creative goals.
-  * The end product will be a compact js library that contains the FaseJS core and a collection of classes familiar to Flash developers for creating and manuipulating a DisplayList within the DOM.
+  * Code.js is a compact js library that loads a module called Fase.js, a collection of classes familiar to Flash developers for creating and manipulating a DisplayList within the DOM.
   
 ## Why?
 
-  * We want to put the art back into front end developement, and be able to focus on harder things than cross-browser development, or copying and pasting old XHTML, CSS, JS, etc. We want, no we **need** HTML5 *without* the hiccups. If you can dream it, you can have it online before your next idea comes up.
+  * We want to put the art back into front end development, and allow creative coders to focus on more beautiful things than cross-browser development, or copying and pasting old XHTML, CSS, JS, etc.
+  * Code.js running the Fase.js and Site.js modules provide HTML5 *without* hiccups.
   
 ## Want to Contribute?
   
-  * Email `git@fasejs.com` to be added to the git repo.
+  * Email `git@neuromantic.com` to be added to the git repo.
   * `git clone git@github.com:FaseJS/fasejs.git`.
   
 ## What's it like?
@@ -51,4 +52,4 @@
     })();
   
   * *[http://FaseJS.com/](http://FaseJS.com/)*
-  * *[http://twitter.com/FaseJS/](http://twitter.com/FaseJS/)*
+  * *[http://twitter.com/NeuromanticLLC/](http://twitter.com/NeuromanticLLC/)*
