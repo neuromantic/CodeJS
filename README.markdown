@@ -23,28 +23,18 @@
 ## What's it like?
  /*!
  *
- * Code.js
+ * Site.js
  * http://fasejs.com/
  *
  * Copyright 2011, Neuromantic Industries & For Sure, Rad!
  * Licensed under the MIT license.
  *
  */
-`(function() {
-	window.onload = function () {
-		Code( [ Fase, Browser ], function(){
-			stage = new Stage( document.getElementById( 'stage' )) ;
-			header = new TextField( 'Code.js' );
-			stage.addChild( header );
-			subhead = new TextField( 'Class / Object : Development Environment.' );
-			stage.addChild( subhead );
-			email = new EmailInput( 'enter your email' );
-			stage.addChild( email );
-			message = new TextArea( 'type your message' );
-			stage.addChild( message );
-			// header.addEventListener( MouseEvent.CLICK, function( event ){ _trace( '>', event.type ); } );
-		});
-	};
-})();`
+    (function() {
+        window.onload = function () {
+            Code( [ Fase, Browser ], function(){
+                 var stage = new Stage( new Document( 'body' ) );
+
+
   * *[http://FaseJS.com/](http://FaseJS.com/)*
   * *[http://twitter.com/NeuromanticLLC/](http://twitter.com/NeuromanticLLC/)*
