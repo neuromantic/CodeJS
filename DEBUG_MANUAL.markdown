@@ -1,7 +1,7 @@
 
-# Fase.js Debug
+# Code.js Troubleshooting
 
-### Some extremely useful gotchas
+### Code.js for Dummies like me.
 
 `*.extends is not a function`
 
@@ -17,7 +17,6 @@
 
 `missing } after property list`
 
-
     look for missing ',' between properties in class declaration
 
     look for  missing closing characters in class declaration
@@ -26,11 +25,14 @@
  
 	look for a getter not using ()
 
+`* is undefined *`
+
+	is your property private?
 
 `*.* is not a function`
 
     you may have assigned a value to a setter function using = instead of ().
 
-`Node was not found" code: "8`
+`this.\* is undefined OR this._\* is undefined`
 
-    wtf?
+	if * is a private property, reference it like this: this._.*
