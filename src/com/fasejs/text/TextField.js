@@ -10,6 +10,9 @@
  *
  */
 _class( 'TextField' )._extends( 'DisplayObject', {
+	init : function(text) {
+		this.text(text);
+	},
 	text : function(value) {
 		if (value === undefined){
 			return this.element().innerHTML;

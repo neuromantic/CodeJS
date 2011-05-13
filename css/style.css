@@ -141,8 +141,8 @@ input:invalid, textarea:invalid {
 /* These selection declarations have to be separate
    No text-shadow: twitter.com/miketaylr/status/12228805301
    Also: hot pink! */
-::-moz-selection{ background: #FF5E99; color:#fff; text-shadow: none; }
-::selection { background:#FF5E99; color:#fff; text-shadow: none; }
+::-moz-selection{ background: #ad2727; color:#fff; text-shadow: none; }
+::selection { background:#ad2727; color:#fff; text-shadow: none; }
 
 /* Bicubic resizing for non-native sized IMG:
    code.flickr.com/blog/2008/11/12/on-ui-quality-the-little-things-client-side-image-resizing/ */
@@ -160,7 +160,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: bold; }
 /**
  * Primary styles
  *
- * Author: 
+ * Author: Neuromantic
  */
 html,body, input, div, textarea {
 	font-family:'Gotham-Book','Basic Commercial W02 Light', 'Arial';
@@ -169,23 +169,22 @@ html,body, input, div, textarea {
 	font-weight: normal;
 	display: block;
 }
-#main{
+#Site{
 	background-color: #FFF;
 }
 	
-#main, #container{
+#Site, #stage{
 	padding:5px;
 }
 
 input, textarea {
-	margin-bottom: 10px;
 	padding: 5px;
 	clear: both;
 }
-header, .Header{
+header, .TextField, input, textarea {
 	margin-bottom: 5px;
 }
-#container, .Stage {
+#Site, #stage {
 	background-color: #E6E6E6;
 	position: absolute; 
 	top: 10px; 
@@ -201,7 +200,7 @@ html, body {
 	width: 100%;
 	overflow: hidden;
 }
-#main, input, textarea, {
+#main, input, textarea, .TextField {
 	display:block;
 	background-color: #E6E6E6;
 }
@@ -209,12 +208,15 @@ h1,h2 {
 	display:block;
 	clear:both;
 }
-footer {
+footer , #footer{
 	text-align: center;
 	font-size: 10px;
 	bottom: 0px;
 }
-input[type=email], textarea {
+textarea, .TextArea {
+	bottom: 100px;
+}
+input[type=email], textarea, .TextArea {
 	background-color: #FFF;
 	color: #a9a9a9;
 	border: 0px;
@@ -232,11 +234,6 @@ input[type=submit] {
 	border: 0px;
 }
 /** Code.js Classes **/
-	
-.TextArea {
-	background-color: #000;
-}
-
 
 
 

@@ -8,37 +8,43 @@
  *
  */
 
+//temporary
+
 (function() {
 	console.log('fase loaded.');
 	window.Fase = function () {
 		return [
+			//test
 			//core
 				// 'com.fasejs.core.Debug',
 			//events
 				'com.fasejs.events.Event',
+				'com.fasejs.events.MouseEvent',
+				'com.fasejs.events.FocusEvent',
 				'com.fasejs.events.EventDispatcher',
+				'com.fasejs.events.TimerEvent',
+				'com.fasejs.util.Timer',
 			//display
 				'com.fasejs.display.Graphics',
 				'com.fasejs.display.DisplayObject',
 				'com.fasejs.display.Sprite',
 				'com.fasejs.display.Stage',
-				'com.fasejs.display.Effects',
 			//text
 				'com.fasejs.text.TextField',
 				'com.fasejs.text.TextFormat',
-			//browser
-				'com.fasejs.browser.Address',
-				'com.browserjs.dom.Input',
-				'com.browserjs.dom.EmailInput',
-				'com.browserjs.dom.Header',
-				'com.browserjs.dom.Section',
-				'com.browserjs.dom.TextArea',
+			//animation
+				'com.fasejs.fs.transitions.Easing',
+				'com.fasejs.fs.transitions.Tween',
 			//net
 				'com.fasejs.net.URLLoader',
 				'com.fasejs.events.LoadingEvent',
-			//animation
-				'com.fasejs.util.Easing',
+			//browser
+				'com.fasejs.browser.Address',
+				'com.browserjs.dom.form.Input',
+				'com.browserjs.dom.form.TextArea',
+				'com.browserjs.dom.form.EmailInput',
+				'com.browserjs.dom.form.SubmitButton'
 		];
-	}
+	};
 })();
 
