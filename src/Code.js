@@ -11,7 +11,7 @@
 
 (function(){
 
-	window._ = {};//                                             * Reserving global._ *
+	_ = {};//                                             * Reserving global._ *
 	
 	_.util = {};
 	
@@ -145,7 +145,7 @@
 			return ( source instanceof Array );
 		},
 		create: function(source) {
-			return new source.constructor();
+			return [];
 		},
 		populate: function(deepCopy, source, result) {
 			for ( var i=0; i<source.length; i++) {
@@ -202,7 +202,7 @@
 	
 	console.log('code loaded.');
 
-	window.CodeObject = false;
+	window.CodeBase = false;
 			
 	_null = function () {// null binding reserved for future use
 		return null;
@@ -251,7 +251,7 @@
  		_.loading.processQueue();
 	};
 	 
-	_.loading.processQueue = function( queue ) {
+	_.loading.processQueue = function () {
 	 	
 		if ( _.loading.complete.length == _.loading.queue.length ) {
 			return window.onCodeReady();
@@ -269,8 +269,7 @@
 	}
 
 	_class = function( codeName, properties ) {
-		var newClass =  ( CodeObject ? CodeObject._plus( properties ) : Class._plus( properties ) );
-	    newClass._codeName = codeName;
+		var newClass =  ( CodeBase ? CodeBase._plus( codeName, properties ) : Class._plus( codeName, properties ) );
 	    newClass._extends = function( parentCodeName, properties ) {
 	       window[ codeName ] = window[ parentCodeName ]._plus( codeName, properties );
 	    	window[ codeName ]._codeName = codeName;
@@ -280,92 +279,154 @@
 	};
 	
 // DON'T GET CUTE.
+Code = function(modules,application) {
+	
+/* 
+ * 
+ * Class via John Resig thanks For Sure, Rad!
+ * 
+ * http://bit.ly/4U5H
+ *	
+ */	
 
-	window.Class = function () { };
-	window.Class._plus = function( className, additions ) {
-		if ( className ){
-			_trace( 'Class' , className );
-		}
-		var initializing = false;
-		var oldPrototype = this.prototype;
-		
-		initializing = true;
-		var newPrototype = new this();
-
-		initializing = false;
-		 newPrototype._ = oldPrototype._ || {};
-
-		function Code() {
-	  		if (! initializing && this.init ) {
-		   		this._super = function(value){
-		   			if ( value === undefined ) {
-		   				return this.__proto__;
-		   			}
-		   				return this.__proto__.constructor.apply( this , arguments );
-		   		}
-		   		this._ = _.util.deepCopy( this._ );
-		   		this._codeName = className;
-		   		this._super( arguments );
-		   		this.init.apply( this, arguments );
-		   	};
-		};
-	 	for ( var name in additions ) {
-			var	propertyKeyword;
-			var propertyName = name;
-			
-	 		attachTarget = {};
-	 		if ( name.indexOf( 'private_' ) >= 0 ) {
-				propertyKeyword = 'private';
-				propertyName = name.substring( name.indexOf( propertyKeyword )  + propertyKeyword.length + 1 , name.length );
-				attachTarget = newPrototype._;
-			} else if ( name.indexOf( 'static_' ) >= 0 ) {
-				propertyKeyword = 'static';
-				attachTarget = Code;
-				propertyName = name.substring( name.indexOf( propertyKeyword )  + propertyKeyword.length + 1 , name.length );
-			} else {
-				propertyKeyword = 'public';
-				attachTarget = newPrototype;
+  var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;;
+  // The base Class implementation (provides _get and _set shortcuts)
+  this.Class = function(){};
+  
+  Class.prototype = {
+		_get : function( propertyName ){
+			var property = this[ propertyName ];
+			if (property  === undefined ) {
+				return undefined;
 			};
-			var propertyType;
-			var property;
-	 		if(typeof additions[ name ] == 'function' && typeof oldPrototype[name] == 'function'){
-	 			propertyType = 'function';
-	 			property = ( function( name, fn ) {
-			   		return function() {
-			        	// var tmp = oldPrototype;
-			            // oldPrototype = oldPrototype[name];
-			           	var ret = fn.apply( this, arguments );
-			           	// oldPrototype = tmp;
-			           	return ret;
-			       	};
-			  	} )( propertyName, additions[ name ] )
-	 		}else{
-	 			propertyType = 'var';
-	 			property = _.util.deepCopy( additions[ name ] );
-	 		}
-			
-			
-			attachTarget[ propertyName ] =  property;
-			if(propertyName != 'init'){ 
-				_trace( propertyKeyword, propertyType, propertyName)
+			return ( typeof this[ propertyName ] == 'function' ) ? this[ propertyName ]() : this[ propertyName ];
+		},
+		_set : function( propertyName, value ){
+			var property = this[ propertyName ];
+			if (property  === undefined ) {
+				this[propertyName] = value;
+			}else{
+				( typeof this[ propertyName ] == 'function' ) ? this[ propertyName ]( value ) : this[ propertyName ] = value;
+			};
+		}
+	};
+	
+  // Create a new Class that inherits from this class
+  Class._plus = function(codeName, additions) {
+    var _super = this.prototype;
+    
+    // Instantiate a base class (but only create the instance,
+    // don't run the init constructor)
+    initializing = true;
+    var newPrototype = new this();
+    newPrototype._codeName = codeName;
+    initializing = false;
+    
+    // The dummy class constructor
+    function Code() {
+      // All construction is actually done in the init method
+      if ( !initializing && this.init ) {
+     	this.init.apply(this, arguments);
+       }
+    }
+    
+    newPrototype._ = _super._ || {};
+    
+    var getters = {};
+    var setters = {};
+    var getSetters = []
+    // Copy the properties over onto the new prototype
+    for (var name in additions) {
+    	var addition = additions[ name ];
+    	var	propertyKeyword;
+		var propertyName = name;
+ 		var attachTarget = {};
+ 		if ( name.indexOf( 'get_' ) >= 0 ) {
+ 			propertyKeyword = 'get_';
+			propertyName = name.substring( name.indexOf( propertyKeyword )  + propertyKeyword.length + 1 , name.length );
+			attachTarget = getters;
+			if ( getSetters.indexOf(propertyName) < 0 ){
+				getSetters.push( propertyName );
 			}
 		}
-		newPrototype._ = _.util.deepCopy(newPrototype._);
-		Code.prototype = newPrototype;
-	 	Code.constructor = Code;
-	 	Code._codeName = className
-	  	Code._plus = arguments.callee;
-	  	return Code;
-	}
-		
+ 		if ( name.indexOf( 'set_' ) >= 0 ) {
+ 			propertyKeyword = 'set_';
+			propertyName = name.substring( name.indexOf( propertyKeyword )  + propertyKeyword.length + 1 , name.length );
+			attachTarget = setters;
+			if ( getSetters.indexOf(propertyName) < 0 ){
+				getSetters.push( propertyName );
+			}
+ 		}
+ 		if ( name.indexOf( 'private_' ) >= 0 ) {
+			propertyKeyword = 'private';
+			propertyName = name.substring( name.indexOf( propertyKeyword )  + propertyKeyword.length + 1 , name.length );
+			attachTarget = newPrototype._;
+		} else if ( name.indexOf( 'static_' ) >= 0 ) {
+			propertyKeyword = 'static';
+			attachTarget = Code;
+			propertyName = name.substring( name.indexOf( propertyKeyword )  + propertyKeyword.length + 1 , name.length );
+		} else {
+			propertyKeyword = 'public';
+			attachTarget = newPrototype;
+		};
+    	
+      // Check if we're overwriting an existing function
+      var property = ( typeof addition == "function" && typeof _super[propertyName] == "function" && fnTest.test(addition) ) ?
+        (function(propertyName, fn){
+          return function() {
+            var tmp = this._super;
+            
+            // Add a new ._super() method that is the same method
+            // but on the super-class
+            this._super = _super[propertyName];
+            
+            // The method only need to be bound temporarily, so we
+            // remove it when we're done executing
+            var ret = fn.apply(this, arguments);        
+            this._super = tmp;
+            
+            return ret;
+          };
+        })( propertyName, addition ) : addition;
+        
+    	attachTarget[propertyName] = property;
+    }
+    for ( var index in getSetters ) {
+    	var getSetterName = getSetters[index];
+    	newPrototype[ getSetterName ] = function ( value ) {
+    		if ( value === undefined ) {
+    			if ( getters[ getSetterName ] ) {
+    				return getters[ getSetterName ].call( this );
+    			}
+    		}
+    		if ( setters[ getSetterName ] ) {
+    			setters[ getSetterName ].apply( this, value );
+    		}
+    	}
+    }
+    // Populate our constructed prototype object
+    Code.prototype = newPrototype;
+    
+    // Enforce the constructor to be what we expect
+    Code.constructor = Code;
+
+    // And make this class extendable
+    Code._plus = arguments.callee;
+    
+    return Code;
+  };
+  
 //		Code initializer
 		
-	Code = function(modules,application) {
-		_trace( Date.toString(), ': running Code.js', ( modules ? 'with '+ modules.length + ' modules' : "" ) );
+
+		_trace( 'running Code.js', ( modules ? 'with '+ modules.length + ' modules' : "" ) );
 		onCodeReady = application || function () { _trace( 'no application provided'); } ;
 		// init to win it.
-		_class('CodeObject')._extends('Class');
+		_class('CodeBase')._extends('Class');
 		// load modules
+		if( modules.length === 0) {
+			return onCodeReady();
+		}
 		for(index in modules){
 			_.loading.queue = _.loading.queue.concat( modules[ index ]() );
 			_.loading.processQueue()

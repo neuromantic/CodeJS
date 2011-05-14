@@ -28,7 +28,7 @@ _class('DisplayObject')._extends('EventDispatcher', {
 	_element : null,
 	element : function( value ) {
 		if( value === undefined ) {
-			return  this._element;
+			return  this._element || ( this._element = null );
 		};
 		this._element = value;
 		this.element().className = this._codeName;
@@ -40,9 +40,11 @@ _class('DisplayObject')._extends('EventDispatcher', {
 		this.element().dispatcher = this;
 		this._addEvents();
 		this.element().style.visible = ( this.element().style.visible == 'visible' ) ? 'inherit' : 'hidden';
+		this.element().style.position = 'absolute';
 	},
 	dispatchMouseEvent : function( event ) {
 		event.target = this;
+		_trace( event.type );
 		if( this._mouseEnabled ) {
 			this.dispatchEvent( event );
 		}
@@ -50,58 +52,67 @@ _class('DisplayObject')._extends('EventDispatcher', {
 	_addEvents : function(){
 		var _this = this;
 		this.element().onmouseover = function (){
-		 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.MOUSE_OVER ) );
-		 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OUT ) );
+			 // _this.dispatchMouseEvent( new MouseEvent( MouseEvent.MOUSE_OVER ) );
+			 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OVER ) );
 		};
 		this.element().onmouseout = function(e) {
-			if (!e) var e = window.event;
-			var tg = (window.event) ? e.srcElement : e.target;
-			if (tg.nodeName != 'DIV') return;
-			var reltg = (e.relatedTarget) ? e.relatedTarget : e.toElement;
-			while ( reltg &&  reltg != tg && reltg.nodeName != 'body') {
-				reltg = reltg.parentNode;
-				if (reltg== tg){
-					 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.MOUSE_OUT ) ) ;
-					  return;
-				};
-			};
+			// if (!e) var e = window.event;
+			// var tg = (window.event) ? e.srcElement : e.target;
+			// if (tg.nodeName != 'DIV') return;
+			// var reltg = (e.relatedTarget) ? e.relatedTarget : e.toElement;
+			// while ( reltg &&  reltg != tg && reltg.nodeName != 'body') {
+				// reltg = reltg.parentNode;
+				// if (reltg== tg){
+					 // _this.dispatchMouseEvent( new MouseEvent( MouseEvent.MOUSE_OUT ) ) ;
+					  // return;
+				// };
+			// };
 			_this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OUT ) );
 		};
 		this.element().onmousedown = function () { _this.dispatchEvent( new MouseEvent( MouseEvent.MOUSE_DOWN ) ) };
 		this.element().onmouseup = function () { _this.dispatchEvent( new MouseEvent( MouseEvent.MOUSE_UP ) ) };
 		this.element().onclick = function () { _this.dispatchMouseEvent( new MouseEvent( MouseEvent.CLICK ) ) };
 	},
-	_name :null,
 	name : function( value ) {
 		if( value === undefined ) {
-			return this._name;
+			return this._name || ( this._name = null );
 		};
 		this._name = value;
 		if( this.element() ) {
 			this.element().id = this.name();
 		};
 	},
-	_parent : null,
 	parent : function( value ) {
 		if ( value === undefined ) {
 			return this._parent;
 		};
+		_trace( 'storing', value, 'as parent of', this );
 		this._parent =  value;
+		_trace( 'setting stage of', this, 'to', this.parent().stage() );
 		this.stage( this.parent().stage() );
 	},
-	_children : [],
 	addChild : function( child ) {
-		if( child instanceof DisplayObject ) {
-			if ( child.parent() != null) {
-				child.parent().removeChild( child );
+		_trace( 'adding', child, 'to', this );
+		
+		this._children = this._children || [];
+		if( child !== this ){
+			if( child instanceof DisplayObject ) {
+				if ( child.parent() != null) {
+					_trace( 'removing', child, 'from', child.parent() );
+					child.parent().removeChild( child );
+				};
+				_trace( 'appending element' );
+				this.element().appendChild( child.element() );
+				child.element().style.zIndex =  this._children.length;
+				_trace('parenting', this, 'to', child )
+				child.parent( this );
+				this._children.push( child );
+			}else{
+				_trace( child , 'is not a' , DisplayObject );
 			};
-			this.element().appendChild( child.element() );
-			child.element().style.zIndex =  this._children.length;
-			child.parent( this );
-			this._children.push( child );
 		}else{
-			_trace( child , 'is not a' , DisplayObject );
-		};
+			throw new Error('You cannot addChild something to itself.')
+		}
 	},
 	removeChild : function(child) {
 		this.element().removeChild( child.element() );
@@ -113,9 +124,14 @@ _class('DisplayObject')._extends('EventDispatcher', {
 		if ( value === undefined ) {
 			return this._stage;
 		};
+		_trace( 'storing', value, 'as stage of', this );
 		this._stage = value;
 		for ( index in this._children ) {
-			this._children[index].stage( this.stage() );
+			_trace('looping through', this._children, 'index : ',  index );
+			_trace('setting stage of' ,this+"'s child" , this._children[index], 'to', this.stage() );
+			if( this._children[index] ) {
+				this._children[index].stage( this.stage() );
+			};
 		};
 	},
 	_x : 0,
@@ -124,16 +140,16 @@ _class('DisplayObject')._extends('EventDispatcher', {
 			return this._x;
 		};
 		this._x = value;
-		// var inheritedX = 0
-		// if( this.parent() ) {
-			// inheritedX = this.parent().x()
-		// }
-		// var x =  value + inheritedX;
-		this.element().style.left = x + 'px';
-		// for ( index in this.children ) {
-			// var child = this.children[ index ];
-			 // child.x( child._x );
-		// };
+		var inheritedX = 0
+		if( this.parent() ) {
+			inheritedX = this.parent().x()
+		}
+		var x =  value + inheritedX;
+		this.element().style.left = this.x() + 'px';
+		for ( index in this.children ) {
+			var child = this.children[ index ];
+			 child.x( child._x );
+		};
 	},
 	_y : 0,
 	y : function( value ) {
@@ -141,12 +157,12 @@ _class('DisplayObject')._extends('EventDispatcher', {
 			return this._y;
 		};
 		this._y = value;
-		// var inheritedY = ( this.parent() ? this.parent().y() : 0 );
-		// var y = value + inheritedY;
-		this.element().style.top = y + 'px';
-		// for ( index in this.children ) {
-			// this.children[ index ].y( this.children[ index ]._y );
-		// };
+		var inheritedY = ( this.parent() ? this.parent().y() : 0 );
+		var y = value + inheritedY;
+		this.element().style.top = this.y() + 'px';
+		for ( index in this.children ) {
+			this.children[ index ].y( this.children[ index ]._y );
+		};
 	},
 	height : function( value ) {
 		if( value == undefined ){
@@ -155,24 +171,30 @@ _class('DisplayObject')._extends('EventDispatcher', {
 		this.element().offsetHeight = value;
 	},
 	width : function( value ) {
-		if( value === undefined ){
+		if( value === undefined ) {
 			return Number( this.element().offsetWidth );
-		}
+		};
 		this.element().styleoffsetWidth = value;
 	},
+	_alpha : 0,
 	alpha : function( value ) {
 		if( value === undefined ) {
-			return Math.round(this.element().style.opacity * 256) / 25600 ;
-		}
-		this.element().style.opacity = Math.round( value *256) / 256;
+			return _alpha;
+		};
+		this.element().style.opacity = value;
+   		this.element().style.filter = 'alpha(opacity=' + value * 100 + ')';
+   		this._alpha = value;
 	},
-	visible : function (value){
-		if ( value === undefined ){
+	visible : function( value ) {
+		if ( value === undefined ) {
 			return this.element().style.visible === 'visible';
-		}
-		this.element().style.visiblity = (value) ? 'visible' : 'hidden';
-		for(index in _children){
-			_children[index].visible('value');
-		}
+		};
+		this.element().style.visiblity = ( value ) ? 'visible' : 'hidden';
+		for( index in _children ) {
+			_children[ index ].visible( 'value' );
+		};
+	},
+	toString : function(){
+		return ( this.name() ) || this._codeName;
 	}
 });

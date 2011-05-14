@@ -16,5 +16,5 @@ _class('MouseEvent')._extends('Event', {
 	static_ROLL_OUT : 'rollOut',
 	static_MOUSE_MOVE : 'mouseMove',
 	static_MOUSE_OVER : 'mouseOver',
-	static_MOUSE_OUT : 'mouseOut',
+	static_MOUSE_OUT : 'mouseOut'
 });

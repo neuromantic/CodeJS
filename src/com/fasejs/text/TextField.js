@@ -11,6 +11,7 @@
  */
 _class( 'TextField' )._extends( 'DisplayObject', {
 	init : function(text) {
+		this._super();
 		this.text(text);
 	},
 	text : function(value) {

@@ -12,7 +12,7 @@
 _class('TextArea')._extends('Input', {
 	init : function( placeholderText ){
 		this.element( document.createElement( 'textarea' ) );
-		if(placeholderText !== undefined){
+		if(placeholderText){
 			this.element().setAttribute( 'placeholder', placeholderText );
 		}
 	}

@@ -38,7 +38,8 @@ _class('Timer')._extends('EventDispatcher', {
 	},
 	start : function () {
 		if (! this.timeout ) {
-			this.timeout = setTimeout( 'this.tick()', tickTime );
+			var timer = this;
+			this.timeout = setTimeout( function(){ timer.tick() }, this.tickTime );
 			this.dispatchEvent( new TimerEvent( TimerEvent.START, this ) );
 		};
 	},

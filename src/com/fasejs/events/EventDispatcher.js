@@ -10,7 +10,7 @@
  *
  */
  
-_class('EventDispatcher')._extends('CodeObject', {
+_class('EventDispatcher', {
 	private_eventHandlers : {},
 	addEventListener : function(eventType, eventHandler) {
 		this._.eventHandlers[eventType] = this._.eventHandlers[eventType] || [];

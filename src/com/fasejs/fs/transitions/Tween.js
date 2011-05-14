@@ -13,81 +13,67 @@
 _class('Tween')._extends('Timer', {
 	static_frameRate : 100,
 	static_defaultEasing : Easing.easeInOutQuad,
-	fromProperties : null,
-	properties : null,
+	toProperties : null,
 	tweenDuration : 0,
 	startTime : 0,
 	easing : null,
-	getCurrentTime : function () {
-		return Date.parse(Date.toString()) * 0.001;
+	currentTime : function () {
+		var seconds = Date.now() * 0.001;
+		// _trace('current time:', seconds )
+		return seconds
 	},
-	static_to : function ( target, duration, properties ) {
+	elapsedTime : function () {
+		return this.currentTime() - this.startTime;
+	},
+	static_to : function( target, duration, properties ) {
 		var tween = new Tween(target,duration,properties)
 		if(properties.onComplete){
 			tween.addEventListener( Event.COMPLETE, function(){ properties.onComplete(); } );
 		};
 	},
-	static_from : function ( target, duration, properties ) {
-		var oldProperties = {};
-		for( propertyName in properties ){
-			Tween.applyProperty( propertyName, target, oldProperties );
+	static_from : function( target, duration, properties ) {
+		var startProperties = {};
+		for ( var propertyName in properties ) {
+			startProperties[ propertyName ] = target._get( propertyName );
+			target._set( propertyName , properties[ propertyName ] );
 		};
-		for( propertyName in properties ){
-			Tween.applyProperty( propertyName, properties, target );
-		};
-		var tween = new Tween( target, duration, oldProperties );
+		var tween = new Tween( target, duration, startProperties );
 		if(properties.onComplete){
-			tween.addEventListener( Event.COMPLETE, function(){ properties.onComplete();  } );
+			tween.addEventListener( Event.COMPLETE, function(){ properties.onComplete(); } );
 		};
 	},
-	static_applyProperties : function ( propertyName, fromObject, toObject ) {
-		if( typeof fromObject[propertyName] == 'function'){// getter
-			if( typeof toObject[propertyName] == 'function'){// setter
-					toObject[ propertyName ]( fromObject[ propertyName ]() );
-			}else{
-				this.fromProperties[ propertyName ] = this.target[ propertyName ]();
-			};
-		} else {
-			if( typeof toObject[propertyName] == 'function'){// setter
-				toObject[ propertyName ]( fromObject[ propertyName ] );
-			}else{
-				this.fromProperties[ propertyName ] = this.target[ propertyName ];
-			};
-		};
-	},
-	init : function ( target, duration, properties ) {
+	init : function( target, duration, properties ) {
 		this.target = target;
 		this.tweenDuration = duration;
-		this.properties = properties;
+		this.toProperties = properties;
 		this.easing = properties.easing || Tween.defaultEasing;
-		this.addEventListener( TimerEvent.TIMER, this.updateTween );
+		this.addEventListener( TimerEvent.TIMER, this.timerHandler );
 		this._super( 1000 / Tween.frameRate );
-		startTween();
+		this.fromProperties = {};
+		this.startTween();
+	},
+	timerHandler : function( event ){
+		event.target.updateTween();
 	},
 	startTween : function () {
-		this.startTime = getCurrentTime();
-		this.fromProperties = {};
-		for(var propertyName in this.properties ) {
-			if( this.target[ propertyName ] ) {
-				Tween.applyProperty( propertyName, this.properties, this.fromProperies );
-			};
+		this.startTime = this.currentTime();
+		for ( var propertyName in this.toProperties ) {
+			this.fromProperties[ propertyName ] = this.target._get( propertyName );
 		};
-		start();
+		this.start();
 	},
 	updateTween : function( event ) {
-		for(var propertyName in this.properties ) {
-			if( this.target[ propertyName ] && fromProperties[ propertyName ] ) {
-				if( typeof this.target[propertyName] == 'function'){// getterSetters
-					this.target[ propertyName ](this.easing( this.getCurrentTime() - this.startTime , fromProperties[ propertyName ], properties[ propertyName ], this.tweenDuration ) );
-				}else{
-					this.target[ propertyName ] = this.easing( this.getCurrentTime() - this.startTime , fromProperties[ propertyName ], properties[ propertyName ], this.tweenDuration );
-				};
+		if( this.elapsedTime() > this.tweenDuration ) {
+			for ( var propertyName in this.toProperties ) {
+				this.target._set( propertyName , this.toProperties[ propertyName ] );
 			};
-		};
-		if( this.getCurrentTime() - this.startTime + ( this.tickDuration * 0.001 ) > this.tweenDuration ) {
-			stop();
 			dispatchEvent( new Event( Event.COMPLETE , this ) );
-		}
+			return this.stop();
+		};
+		for ( var propertyName in this.toProperties ) { // all equations use this signature  (t: current time, b: beginning value, c: end value, d: duration)
+			var newValue = this.easing( this.elapsedTime(), this.fromProperties[ propertyName ], this.toProperties[ propertyName ], this.tweenDuration );
+			this.target._set( propertyName , newValue );
+		};
 	}
 });
 			
