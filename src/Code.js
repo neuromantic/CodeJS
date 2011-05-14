@@ -331,9 +331,11 @@ Code = function(modules,application) {
     }
     
     newPrototype._ = _super._ || {};
+    newPrototype.__ = _super.__ || {};
     
-    var getters = {};
-    var setters = {};
+    newPrototype.__.getters = newPrototype.__.getters || {};
+    newPrototype.__.setters = newPrototype.__.setters || {};
+    
     var getSetters = []
     // Copy the properties over onto the new prototype
     for (var name in additions) {
@@ -342,17 +344,17 @@ Code = function(modules,application) {
 		var propertyName = name;
  		var attachTarget = {};
  		if ( name.indexOf( 'get_' ) >= 0 ) {
- 			propertyKeyword = 'get_';
+ 			propertyKeyword = 'get';
 			propertyName = name.substring( name.indexOf( propertyKeyword )  + propertyKeyword.length + 1 , name.length );
-			attachTarget = getters;
+			attachTarget = newPrototype.__.getters;
 			if ( getSetters.indexOf(propertyName) < 0 ){
 				getSetters.push( propertyName );
 			}
 		}
  		if ( name.indexOf( 'set_' ) >= 0 ) {
- 			propertyKeyword = 'set_';
+ 			propertyKeyword = 'set';
 			propertyName = name.substring( name.indexOf( propertyKeyword )  + propertyKeyword.length + 1 , name.length );
-			attachTarget = setters;
+			attachTarget = newPrototype.__.setters;
 			if ( getSetters.indexOf(propertyName) < 0 ){
 				getSetters.push( propertyName );
 			}
@@ -394,13 +396,14 @@ Code = function(modules,application) {
     for ( var index in getSetters ) {
     	var getSetterName = getSetters[index];
     	newPrototype[ getSetterName ] = function ( value ) {
+    		_trace("?",arguments.callee);
     		if ( value === undefined ) {
-    			if ( getters[ getSetterName ] ) {
-    				return getters[ getSetterName ].call( this );
+    			if ( this.__.getters[ arguments.callee.name ] ) {
+    				return this.__.getters[ arguments.callee.name ].call( this );
     			}
     		}
-    		if ( setters[ getSetterName ] ) {
-    			setters[ getSetterName ].apply( this, value );
+    		if ( this.__.setters[ arguments.callee.name ] ) {
+    			this.__.setters[ arguments.callee.name ].apply( this, value );
     		}
     	}
     }

@@ -32,12 +32,15 @@ _class('Tween')._extends('Timer', {
 		};
 	},
 	static_from : function( target, duration, properties ) {
-		var startProperties = {};
+		var originalProperties = {};
 		for ( var propertyName in properties ) {
-			startProperties[ propertyName ] = target._get( propertyName );
+			_trace( 'storing original value for', propertyName, ':',  target._get( propertyName ) );
+			originalProperties[ propertyName ] = target._get( propertyName );
+			
+			_trace( 'setting from value for', propertyName, ':',  properties[ propertyName ] );
 			target._set( propertyName , properties[ propertyName ] );
 		};
-		var tween = new Tween( target, duration, startProperties );
+		var tween = new Tween( target, duration, originalProperties );
 		if(properties.onComplete){
 			tween.addEventListener( Event.COMPLETE, function(){ properties.onComplete(); } );
 		};
@@ -59,6 +62,7 @@ _class('Tween')._extends('Timer', {
 		this.startTime = this.currentTime();
 		for ( var propertyName in this.toProperties ) {
 			this.fromProperties[ propertyName ] = this.target._get( propertyName );
+			_trace( 'starting tween of property',propertyName,'from:', this.fromProperties[ propertyName ], 'to:',this.toProperties[ propertyName ] );
 		};
 		this.start();
 	},

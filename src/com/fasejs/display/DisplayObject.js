@@ -10,11 +10,11 @@
  *
  */
  
-_class('DisplayObject')._extends('EventDispatcher', {
+_class( 'DisplayObject' )._extends( 'EventDispatcher', {
 	
 	static_count : 0,
 	_mouseEnabled : true,
-	mouseEnabled : function(value){
+	mouseEnabled : function( value ) {
 		if ( value === undefined ){
 			return this._mouseEnabled;
 		}
@@ -114,9 +114,9 @@ _class('DisplayObject')._extends('EventDispatcher', {
 			throw new Error('You cannot addChild something to itself.')
 		}
 	},
-	removeChild : function(child) {
+	removeChild : function( child ) {
 		this.element().removeChild( child.element() );
-		this._children.splice( this._children.indexOf(child), 1 );
+		this._children.splice( this._children.indexOf( child ), 1 );
 		child.parent( null );
 	},
 	_stage : null,
@@ -176,14 +176,16 @@ _class('DisplayObject')._extends('EventDispatcher', {
 		};
 		this.element().styleoffsetWidth = value;
 	},
-	_alpha : 0,
-	alpha : function( value ) {
-		if( value === undefined ) {
-			return _alpha;
-		};
+	private_alpha : 1,
+	get_alpha : function () {
+			return this._.alpha;
+	},
+	set_alpha : function ( value ) {
+		_trace( 'trying to set alpha to', value) 
 		this.element().style.opacity = value;
-   		this.element().style.filter = 'alpha(opacity=' + value * 100 + ')';
-   		this._alpha = value;
+		_trace( 'win!'); 
+   		// this.element().style.filter = 'alpha(opacity=' + value * 100 + ')';
+   		this._.alpha = value;
 	},
 	visible : function( value ) {
 		if ( value === undefined ) {
@@ -194,7 +196,7 @@ _class('DisplayObject')._extends('EventDispatcher', {
 			_children[ index ].visible( 'value' );
 		};
 	},
-	toString : function(){
+	toString : function () {
 		return ( this.name() ) || this._codeName;
 	}
 });
