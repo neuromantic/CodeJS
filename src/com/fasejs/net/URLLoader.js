@@ -41,7 +41,7 @@ _class('URLLoader')._extends('EventDispatcher', {
     			if (XMLHTTP && XMLHTTP.readyState == 4) {
     				if (XMLHTTP.status == 200) {
     					var response = XMLHTTP.responseText;
-    					urlLoader.dispatchEvent(new LoadingEvent(LoadingEvent.LOADED , response));
+    					urlLoader._dispatchEvent(new LoadingEvent(LoadingEvent.LOADED , response));
     				};
     			};
     		};

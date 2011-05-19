@@ -13,23 +13,23 @@
 _class('EventDispatcher', {
 	private_eventHandlers : {},
 	addEventListener : function(eventType, eventHandler) {
-		this._.eventHandlers[eventType] = this._.eventHandlers[eventType] || [];
-		this._.eventHandlers[eventType].push(eventHandler);
+		this._.eventHandlers[ eventType ] = this._.eventHandlers[eventType] || [];
+		this._.eventHandlers[ eventType ].push( eventHandler );
 	},
-	removeEventListener : function(eventType, eventHandler) {
-		if (this._.eventHandlers[eventType].length > 0) {
-			var index = this._.eventHandlers[eventType].indexOf(eventHandler);
-			if (index > -1) {
-				this.eventHandlers[eventType].splice(index,1);
-			}
-		}
+	removeEventListener : function( eventType, eventHandler ) {
+		if( this._.eventHandlers[ eventType ].length > 0 ) {
+			var index = this._.eventHandlers[ eventType ].indexOf( eventHandler );
+			if( index > -1 ) {
+				this.eventHandlers[ eventType ].splice( index, 1 );
+			};
+		};
 	},
-	dispatchEvent : function(event){
-		if(this._.eventHandlers[event.type]){
+	_dispatchEvent : function( event ) {
+		if( this._.eventHandlers[ event.type ] ) {
 			event.target = this;
-			for(index in this._.eventHandlers[event.type]){
-				this._.eventHandlers[event.type][index](event)
-			}
-		}
-	}
+			for( index in this._.eventHandlers[ event.type ] ) {
+				this._.eventHandlers[ event.type ][ index ]( event );
+			};
+		};
+	}//,
 });

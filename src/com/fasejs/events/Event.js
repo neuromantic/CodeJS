@@ -9,7 +9,6 @@
  * Licensed under the MIT license.
  *
  */
- 
 _class('Event', {
 	static_ADDED_TO_STAGE : 'addedToStage',
 	type : '',

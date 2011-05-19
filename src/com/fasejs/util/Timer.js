@@ -11,44 +11,61 @@
  */
  
 _class('Timer')._extends('EventDispatcher', {
-	tickTime : 0,
-	remaining : 0,
-	repeat : 0,
-	timeout : null,
+	private_tickTime : 0,
+	private_remaining : 0,
+	private_repeat : 0,
+	private_timeout : null,
+	private_running : false,
 	init : function( tickTime, repeat ) {
-		this.tickTime = tickTime;
-		this.repeat = repeat || -1;
-		this.remaining = repeat;
+		this._.tickTime = tickTime;
+		this._.repeat = repeat || -1;
+		this._.remaining = repeat;
+		_trace( 'new Timer', tickTime, repeat );
 	},
 	tick : function () {
-		this.stop();
-		this.remaining--;
-		if( this.remaining > 0 || this.repeat == -1 ) {
-			this.dispatchEvent( new TimerEvent( TimerEvent.TIMER, this ) );
+		_trace( 'ticking', this._.timeout);
+		if( this._.remaining > 0 || this._.repeat === -1 ) {
+			this._dispatchEvent( new TimerEvent( TimerEvent.TIMER, this ) );
+			_trace( 'advance');
+			this.advance();
 		}else{
-			this.dispatchEvent( new TimerEvent( TimerEvent.COMPLETE, this ) );
+			this._dispatchEvent( new TimerEvent( TimerEvent.COMPLETE, this ) );
+			// _trace( 'stop' );
+			this.stop();
 		};
-		this.start();
+		this._.remaining--;
+	},
+	advance : function () {
+		// _trace( 'advancing' );
+		if( this._.running ){
+			this.stop();
+			this.start();
+		}
 	},
 	reset : function () {
-		this.stop();
-		this.remaining = this.repeat;
-		this.dispatchEvent( new TimerEvent( TimerEvent.RESET, this ) );
-		this.start();
+		// _trace( 'resetting' );
+		this._dispatchEvent( new TimerEvent( TimerEvent.RESET, this ) );
+		this._.remaining = this._.repeat;
+		this.advance();
 	},
 	start : function () {
-		if (! this.timeout ) {
-			var timer = this;
-			this.timeout = setTimeout( function(){ timer.tick() }, this.tickTime );
-			this.dispatchEvent( new TimerEvent( TimerEvent.START, this ) );
+		_trace( 'starting, my timeout is', this._.timeout );
+		if (! this._.timeout ) {
+			var _this = this;
+			this._dispatchEvent( new TimerEvent( TimerEvent.START, this ) );
+			this._.timeout = window.setTimeout( function(){ _this.tick() }, this._.tickTime );
+			_trace( 'created timeout', this._.timeout );
+			this._.running = true;
 		};
 	},
 	stop : function () {
-		if ( this.timeout ){
-			clearTimeout(this.timeout);
-			this.timeout = null;
-			this.dispatchEvent( new TimerEvent( TimerEvent.STOP, this ) );
+		// _trace( 'stopping' );
+		if ( this._.timeout ){
+			window.clearTimeout( this._.timeout );
+			this._.timeout = null;
+			this._dispatchEvent( new TimerEvent( TimerEvent.STOP, this ) );
+			this._.running = false;
 		};
-	}
+	}//,
 });
 	

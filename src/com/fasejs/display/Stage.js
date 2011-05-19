@@ -19,5 +19,11 @@ _class( 'Stage' )._extends( 'Sprite', {
 		};
 		this.element( hostElement );
 		this.stage( this );
-	}
+		this.addEventListener( MouseEvent.MOVE, this.onMouseMove );
+	},
+	onMouseMove : function ( event ) {
+		this.mouseX( event.mouseX );
+		this.mouseY( event.mouseY );
+		_trace( event.mouseY, event.mouseX );
+	}//,
 });

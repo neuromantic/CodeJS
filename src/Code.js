@@ -277,6 +277,27 @@
 	    window[ codeName ] = newClass;
 		return window[ codeName ];
 	};
+	_.definition = {};
+	_.definition.queue = [];
+	_.definition._class = function( codeName, code, codeBase ) {
+		if( _.loading.queue.length > 0 ){
+				_.definition.queue.push( { codeName: codeName, code: properties } );
+		} else {
+			_.definition.define( { codeName: codeName, code: properties } );
+		};
+	};
+	_.definition.define = function ( definition ) {
+		var codeName = definition.codeName;
+		var properties = definition.code;
+		var codeBase = definition.codeBase || CodeBase;
+		var newClass =  ( codeBase ? codeBase._plus( codeName, properties ) : Class._plus( codeName, properties ) );
+	    newClass._extends = function( parentCodeName, properties ) {
+	    	window[ this.codeName ] = window[ parentCodeName ]._plus( codeName, properties );
+	    	window[ codeName ]._codeName = codeName;
+	    };
+	    window[ codeName ] = newClass;
+		return window[ codeName ];
+	};
 	
 // DON'T GET CUTE.
 Code = function(modules,application) {
@@ -325,6 +346,7 @@ Code = function(modules,application) {
     // The dummy class constructor
     function Code() {
       // All construction is actually done in the init method
+      this._ = _.util.deepCopy( this._ );
       if ( !initializing && this.init ) {
      	this.init.apply(this, arguments);
        }

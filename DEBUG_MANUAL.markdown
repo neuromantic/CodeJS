@@ -25,9 +25,13 @@
  
 	look for a getter not using ()
 
-`* is undefined *`
+`this.* is undefined`
 
 	is your property private?
+
+`* is not defined`
+	
+	did you remember to use this.* when calling a method from a method?
 
 `*.* is not a function`
 

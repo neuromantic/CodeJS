@@ -21,7 +21,6 @@ _class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		this.mouseEnabled = value;
 	},
 	init : function( contents ) {
-		_trace( 'DisplayObject init' );
 		this.element( contents || document.createElement( 'div' ) );
 		
 	},
@@ -40,38 +39,52 @@ _class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		this.element().dispatcher = this;
 		this._addEvents();
 		this.element().style.visible = ( this.element().style.visible == 'visible' ) ? 'inherit' : 'hidden';
-		this.element().style.position = 'absolute';
+		// this.element().style.position = 'absolute';
 	},
 	dispatchMouseEvent : function( event ) {
 		event.target = this;
-		_trace( event.type );
+		// _trace( event.type, event.target );
 		if( this._mouseEnabled ) {
-			this.dispatchEvent( event );
-		}
+			this._dispatchEvent( event );
+		};
+	},
+	private_mouseX : 0,
+	mouseX : function( value ) {
+		if ( value === undefined ) {
+			return this._.mouseX;
+		};
+		this._.mouseX = value - this.x();
+		for( var child in this.children ) {
+			child.mouseX( this.mouseX() );
+		};
+	},
+	private_mouseY : 0,
+	mouseY : function( value ) {
+		if ( value === undefined ) {
+			return this._.mouseY
+		};
+		this._.mouseY = value - this.y();
+		for( var child in this.children ) {
+			child.mouseY( this.mouseY() );
+		};
 	},
 	_addEvents : function(){
 		var _this = this;
-		this.element().onmouseover = function (){
-			 // _this.dispatchMouseEvent( new MouseEvent( MouseEvent.MOUSE_OVER ) );
-			 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OVER ) );
+		this.element().onmouseover = function( e ) {
+			 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OVER, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 		};
-		this.element().onmouseout = function(e) {
-			// if (!e) var e = window.event;
-			// var tg = (window.event) ? e.srcElement : e.target;
-			// if (tg.nodeName != 'DIV') return;
-			// var reltg = (e.relatedTarget) ? e.relatedTarget : e.toElement;
-			// while ( reltg &&  reltg != tg && reltg.nodeName != 'body') {
-				// reltg = reltg.parentNode;
-				// if (reltg== tg){
-					 // _this.dispatchMouseEvent( new MouseEvent( MouseEvent.MOUSE_OUT ) ) ;
-					  // return;
-				// };
-			// };
-			_this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OUT ) );
+		this.element().onmouseout = function( e ) {
+			 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OUT, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 		};
-		this.element().onmousedown = function () { _this.dispatchEvent( new MouseEvent( MouseEvent.MOUSE_DOWN ) ) };
-		this.element().onmouseup = function () { _this.dispatchEvent( new MouseEvent( MouseEvent.MOUSE_UP ) ) };
-		this.element().onclick = function () { _this.dispatchMouseEvent( new MouseEvent( MouseEvent.CLICK ) ) };
+		this.element().onmousedown = function ( e ) {
+			 _this._dispatchEvent( new MouseEvent( MouseEvent.MOUSE_DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+		};
+		this.element().onmouseup = function ( e ) {
+			_this._dispatchEvent( new MouseEvent( MouseEvent.MOUSE_UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+		};
+		this.element().onclick = function ( e ) { 
+			_this.dispatchMouseEvent( new MouseEvent( MouseEvent.CLICK, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+		};
 	},
 	name : function( value ) {
 		if( value === undefined ) {
@@ -86,25 +99,24 @@ _class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		if ( value === undefined ) {
 			return this._parent;
 		};
-		_trace( 'storing', value, 'as parent of', this );
+		// _trace( 'storing', value, 'as parent of', this );
 		this._parent =  value;
-		_trace( 'setting stage of', this, 'to', this.parent().stage() );
+		// _trace( 'setting stage of', this, 'to', this.parent().stage() );
 		this.stage( this.parent().stage() );
 	},
 	addChild : function( child ) {
-		_trace( 'adding', child, 'to', this );
-		
+		// _trace( 'adding', child, 'to', this );
 		this._children = this._children || [];
 		if( child !== this ){
 			if( child instanceof DisplayObject ) {
 				if ( child.parent() != null) {
-					_trace( 'removing', child, 'from', child.parent() );
+					// _trace( 'removing', child, 'from', child.parent() );
 					child.parent().removeChild( child );
 				};
-				_trace( 'appending element' );
+				// _trace( 'appending element' );
 				this.element().appendChild( child.element() );
 				child.element().style.zIndex =  this._children.length;
-				_trace('parenting', this, 'to', child )
+				// _trace('parenting', this, 'to', child );
 				child.parent( this );
 				this._children.push( child );
 			}else{
@@ -112,23 +124,23 @@ _class( 'DisplayObject' )._extends( 'EventDispatcher', {
 			};
 		}else{
 			throw new Error('You cannot addChild something to itself.')
-		}
+		};
 	},
 	removeChild : function( child ) {
 		this.element().removeChild( child.element() );
 		this._children.splice( this._children.indexOf( child ), 1 );
 		child.parent( null );
 	},
-	_stage : null,
+	private_stage : null,
 	stage : function( value ) {
 		if ( value === undefined ) {
-			return this._stage;
+			return this._.stage;
 		};
-		_trace( 'storing', value, 'as stage of', this );
-		this._stage = value;
+		// _trace( 'storing', value, 'as stage of', this );
+		this._.stage = value;
 		for ( index in this._children ) {
-			_trace('looping through', this._children, 'index : ',  index );
-			_trace('setting stage of' ,this+"'s child" , this._children[index], 'to', this.stage() );
+			// _trace('looping through', this._children, 'index : ',  index );
+			// _trace('setting stage of' ,this+"'s child" , this._children[index], 'to', this.stage() );
 			if( this._children[index] ) {
 				this._children[index].stage( this.stage() );
 			};
@@ -165,25 +177,25 @@ _class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		};
 	},
 	height : function( value ) {
+		_trace( this.element().style.height);
 		if( value == undefined ){
-			return Number( this.element().offsetHeight );
+			return Number( this.element().style.height.substring( 0, this.element().style.height.length - 2 ) );
 		}
-		this.element().offsetHeight = value;
+		this.element().style.height = value+'px';
 	},
 	width : function( value ) {
 		if( value === undefined ) {
-			return Number( this.element().offsetWidth );
+			return Number( this.element().style.width.substring( 0, this.element().style.width.length - 2 ) );
 		};
-		this.element().styleoffsetWidth = value;
+		this.element().style.width = value+'px';
 	},
 	private_alpha : 1,
-	get_alpha : function () {
+	alpha : function ( value ) {
+		if( value === undefined ){
 			return this._.alpha;
-	},
-	set_alpha : function ( value ) {
-		_trace( 'trying to set alpha to', value) 
+			
+		}
 		this.element().style.opacity = value;
-		_trace( 'win!'); 
    		// this.element().style.filter = 'alpha(opacity=' + value * 100 + ')';
    		this._.alpha = value;
 	},
@@ -197,6 +209,6 @@ _class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		};
 	},
 	toString : function () {
-		return ( this.name() ) || this._codeName;
+		return ( this.name() ) || this._super();
 	}
 });
