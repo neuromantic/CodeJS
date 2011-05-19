@@ -44,7 +44,7 @@ _class('MouseEvent')._extends('Event', {
 	static_MOUSE_OUT : 'mouseOut',
 	mouseX : 0,
 	mouseY : 0,
-	init : function ( type, target, mouseX, mouseY ){
+	MouseEvent : function ( type, target, mouseX, mouseY ){
 		this._super( type, target );
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;

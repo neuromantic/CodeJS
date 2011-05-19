@@ -21,8 +21,8 @@ var jQuery = (function() {
 
 // Define a local copy of jQuery
 var jQuery = function( selector, context ) {
-		// The jQuery object is actually just the init constructor 'enhanced'
-		return new jQuery.fn.init( selector, context, rootjQuery );
+		// The jQuery object is actually just the _config constructor 'enhanced'
+		return new jQuery.fn._config( selector, context, rootjQuery );
 	},
 
 	// Map over jQuery in case of overwrite
@@ -88,7 +88,7 @@ var jQuery = function( selector, context ) {
 
 jQuery.fn = jQuery.prototype = {
 	constructor: jQuery,
-	init: function( selector, context, rootjQuery ) {
+	_config: function( selector, context, rootjQuery ) {
 		var match, elem, ret, doc;
 
 		// Handle $(""), $(null), or $(undefined)
@@ -303,8 +303,8 @@ jQuery.fn = jQuery.prototype = {
 	splice: [].splice
 };
 
-// Give the init function the jQuery prototype for later instantiation
-jQuery.fn.init.prototype = jQuery.fn;
+// Give the _config function the jQuery prototype for later instantiation
+jQuery.fn._config.prototype = jQuery.fn;
 
 jQuery.extend = jQuery.fn.extend = function() {
 	var options, name, src, copy, copyIsArray, clone,
@@ -821,21 +821,21 @@ jQuery.extend({
 
 	sub: function() {
 		function jQuerySubclass( selector, context ) {
-			return new jQuerySubclass.fn.init( selector, context );
+			return new jQuerySubclass.fn._config( selector, context );
 		}
 		jQuery.extend( true, jQuerySubclass, this );
 		jQuerySubclass.superclass = this;
 		jQuerySubclass.fn = jQuerySubclass.prototype = this();
 		jQuerySubclass.fn.constructor = jQuerySubclass;
 		jQuerySubclass.subclass = this.subclass;
-		jQuerySubclass.fn.init = function init( selector, context ) {
+		jQuerySubclass.fn._config = function _config( selector, context ) {
 			if ( context && context instanceof jQuery && !(context instanceof jQuerySubclass) ) {
 				context = jQuerySubclass(context);
 			}
 
-			return jQuery.fn.init.call( this, selector, context, rootjQuerySubclass );
+			return jQuery.fn._config.call( this, selector, context, rootjQuerySubclass );
 		};
-		jQuerySubclass.fn.init.prototype = jQuerySubclass.fn;
+		jQuerySubclass.fn._config.prototype = jQuerySubclass.fn;
 		var rootjQuerySubclass = jQuerySubclass(document);
 		return jQuerySubclass;
 	},
@@ -2183,7 +2183,7 @@ jQuery.event = {
 			handler.guid = jQuery.guid++;
 		}
 
-		// Init the element's event structure
+		// _config the element's event structure
 		var elemData = jQuery._data( elem );
 
 		// If no elemData is found then we must be trying to bind to one of the
@@ -2244,7 +2244,7 @@ jQuery.event = {
 			var handlers = events[ type ],
 				special = jQuery.event.special[ type ] || {};
 
-			// Init the event handler queue
+			// _config the event handler queue
 			if ( !handlers ) {
 				handlers = events[ type ] = [];
 
@@ -8064,7 +8064,7 @@ if ( "getBoundingClientRect" in document.documentElement ) {
 			return jQuery.offset.bodyOffset( elem );
 		}
 
-		jQuery.offset.initialize();
+		jQuery.offset._configialize();
 
 		var computedStyle,
 			offsetParent = elem.offsetParent,
@@ -8122,7 +8122,7 @@ if ( "getBoundingClientRect" in document.documentElement ) {
 }
 
 jQuery.offset = {
-	initialize: function() {
+	_configialize: function() {
 		var body = document.body, container = document.createElement("div"), innerDiv, checkDiv, table, td, bodyMarginTop = parseFloat( jQuery.css(body, "marginTop") ) || 0,
 			html = "<div style='position:absolute;top:0;left:0;margin:0;border:5px solid #000;padding:0;width:1px;height:1px;'><div></div></div><table style='position:absolute;top:0;left:0;margin:0;border:5px solid #000;padding:0;width:1px;height:1px;' cellpadding='0' cellspacing='0'><tr><td></td></tr></table>";
 
@@ -8152,14 +8152,14 @@ jQuery.offset = {
 		this.doesNotIncludeMarginInBodyOffset = (body.offsetTop !== bodyMarginTop);
 
 		body.removeChild( container );
-		jQuery.offset.initialize = jQuery.noop;
+		jQuery.offset._configialize = jQuery.noop;
 	},
 
 	bodyOffset: function( body ) {
 		var top = body.offsetTop,
 			left = body.offsetLeft;
 
-		jQuery.offset.initialize();
+		jQuery.offset._configialize();
 
 		if ( jQuery.offset.doesNotIncludeMarginInBodyOffset ) {
 			top  += parseFloat( jQuery.css(body, "marginTop") ) || 0;

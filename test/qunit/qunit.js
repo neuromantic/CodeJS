@@ -377,8 +377,8 @@ if ( typeof exports === "undefined" || typeof require === "undefined" ) {
 extend(QUnit, {
 	config: config,
 
-	// Initialize the configuration options
-	init: function() {
+	// _configialize the configuration options
+	_config: function() {
 		extend(config, {
 			stats: { all: 0, bad: 0 },
 			moduleStats: { all: 0, bad: 0 },
@@ -429,7 +429,7 @@ extend(QUnit, {
 	triggerEvent: function( elem, type, event ) {
 		if ( document.createEvent ) {
 			event = document.createEvent("MouseEvents");
-			event.initMouseEvent(type, true, true, elem.ownerDocument.defaultView,
+			event._configMouseEvent(type, true, true, elem.ownerDocument.defaultView,
 				0, 0, 0, 0, 0, false, false, false, false, 0, null);
 			elem._dispatchEvent( event );
 
@@ -494,9 +494,9 @@ if ( typeof document === "undefined" || document.readyState === "complete" ) {
 addEvent(window, "load", function() {
 	QUnit.begin();
 	
-	// Initialize the config, saving the execution queue
+	// _configialize the config, saving the execution queue
 	var oldconfig = extend({}, config);
-	QUnit.init();
+	QUnit._config();
 	extend(config, oldconfig);
 
 	config.blocking = false;
@@ -829,7 +829,7 @@ QUnit.equiv = function () {
 
             // - skip when the property is a method of an instance (OOP)
             // - abort otherwise,
-            //   initial === would have catch identical references anyway
+            //   _configial === would have catch identical references anyway
             "function": function () {
                 var caller = callers[callers.length - 1];
                 return caller !== Object &&

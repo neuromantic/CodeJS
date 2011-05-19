@@ -10,7 +10,7 @@
  *
  */
 _class( 'Stage' )._extends( 'Sprite', {
-	init : function( hostElement ) {
+	Stage : function( hostElement ) {
 		if ( hostElement.hasChildNodes() ) {
 		    while ( hostElement.childNodes.length > 0 ) {
 		    	var child = hostElement.firstChild;

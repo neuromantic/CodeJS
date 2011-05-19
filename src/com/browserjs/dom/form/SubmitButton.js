@@ -10,7 +10,7 @@
  *
  */
 _class('SubmitButton')._extends('Input', {
-	init : function( label ){
+	SubmitButton : function( label ){
 		this.element( document.createElement( 'input' ) );
 		this.element().setAttribute('type', 'submit')
 		if(label !== undefined){

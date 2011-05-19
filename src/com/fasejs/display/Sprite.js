@@ -9,13 +9,10 @@
  * Licensed under the MIT license.
  *
  */
-
 _class( 'Sprite' )._extends( 'DisplayObject', {
 	_graphics : null,
 	graphics : function () {//read only
 		return this._graphics || ( this._graphics = new Graphics( this ) );
-		init : function(name){
-			this.name(name);
-		}
-	},
+		
+	}
 });

@@ -13,7 +13,7 @@
 _class('LoadingEvent')._extends('Event', {
 	static_LOADED : 'loaded',
 	data : {},
-	init : function(type,data) {
+	LoadingEvent : function(type,data) {
 		this.type = type;
 		this.data = data;
 	}

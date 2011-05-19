@@ -10,7 +10,7 @@
  *
  */
 _class('EmailInput')._extends('Input', {
-	init : function( placeholderText ){
+	EmailInput : function( placeholderText ){
 		this.element( document.createElement( 'Input' ) );
 		this.element().setAttribute('type', 'email')
 		if(placeholderText !== undefined){

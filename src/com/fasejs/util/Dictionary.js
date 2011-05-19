@@ -10,7 +10,7 @@
  *
  */
 _class('Dictionary', {
-	init : function( key, value ) {
+	Dictionary : function( key, value ) {
 		if(value === undefined ) {
 			return this._.values[ this.index( key ) ];
 		}

@@ -10,7 +10,7 @@
  *
  */
 _class('Input')._extends('TextField', {
-	init : function( type ){
+	Input : function( type ){
 		this.element( document.createElement( 'input' ) );
 		this.element().setAttribute( 'type', type );
 	},

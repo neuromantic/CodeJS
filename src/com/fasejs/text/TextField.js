@@ -10,7 +10,7 @@
  *
  */
 _class( 'TextField' )._extends( 'DisplayObject', {
-	init : function(text) {
+	TextField : function(text) {
 		this._super();
 		this.text(text);
 	},

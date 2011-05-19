@@ -55,7 +55,7 @@ _class('Tween')._extends('Timer', {
 		};
 		var tween = new Tween( target, duration, originalProperties );
 	},
-	init : function( target, duration, properties ) {
+	Tween : function( target, duration, properties ) {
 		//_trace( 'new Tween', target, duration);
 		this.target = target;
 		this.tweenDuration = duration;

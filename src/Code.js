@@ -200,14 +200,14 @@
 	// CODE
 	
 	
-	console.log('code loaded.');
+	console.log('code.');
 
 	window.CodeBase = false;
 			
 	_null = function () {// null binding reserved for future use
 		return null;
 	};
-	_trace = function( seriously ) {
+	_trace = function( ) {
 		var output = "";
 		for( index in arguments ) {
 			 output += arguments[ index ] + (' ');
@@ -310,7 +310,7 @@ Code = function(modules,application) {
  *	
  */	
 
-  var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;;
+  var _configializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;;
   // The base Class implementation (provides _get and _set shortcuts)
   this.Class = function(){};
   
@@ -337,18 +337,18 @@ Code = function(modules,application) {
     var _super = this.prototype;
     
     // Instantiate a base class (but only create the instance,
-    // don't run the init constructor)
-    initializing = true;
+    // don't run the _config constructor)
+    _configializing = true;
     var newPrototype = new this();
     newPrototype._codeName = codeName;
-    initializing = false;
+    _configializing = false;
     
     // The dummy class constructor
     function Code() {
-      // All construction is actually done in the init method
+      // All construction is actually done in the _config method
       this._ = _.util.deepCopy( this._ );
-      if ( !initializing && this.init ) {
-     	this.init.apply(this, arguments);
+      if ( !_configializing && this._config ) {
+     	this._config.apply(this, arguments);
        }
     }
     
@@ -389,6 +389,9 @@ Code = function(modules,application) {
 			propertyKeyword = 'static';
 			attachTarget = Code;
 			propertyName = name.substring( name.indexOf( propertyKeyword )  + propertyKeyword.length + 1 , name.length );
+		} else if ( name === codeName ){
+			attachTarget = newProptotype;
+			propertyName = '_config'
 		} else {
 			propertyKeyword = 'public';
 			attachTarget = newPrototype;
@@ -441,12 +444,12 @@ Code = function(modules,application) {
     return Code;
   };
   
-//		Code initializer
+//		Code _configializer
 		
 
 		_trace( 'running Code.js', ( modules ? 'with '+ modules.length + ' modules' : "" ) );
 		onCodeReady = application || function () { _trace( 'no application provided'); } ;
-		// init to win it.
+		// _config to win it.
 		_class('CodeBase')._extends('Class');
 		// load modules
 		if( modules.length === 0) {

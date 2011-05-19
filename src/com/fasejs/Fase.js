@@ -27,6 +27,8 @@
 			//display
 				'com.fasejs.display.Graphics',
 				'com.fasejs.display.DisplayObject',
+				'com.fasejs.display.Bitmap',
+				'com.fasejs.display.Loader',
 				'com.fasejs.display.Sprite',
 				'com.fasejs.display.Stage',
 			//text

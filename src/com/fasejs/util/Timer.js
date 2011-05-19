@@ -16,7 +16,7 @@ _class('Timer')._extends('EventDispatcher', {
 	private_repeat : 0,
 	private_timeout : null,
 	private_running : false,
-	init : function( tickTime, repeat ) {
+	Timer : function( tickTime, repeat ) {
 		this._.tickTime = tickTime;
 		this._.repeat = repeat || -1;
 		this._.remaining = repeat;

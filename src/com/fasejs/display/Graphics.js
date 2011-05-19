@@ -11,7 +11,7 @@
  */
  
 _class('Graphics', {
-	init : function(displayObject) {
+	Graphics : function(displayObject) {
 		var canvas = document.createElement('canvas');
 		this._canvas = canvas;
 		displayObject.element().appendChild(canvas);
@@ -19,45 +19,26 @@ _class('Graphics', {
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 	},
-	decToHex : function(dec) {
-		return dec.toString(16);
+	rgba : function( color, alpha ) {
+		alpha = alpha ? ',' + alpha : '';
+		return 'rgba('+ parseInt( color.substring( 0, 2 ), 16 ) + ','
+					  + parseInt( color.substring( 2, 4 ), 16 ) + ','
+					  + parseInt( color.substring( 4, 6 ), 16 ) + ','
+					  + alpha + ')';
 	},
-	hexToR : function(hex) {
-		return parseInt(hex.substring(0, 2), 16);
-	},
-	hexToG : function(hex) {
-		return parseInt(hex.substring(2, 4), 16);
-	},
-	hexToB : function(hex) {
-		return parseInt(hex.substring(4, 6), 16);
-	},
-	resize : function(w, h) {
-		this.width = w;
-		this.height = h;
-	},
-	moveTo : function(x, y) {
+	moveTo : function( x, y ) {
 		this._context.moveTo(x, y);
 	},
-	strokeStyle : function(rgb) {
-		this._context.strokeStyle = rgb;
-	},
-	lineStyle : function(lineWidth, lineColor) {
-		lineColor = '#' + decToHex(lineColor);
-		this._context.strokeStyle = lineColor;
+	lineStyle : function( lineWidth, lineColor, alpha ) {
+		this._context.strokeStyle = this.rgba( lineColor.toString( 16 ), alpha );
 		this._context.lineWidth = lineWidth;
-		this._context.stroke();
-	},
-	fill : function() {
-		this._context.fill();
-	},
-	stroke : function() {
 		this._context.stroke();
 	},
 	drawCircle : function(x, y, rad) {
 		this._context.arc(x, y, rad, 0, Math.PI*2, false); 
 	},
 	beginFill : function(fillColor, alpha) {
-		var hex = this.decToHex(fillColor);
+		var hex = fillColor.toString( 16 );
 		r = this.hexToR(hex);
 		g = this.hexToG(hex);
 		b = this.hexToB(hex);
@@ -70,6 +51,7 @@ _class('Graphics', {
 		this._context.fillRect(x, y, w, h);
 	},
 	endFill : function() {
+		this._context.fill();
 	},
 	lineTo : function(x, y) {
 		this._context.lineTo(x, y);
@@ -80,7 +62,7 @@ _class('Graphics', {
 	quadraticCurveTo : function(xControl, yControl, xEnd, yEnd) {
 		this._context.quadraticCurveTo(xControl, yControl, xEnd, yEnd);
 	},
-	roundedRect : function(x, y, w, h, rad) {
+	drawRoundedRect : function(x, y, w, h, rad) {
 	    this.moveTo(x, y + rad);
 	    this.lineTo(x, y + h - rad);
 	    this.quadraticCurveTo(x, y + h, x + rad, y + h);
@@ -90,10 +72,6 @@ _class('Graphics', {
 	    this.quadraticCurveTo(x + w, y, x + w - rad, y);
 	    this.lineTo(x + rad, y);
 	    this.quadraticCurveTo(x, y, x, y + rad);
-	},
-	fillRoundedRect: function(x, y, w, h, rad) {
-	    this.roundedRect(x, y, w, h, rad);
-	    this.fill();
 	},
 	clear : function() {
 	    this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);

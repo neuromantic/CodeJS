@@ -13,7 +13,7 @@ _class('Event', {
 	static_ADDED_TO_STAGE : 'addedToStage',
 	type : '',
 	target : null,
-	init : function(type, target) {
+	Event : function(type, target) {
 		this.type = type;
 		this.target = target;
 	}

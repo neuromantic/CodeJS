@@ -11,9 +11,9 @@
  */
  
 _class('URLLoader')._extends('EventDispatcher', {
-    URLRequestMethod : 'GET',
-    URLRequest : null,
-    URLVariables : null,
+   URLRequestMethod : 'GET',
+   URLRequest : null,
+   URLVariables : null,
    //  _
    XMLHTTP : function () { // private const
     	var x = false;
@@ -34,14 +34,14 @@ _class('URLLoader')._extends('EventDispatcher', {
   	},
     load : function() {
     	//TODO: params = this.URLVariables;
-    	var urlLoader = this;
+    	var _this = this;
     	var XMLHTTP = this.XMLHTTP();
     	if (XMLHTTP) {
     		XMLHTTP.onreadystatechange = function stateChange() {
     			if (XMLHTTP && XMLHTTP.readyState == 4) {
     				if (XMLHTTP.status == 200) {
     					var response = XMLHTTP.responseText;
-    					urlLoader._dispatchEvent(new LoadingEvent(LoadingEvent.LOADED , response));
+    					_this._dispatchEvent(new LoadingEvent(LoadingEvent.LOADED , response));
     				};
     			};
     		};

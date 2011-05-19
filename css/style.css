@@ -162,6 +162,8 @@ h1, h2, h3, h4, h5, h6 { font-weight: bold; }
  *
  * Author: Neuromantic
  */
+
+
 html,body, input, div, textarea {
 	font-family:'Gotham-Book','Basic Commercial W02 Light', 'Arial';
 	text-align: left;
@@ -169,52 +171,32 @@ html,body, input, div, textarea {
 	font-weight: normal;
 	display: block;
 }
-#Site{
-	background-color: #FFF;
+#bg {
+	background-color: #E6E6E6;
 }
-	
-#Site, #stage{
-	padding:5px;
+#Site {
+	background-color: #000;
 }
 
 input, textarea {
 	padding: 5px;
-	clear: both;
 }
-header, .TextField, input, textarea {
-	margin-bottom: 5px;
-}
-#Site, #stage {
-	background-color: #E6E6E6;
-	position: absolute; 
-	top: 10px; 
-	left: 10px; 
-	right: 10px; 
-	bottom:10px; 
-	
+#graphic {
+	width: 320px;
+	height : 320px;
 }
 
 html, body {
 	color: #666666;
 	height: 100%;
 	width: 100%;
-	overflow: hidden;
 }
-#main, input, textarea, .TextField {
-	display:block;
+	input, textarea, .TextField {
 	background-color: #E6E6E6;
 }
-h1,h2 {
-	display:block;
-	clear:both;
-}
-footer , #footer{
-	text-align: center;
+#footer{
+	
 	font-size: 10px;
-	bottom: 0px;
-}
-textarea, .TextArea {
-	bottom: 100px;
 }
 input[type=email], textarea, .TextArea {
 	background-color: #FFF;
@@ -233,6 +215,7 @@ input[type=submit] {
 	text-align: center;
 	border: 0px;
 }
+*/
 /** Code.js Classes **/
 
 

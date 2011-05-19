@@ -13,38 +13,51 @@
 _class( 'DisplayObject' )._extends( 'EventDispatcher', {
 	
 	static_count : 0,
-	_mouseEnabled : true,
+	private_mouseEnabled : true,
 	mouseEnabled : function( value ) {
 		if ( value === undefined ){
 			return this._mouseEnabled;
 		}
 		this.mouseEnabled = value;
 	},
-	init : function( contents ) {
+	DisplayObject : function( contents ) {
 		this.element( contents || document.createElement( 'div' ) );
 		
 	},
-	_element : null,
+	private_element : null,
 	element : function( value ) {
 		if( value === undefined ) {
-			return  this._element || ( this._element = null );
+			return  this._.element || ( this._.element = null );
 		};
-		this._element = value;
+		this._.element = value;
 		this.element().className = this._codeName;
 		if( this.element().id ){
 			this.name( this.element().id )
 		}else if( this.name() ) {
 			this.element().id = this.name();
 		};
-		this.element().dispatcher = this;
-		this._addEvents();
-		this.element().style.visible = ( this.element().style.visible == 'visible' ) ? 'inherit' : 'hidden';
-		// this.element().style.position = 'absolute';
+		var _this = this;
+		this.element().onmouseover = function( e ) {
+			 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OVER, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+		};
+		this.element().onmouseout = function( e ) {
+			 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OUT, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+		};
+		this.element().onmousedown = function ( e ) {
+			 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.MOUSE_DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+		};
+		this.element().onmouseup = function ( e ) {
+			_this.dispatchMouseEvent( new MouseEvent( MouseEvent.MOUSE_UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+		};
+		this.element().onclick = function ( e ) { 
+			_this.dispatchMouseEvent( new MouseEvent( MouseEvent.CLICK, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+		};
+		this.element().style.visible = ( this.element().style.visible == 'visible' || this.element().style.visible == 'inherit'  ) ? 'inherit' : 'hidden';
+		this.element().style.position = 'absolute';
 	},
 	dispatchMouseEvent : function( event ) {
 		event.target = this;
-		// _trace( event.type, event.target );
-		if( this._mouseEnabled ) {
+		if( this._.mouseEnabled ) {
 			this._dispatchEvent( event );
 		};
 	},
@@ -66,24 +79,6 @@ _class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		this._.mouseY = value - this.y();
 		for( var child in this.children ) {
 			child.mouseY( this.mouseY() );
-		};
-	},
-	_addEvents : function(){
-		var _this = this;
-		this.element().onmouseover = function( e ) {
-			 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OVER, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
-		};
-		this.element().onmouseout = function( e ) {
-			 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OUT, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
-		};
-		this.element().onmousedown = function ( e ) {
-			 _this._dispatchEvent( new MouseEvent( MouseEvent.MOUSE_DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
-		};
-		this.element().onmouseup = function ( e ) {
-			_this._dispatchEvent( new MouseEvent( MouseEvent.MOUSE_UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
-		};
-		this.element().onclick = function ( e ) { 
-			_this.dispatchMouseEvent( new MouseEvent( MouseEvent.CLICK, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 		};
 	},
 	name : function( value ) {
@@ -138,20 +133,20 @@ _class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		};
 		// _trace( 'storing', value, 'as stage of', this );
 		this._.stage = value;
-		for ( index in this._children ) {
+		for ( index in this._.children ) {
 			// _trace('looping through', this._children, 'index : ',  index );
 			// _trace('setting stage of' ,this+"'s child" , this._children[index], 'to', this.stage() );
-			if( this._children[index] ) {
-				this._children[index].stage( this.stage() );
+			if( this._.children[ index ] ) {
+				this._.children[ index ].stage( this.stage() );
 			};
 		};
 	},
-	_x : 0,
+	private_x : 0,
 	x : function( value ) {
 		if ( value === undefined ){
-			return this._x;
+			return this._.x;
 		};
-		this._x = value;
+		this._.x = value;
 		var inheritedX = 0
 		if( this.parent() ) {
 			inheritedX = this.parent().x()
@@ -160,20 +155,21 @@ _class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		this.element().style.left = this.x() + 'px';
 		for ( index in this.children ) {
 			var child = this.children[ index ];
-			 child.x( child._x );
+			 child.x( child._.x );
 		};
 	},
-	_y : 0,
+	private_y : 0,
 	y : function( value ) {
 		if ( value === undefined ) {
-			return this._y;
+			return this._.y;
 		};
-		this._y = value;
+		this._.y = value;
 		var inheritedY = ( this.parent() ? this.parent().y() : 0 );
 		var y = value + inheritedY;
 		this.element().style.top = this.y() + 'px';
-		for ( index in this.children ) {
-			this.children[ index ].y( this.children[ index ]._y );
+		for ( index in this._.children ) {
+			var child = this._.children[ index ];
+			child.y( child._.y );
 		};
 	},
 	height : function( value ) {
@@ -201,11 +197,11 @@ _class( 'DisplayObject' )._extends( 'EventDispatcher', {
 	},
 	visible : function( value ) {
 		if ( value === undefined ) {
-			return this.element().style.visible === 'visible';
+			return this.element().style.visible === 'inherit';
 		};
-		this.element().style.visiblity = ( value ) ? 'visible' : 'hidden';
-		for( index in _children ) {
-			_children[ index ].visible( 'value' );
+		this.element().style.visiblity = ( value ) ? 'inherit' : 'hidden';
+		for( index in this._.children ) {
+			this._.children[ index ].visible( value );
 		};
 	},
 	toString : function () {
