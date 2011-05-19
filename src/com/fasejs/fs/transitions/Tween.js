@@ -19,14 +19,14 @@ _class('Tween')._extends('Timer', {
 	easing : null,
 	currentTime : function () {
 		var seconds = Date.now() * 0.001;
-		// _trace('current time:', seconds )
+		//_trace('current time:', seconds )
 		return seconds
 	},
 	elapsedTime : function () {
 		return this.currentTime() - this.startTime;
 	},
 	static_to : function( target, duration, properties ) {
-		_trace( 'Tween.to', target, duration );
+		//_trace( 'Tween.to', target, duration );
 		var tween = new Tween(target,duration,properties);
 	},
 	static_tweens: [],
@@ -48,15 +48,15 @@ _class('Tween')._extends('Timer', {
 	static_from : function( target, duration, properties ) {
 		var originalProperties = {};
 		for ( var propertyName in properties ) {
-			_trace( 'storing original value for', propertyName, ':',  target._get( propertyName ) );
+			//_trace( 'storing original value for', propertyName, ':',  target._get( propertyName ) );
 			originalProperties[ propertyName ] = target._get( propertyName );
-			_trace( 'setting from value for', propertyName, ':',  properties[ propertyName ] );
+			//_trace( 'setting from value for', propertyName, ':',  properties[ propertyName ] );
 			target._set( propertyName , properties[ propertyName ] );
 		};
 		var tween = new Tween( target, duration, originalProperties );
 	},
 	init : function( target, duration, properties ) {
-		_trace( 'new Tween', target, duration);
+		//_trace( 'new Tween', target, duration);
 		this.target = target;
 		this.tweenDuration = duration;
 		this.toProperties = properties;
@@ -65,7 +65,7 @@ _class('Tween')._extends('Timer', {
 		this._super( 1000 / Tween.frameRate );
 		this.fromProperties = {};
 		if( properties.onComplete ){
-			// _trace( 'setting onComplete' );
+			//_trace( 'setting onComplete' );
 			this.addEventListener( Event.COMPLETE, function(){; properties.onComplete(); } );
 		};
 		if ( Tween.targets.indexOf( this.target ) < 0 ){
@@ -74,7 +74,7 @@ _class('Tween')._extends('Timer', {
 		};
 		Tween.getTweensOf( this.target ).push( this );
 		if( properties.delay ) {
-			// _trace( 'delaying Tween by', properties.delay );
+			//_trace( 'delaying Tween by', properties.delay );
 			this.delayTimer = new Timer( properties.delay * 1000, 1 );
 			var _this = this;
 			this.delayTimer.addEventListener( TimerEvent.COMPLETE, function() { _this.onDelayComplete() }  );
@@ -102,7 +102,7 @@ _class('Tween')._extends('Timer', {
 		this.startTime = this.currentTime();
 		for ( var propertyName in this.toProperties ) {
 			this.fromProperties[ propertyName ] = this.target._get( propertyName );
-			_trace( 'starting tween on', this.target, 'of property',propertyName,'from:', this.fromProperties[ propertyName ], 'to:', this.toProperties[ propertyName ] );
+			//_trace( 'starting tween on', this.target, 'of property',propertyName,'from:', this.fromProperties[ propertyName ], 'to:', this.toProperties[ propertyName ] );
 		};
 		this.start();
 	},
@@ -110,9 +110,9 @@ _class('Tween')._extends('Timer', {
 		if( this.elapsedTime() > this.tweenDuration ) {
 			return this.stopTween( true );
 		};
-		for ( var propertyName in this.toProperties ) { // all equations use this signature  (t: current time, b: beginning value, c: end value, d: duration)
+		for ( var propertyName in this.toProperties ) { //all equations use this signature  (t: current time, b: beginning value, c: end value, d: duration)
 			var newValue = this.easing( this.elapsedTime(), this.fromProperties[ propertyName ], this.toProperties[ propertyName ], this.tweenDuration );
-			// _trace( this.target, propertyName, newValue );
+			//_trace( this.target, propertyName, newValue );
 			this.target._set( propertyName , newValue );
 		};
 	},
@@ -120,13 +120,13 @@ _class('Tween')._extends('Timer', {
 		if( finish ) {
 			for( var propertyName in this.toProperties ) {
 				this.target._set( propertyName , this.toProperties[ propertyName ] );
-				_trace( 'stopping tween of', this.target, 'at', this.target._get( propertyName ) );
+				//_trace( 'stopping tween of', this.target, 'at', this.target._get( propertyName ) );
 			};
 		};
 		this._dispatchEvent( new Event( Event.COMPLETE , this ) );
 		this.stop();
-		// var targetTweens = Tween.getTweensOf(  this.target );
-		// targetTweens.splice( targetTweens.indexOf( this ) );
+		//var targetTweens = Tween.getTweensOf(  this.target );
+		//targetTweens.splice( targetTweens.indexOf( this ) );
 	}//,
 });
 			

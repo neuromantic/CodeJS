@@ -20,46 +20,46 @@ _class('Timer')._extends('EventDispatcher', {
 		this._.tickTime = tickTime;
 		this._.repeat = repeat || -1;
 		this._.remaining = repeat;
-		_trace( 'new Timer', tickTime, repeat );
+		//_trace( 'new Timer', tickTime, repeat );
 	},
 	tick : function () {
-		_trace( 'ticking', this._.timeout);
+		//_trace( 'ticking', this._.timeout);
 		if( this._.remaining > 0 || this._.repeat === -1 ) {
 			this._dispatchEvent( new TimerEvent( TimerEvent.TIMER, this ) );
-			_trace( 'advance');
+			//_trace( 'advance');
 			this.advance();
 		}else{
 			this._dispatchEvent( new TimerEvent( TimerEvent.COMPLETE, this ) );
-			// _trace( 'stop' );
+			//_trace( 'stop' );
 			this.stop();
 		};
 		this._.remaining--;
 	},
 	advance : function () {
-		// _trace( 'advancing' );
+		//_trace( 'advancing' );
 		if( this._.running ){
 			this.stop();
 			this.start();
 		}
 	},
 	reset : function () {
-		// _trace( 'resetting' );
+		//_trace( 'resetting' );
 		this._dispatchEvent( new TimerEvent( TimerEvent.RESET, this ) );
 		this._.remaining = this._.repeat;
 		this.advance();
 	},
 	start : function () {
-		_trace( 'starting, my timeout is', this._.timeout );
+		//_trace( 'starting, my timeout is', this._.timeout );
 		if (! this._.timeout ) {
 			var _this = this;
 			this._dispatchEvent( new TimerEvent( TimerEvent.START, this ) );
 			this._.timeout = window.setTimeout( function(){ _this.tick() }, this._.tickTime );
-			_trace( 'created timeout', this._.timeout );
+			//_trace( 'created timeout', this._.timeout );
 			this._.running = true;
 		};
 	},
 	stop : function () {
-		// _trace( 'stopping' );
+		//_trace( 'stopping' );
 		if ( this._.timeout ){
 			window.clearTimeout( this._.timeout );
 			this._.timeout = null;

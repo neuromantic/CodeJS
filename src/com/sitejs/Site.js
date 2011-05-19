@@ -33,10 +33,12 @@
 			var components = [ header, subhead, email, message, submit, footer ];
 			var delay = 0;
 			for( var index in components ){
+				index = Number( index );
 				var component = components[ index ];
 				component.alpha( 0 );
 				Tween.to( component, 0.5, { alpha : 1, delay : delay } );
-				delay = ( (index + 1) * 0.5 ) - 0.4;
+				_trace( 'set tween #', index, 'delay', delay );
+				delay += 0.1;
 			}
 			
 		 });
