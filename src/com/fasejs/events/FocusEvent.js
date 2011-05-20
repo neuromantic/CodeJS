@@ -9,8 +9,11 @@
  * Licensed under the MIT license.
  *
  */
-  
-_class('FocusEvent')._extends('Event', {
-	static_FOCUS_IN : 'focusIn',
-	static_FOCUS_OUT : 'focusOut',
-});
+  _package( 'com.fasejs.events',
+ 
+ 	_import( 'com.fasejs.events.Event' ),
+	_class('FocusEvent')._extends('Event', {
+		static_IN : 'focusIn',
+		static_OUT : 'focusOut',
+	}
+));

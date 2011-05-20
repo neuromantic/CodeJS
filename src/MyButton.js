@@ -1,5 +1,5 @@
 _class('MyButton')._extends('SubmitButton',{
-	_config : function () {
+	MyButton : function () {
 		this.element().value = 'mine';
 	}
 })

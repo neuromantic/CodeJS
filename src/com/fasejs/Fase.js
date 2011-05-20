@@ -11,7 +11,7 @@
 //temporary
 
 (function() {
-	console.log('fase loaded.');
+	console.log('fase.');
 	window.Fase = function () {
 		return [
 			//test
@@ -23,6 +23,7 @@
 				'com.fasejs.events.FocusEvent',
 				'com.fasejs.events.EventDispatcher',
 				'com.fasejs.events.TimerEvent',
+				'com.fasejs.fs.events.TweenEvent',
 				'com.fasejs.util.Timer',
 			//display
 				'com.fasejs.display.Graphics',

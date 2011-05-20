@@ -9,11 +9,17 @@
  * Licensed under the MIT license.
  *
  */
-_class('TextArea')._extends('Input', {
-	TextArea : function( placeholderText ){
-		this.element( document.createElement( 'textarea' ) );
-		if(placeholderText){
-			this.element().setAttribute( 'placeholder', placeholderText );
+_package( 'com.browserjs.dom.form',
+
+	_import( 'com.fasejs.text.TextField' ),
+	_import( 'com.browserjs.dom.form.Input' ),
+	
+	_class('TextArea')._extends('Input', {
+		TextArea : function( placeholderText ){
+			this.element( document.createElement( 'textarea' ) );
+			if(placeholderText){
+				this.element().setAttribute( 'placeholder', placeholderText );
+			}
 		}
 	}
-});
+));

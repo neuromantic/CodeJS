@@ -176,14 +176,14 @@ html,body, input, div, textarea {
 }
 #Site {
 	background-color: #000;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
 }
 
 input, textarea {
 	padding: 5px;
-}
-#graphic {
-	width: 320px;
-	height : 320px;
 }
 
 html, body {

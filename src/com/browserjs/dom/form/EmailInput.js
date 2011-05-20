@@ -9,12 +9,17 @@
  * Licensed under the MIT license.
  *
  */
-_class('EmailInput')._extends('Input', {
-	EmailInput : function( placeholderText ){
-		this.element( document.createElement( 'Input' ) );
-		this.element().setAttribute('type', 'email')
-		if(placeholderText !== undefined){
-			this.element().setAttribute( 'placeholder', placeholderText );
-		}
-	},
-});
+_package( 'com.browserjs.dom.form',
+
+	_import( 'com.fasejs.events.FocusEvent' ),
+	
+	_class('EmailInput')._extends('Input', {
+		EmailInput : function( placeholderText ){
+			this.element( document.createElement( 'Input' ) );
+			this.element().setAttribute('type', 'email')
+			if(placeholderText !== undefined){
+				this.element().setAttribute( 'placeholder', placeholderText );
+			};
+		}//,
+	}//,
+));

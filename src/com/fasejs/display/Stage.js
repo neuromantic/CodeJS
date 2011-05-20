@@ -9,21 +9,29 @@
  * Licensed under the MIT license.
  *
  */
-_class( 'Stage' )._extends( 'Sprite', {
-	Stage : function( hostElement ) {
-		if ( hostElement.hasChildNodes() ) {
-		    while ( hostElement.childNodes.length > 0 ) {
-		    	var child = hostElement.firstChild;
-		        hostElement.removeChild( child ); 
-		    };
-		};
-		this.element( hostElement );
-		this.stage( this );
-		this.addEventListener( MouseEvent.MOVE, this.onMouseMove );
-	},
-	onMouseMove : function ( event ) {
-		this.mouseX( event.mouseX );
-		this.mouseY( event.mouseY );
-		_trace( event.mouseY, event.mouseX );
-	}//,
-});
+_package( 'com.fasejs.display',
+
+	_import( 'com.fasejs.display.Sprite' ),
+ 	_import( 'com.fasejs.events.MouseEvent' ),
+	
+	_class( 'Stage' )._extends( 'Sprite', {
+		Stage : function( hostElement ) {
+			if ( hostElement.hasChildNodes() ) {
+			    while ( hostElement.childNodes.length > 0 ) {
+			    	var child = hostElement.firstChild;
+			        hostElement.removeChild( child ); 
+			    };
+			};
+			this._super( hostElement );
+			this.stage( this );
+			this.addEventListener( MouseEvent.MOVE, this.onMouseMove );
+			var _this = this;
+			window.onresize = function ( e ) { _this._dispatchEvent( new Event( Event.RESIZE, _this) ) }
+		},
+		onMouseMove : function ( event ) {
+			this.mouseX( event.mouseX );
+			this.mouseY( event.mouseY );
+			_trace( event.mouseY, event.mouseX );
+		}//,
+	})
+);

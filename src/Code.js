@@ -311,7 +311,7 @@ Code = function(modules,application) {
  */	
 
   var _configializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;;
-  // The base Class implementation (provides _get and _set shortcuts)
+  // The base Class implementation -- provides _get and _set shortcuts to eliminate abiguous assignment ( is it a  property or a getSetter ? )
   this.Class = function(){};
   
   Class.prototype = {
@@ -345,7 +345,7 @@ Code = function(modules,application) {
     
     // The dummy class constructor
     function Code() {
-      // All construction is actually done in the _config method
+      // All construction is actually done in the _config method (declared using the new Class name as string (codeName ) )
       this._ = _.util.deepCopy( this._ );
       if ( !_configializing && this._config ) {
      	this._config.apply(this, arguments);
@@ -358,7 +358,7 @@ Code = function(modules,application) {
     newPrototype.__.getters = newPrototype.__.getters || {};
     newPrototype.__.setters = newPrototype.__.setters || {};
     
-    var getSetters = []
+    var getSetters = [];
     // Copy the properties over onto the new prototype
     for (var name in additions) {
     	var addition = additions[ name ];
@@ -390,7 +390,7 @@ Code = function(modules,application) {
 			attachTarget = Code;
 			propertyName = name.substring( name.indexOf( propertyKeyword )  + propertyKeyword.length + 1 , name.length );
 		} else if ( name === codeName ){
-			attachTarget = newProptotype;
+			attachTarget = newPrototype;
 			propertyName = '_config'
 		} else {
 			propertyKeyword = 'public';
@@ -405,7 +405,12 @@ Code = function(modules,application) {
             
             // Add a new ._super() method that is the same method
             // but on the super-class
-            this._super = _super[propertyName];
+            if( propertyName === '_config' ) {
+            	this._super = _super._config;
+            }else{
+            	this._super = _super;
+            }
+            
             
             // The method only need to be bound temporarily, so we
             // remove it when we're done executing

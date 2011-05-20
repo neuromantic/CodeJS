@@ -9,12 +9,16 @@
  * Licensed under the MIT license.
  *
  */
+ _package( 'com.fasejs.events',
  
-_class('LoadingEvent')._extends('Event', {
-	static_LOADED : 'loaded',
-	data : {},
-	LoadingEvent : function(type,data) {
-		this.type = type;
-		this.data = data;
+ 	_import( 'com.fasejs.events.Event' ),
+ 	
+	_class('LoadingEvent')._extends('Event', {
+		static_LOADED : 'loaded',
+		data : {},
+		LoadingEvent : function(type,data) {
+			this.type = type;
+			this.data = data;
+		}
 	}
-});
+));

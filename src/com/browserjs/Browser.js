@@ -9,7 +9,7 @@
  */
 
 (function() {
-	console.log( 'broswer loaded.' );
+	console.log( 'broswer.' );
 	window.Browser = function () {
 	//	return [ 'com.browserjs.dom.Input' ];
 	}
