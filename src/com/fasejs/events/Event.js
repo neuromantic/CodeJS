@@ -9,7 +9,7 @@
  * Licensed under the MIT license.
  *
  */
- _package( 'com.fasejs.events',
+ // _package( 'com.fasejs.events',
 	_class('Event', {
 		static_ADDED_TO_STAGE : 'addedToStage',
 	 	static_RESIZE : "resize",
@@ -18,6 +18,6 @@
 		Event : function(type, target) {
 			this.type = type;
 			this.target = target;
-		}
+		}//,
 	}
-));
+);

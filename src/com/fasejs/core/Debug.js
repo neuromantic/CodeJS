@@ -116,7 +116,7 @@ _class('Debug')._extends('Event', {
 		for each(var item in args) {
 			extra += item + ' : ' + o[item] + ', ';
 		};
-		extra = extra.substring(0, extra.lastIndexOf(','));
+		extra = extra.substring(0, extra.lastIndexOf(',');
 		extra += ' )';
 		return '[' + getQualifiedClassName(o) + extra + ']';
 	}

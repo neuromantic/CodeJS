@@ -9,13 +9,16 @@
  */
 (function() {
 	window.onload = function () {
-		_import( 'com.fasejs.fs.transitions.Tween');
-		_import( 'com.fasejs.display.Stage' );
-		_import( 'com.fasejs.text.TextField' );
-		_import( 'com.fasejs.display.Stage' );
-		_import( 'com.fasejs.display.Stage' );
-		_import( 'com.fasejs.display.Stage' );
-		Code(function () { // Fase
+		Code( [ Fase ], function () { // Fase
+		// // _import( 'com.fasejs.fs.transitions.Tween');
+		// // _import( 'com.fasejs.fs.transitions.Easing');
+		// // _import( 'com.fasejs.display.Stage' );
+		// // _import( 'com.fasejs.display.Sprite' );
+		// // _import( 'com.fasejs.text.TextField' );
+		// // _import( 'com.fasejs.events.Event' );
+		// // _import( 'com.fasejs.events.MouseEvent' );
+		// // _import( 'com.browserjs.dom.form.EmailInput' );
+		// // _import( 'com.browserjs.dom.form.TextArea' );
 			setup = function () {
 				Tween.defaultEasing = Easing.linearTween
 			};
@@ -31,13 +34,13 @@
 				subhead.name( 'subhead' );
 				bg.addChild( subhead );
 				email = new EmailInput( 'enter your email' );
-				subhead.name( 'email' );
+				email.name( 'email' );
 				bg.addChild( email );
 				message = new TextArea( 'type a message' );
-				subhead.name( 'message' );
+				message.name( 'message' );
 				bg.addChild( message );
 				submit = new SubmitButton( 'send')
-				subhead.name( 'submit' );
+				submit.name( 'submit' );
 				bg.addChild( submit );
 				graphic = new Loader( 'img/diagonal.png' );
 				stage.addChild( graphic );
@@ -55,18 +58,32 @@
 					var animated = (! message.visible() );
 					message.visible( true );
 					_this.layout( animated, function () {
-						Tween.to( message, 1, { alpha : 1 } );
+						Tween.to( message, 0.25, { alpha : 1 } );
 					} );
 				} );
 				message.addEventListener( FocusEvent.FOCUS, function () { 
 					var animated = (! submit.visible() );
 					submit.visible( true );
 					_this.layout( animated, function () { 
-						Tween.to( submit, 1, { alpha : 1 } );
+						Tween.to( submit, 0.25, { alpha : 1 } );
 					} );
 				} );
-				submit.addEventListener(  MouseEvent.CLICK, function ( event ) { Tween.to( event.target, 0.5, { x : bg.width() - submit.width - 5 } ) } );
+				submit.addEventListener(  MouseEvent.CLICK, submit_clickHandler );
 			};
+			submit_clickHandler = function ( event ) {
+				submit.removeEventListener(  MouseEvent.CLICK, submit_clickHandler );
+				Tween.to( event.target, 0.5, { x : submit.x() +  message.width() - submit.width() - 5 } );
+			}
+			init = function () {
+				var components = [ header, subhead, email, message, submit, footer, graphic ];
+				for( var index in components ){
+					index = Number( index );
+					var component = components[ index ];
+					component.alpha( 0 );
+				}
+				message.visible( false );
+				submit.visible( false );
+			}
 			layout = function ( animated ,callback ) {
 				var components = [ header, subhead, email, message, submit ];
 				bg.x( 10 );
@@ -87,43 +104,43 @@
 					 	bottom += component.height() + 5;
 					 }
 				}
-				var duration = ( animated ) ? 0.5 : 0;
-				Tween.to( bg, duration, {
-					 height    : Math.max( stage.height() - 20, bottom + graphic.height() ), 
-					 onUpdate  : function () {
-						footer.y(  bg.y() + bg.height() - footer.height() - 20 );
-						graphic.y( bg.y() + bg.height() - graphic.height() );
-					},
-					onComplete : callback 
-				} );
+				if ( animated ){ 
+					var bgH = Math.max( stage.height() - 20, bottom + graphic.height() );
+					Tween.to( bg, 0.25, {
+						height     : bgH,
+						onComplete : callback 
+					} );
+					Tween.to( graphic, 0.25, {
+						y          : bg.y() + bgH - graphic.height(), 
+					} );
+					Tween.to( footer, 0.25, {
+						y          : bg.y() + bgH - footer.height() - 20,
+					} );
+				}else{
+					bg.height( Math.max( stage.height() - 20, bottom + graphic.height() ) );
+					footer.y(  bg.y() + bg.height() - footer.height() - 20 );
+					graphic.y( bg.y() + bg.height() - graphic.height() );
+					callback ? callback() : 0;
+				}	
 				
 				graphic.x( bg.x() + bg.width()  - graphic.width()  );
 				footer.x( bg.x()  + bg.width()  - footer.width()   - 20 );
 				
+				
 			};
 			
-			init = function () {
-				var components = [ header, subhead, email, message, submit, footer ];
-				for( var index in components ){
-					index = Number( index );
-					var component = components[ index ];
-					component.alpha( 0 );
-				}
-				message.visible( false );
-				submit.visible( false );
-				this.layout()
-			}
 			start = function () {
-				Tween.to( header , 0.5, { alpha : 1, delay : 0    } );
-				Tween.to( subhead, 0.5, { alpha : 1, delay : 0.25 } );
-				Tween.to( email  , 0.5, { alpha : 1, delay : 0.5  } );
-				Tween.to( footer , 0.5, { alpha : 1, delay : 0.5  } );
+				Tween.to( header  , 0.5, { alpha : 1, delay : 0    } );
+				Tween.to( graphic , 0.5, { alpha : 1, delay : 0  } );
+				Tween.to( subhead , 0.5, { alpha : 1, delay : 0.25 } );
+				Tween.to( email   , 0.5, { alpha : 1, delay : 0.5  } );
+				Tween.to( footer  , 0.5, { alpha : 1, delay : 0.5  } );
 			};
 			setup();
 			build();
 			addEvents();
-			layout();
 			init();
+			layout();
 			start();
 		});
 	};//,

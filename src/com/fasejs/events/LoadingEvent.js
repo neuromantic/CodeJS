@@ -9,9 +9,9 @@
  * Licensed under the MIT license.
  *
  */
- _package( 'com.fasejs.events',
+ // _package( 'com.fasejs.events',
  
- 	_import( 'com.fasejs.events.Event' ),
+ 	// _import( 'com.fasejs.events.Event' ),
  	
 	_class('LoadingEvent')._extends('Event', {
 		static_LOADED : 'loaded',
@@ -21,4 +21,4 @@
 			this.data = data;
 		}
 	}
-));
+);

@@ -9,9 +9,9 @@
  * Licensed under the MIT license.
  *
  */
-_package( 'com.browserjs.dom.form',
-	_import( 'com.fasejs.text.TextField' ),
-	_import( 'com.fasejs.events.FocusEvent' ),
+// _package( 'com.browserjs.dom.form',
+	// _import( 'com.fasejs.text.TextField' ),
+	// _import( 'com.fasejs.events.FocusEvent' ),
 	_class( 'Input' )._extends('TextField', {
 		Input : function( type ){
 			this.element( document.createElement( 'input' ) );
@@ -22,4 +22,4 @@ _package( 'com.browserjs.dom.form',
 			this.element().onblur = function () { _this._dispatchEvent( new FocusEvent( FocusEvent.OUT ), _this ) };
 		}//,
 	}//,
-));
+);

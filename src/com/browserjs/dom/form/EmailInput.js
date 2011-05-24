@@ -9,9 +9,9 @@
  * Licensed under the MIT license.
  *
  */
-_package( 'com.browserjs.dom.form',
+// _package( 'com.browserjs.dom.form',
 
-	_import( 'com.fasejs.events.FocusEvent' ),
+	// _import( 'com.fasejs.events.FocusEvent' ),
 	
 	_class('EmailInput')._extends('Input', {
 		EmailInput : function( placeholderText ){
@@ -22,4 +22,4 @@ _package( 'com.browserjs.dom.form',
 			};
 		}//,
 	}//,
-));
+);

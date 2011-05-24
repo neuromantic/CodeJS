@@ -9,11 +9,11 @@
  * Licensed under the MIT license.
  *
  */
- _package( 'com.fasejs.display',
+ // _package( 'com.fasejs.display',
  
- 	_import( 'com.fasejs.events.EventDispatcher' ),
- 	_import( 'com.fasejs.events.MouseEvent' ),
- 	_import( 'com.fasejs.display.Stage' ),
+ 	// _import( 'com.fasejs.events.EventDispatcher' ),
+ 	// _import( 'com.fasejs.events.MouseEvent' ),
+ 	// _import( 'com.fasejs.display.Stage' ),
  	
 	_class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		
@@ -32,7 +32,7 @@
 		private_element : null,
 		element : function( value ) {
 			if( value === undefined ) {
-				return  this._.element || ( this._.element = null );
+				return  this._.element;
 			};
 			this._.element = value;
 			this.element().className = this._codeName;
@@ -89,9 +89,9 @@
 		},
 		name : function( value ) {
 			if( value === undefined ) {
-				return this._name || ( this._name = null );
+				return this._.name;
 			};
-			this._name = value;
+			this._.name = value;
 			if( this.element() ) {
 				this.element().id = this.name();
 			};
@@ -204,7 +204,7 @@
 		visible : function( value ) {
 			if ( value === undefined ) {
 				if(this._.value === null){
-					this._.visible = this.element().style.display != 'none'
+					this._.visible = this.element().style.display != 'none';
 				};
 				return this._.visible;
 			};
@@ -226,4 +226,4 @@
 			return ( this.name() ) || this._super.toString();
 		}
 	}
-));
+);

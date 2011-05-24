@@ -10,7 +10,7 @@
  *
  */
 
- _package( 'com.fasejs.util',
+ // _package( 'com.fasejs.util',
 	_class('Dictionary', {
 		private_values : [],
 		private_objects : [],
@@ -26,4 +26,4 @@
 	
 		}//,
 	}//,
-));
+);

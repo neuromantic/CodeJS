@@ -9,9 +9,9 @@
  * Licensed under the MIT license.
  *
  */
-_package( 'com.fasejs.events',
+// _package( 'com.fasejs.events',
  
- 	_import( 'com.fasejs.events.Event' ),
+ 	// _import( 'com.fasejs.events.Event' ),
  	
 	_class('TimerEvent')._extends('Event', {
 		static_START : 'timerStart',
@@ -20,4 +20,4 @@ _package( 'com.fasejs.events',
 		static_COMPLETE : 'timerComplete',
 		static_RESET : 'timerReset'
 	}
-));
+);

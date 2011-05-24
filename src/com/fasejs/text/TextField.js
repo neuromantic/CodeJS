@@ -9,8 +9,8 @@
  * Licensed under the MIT license.
  *
  */
-_package( 'com.fasejs.text', 
-	_import( 'com.fasejs.display.DisplayObject' ),
+// _package( 'com.fasejs.text', 
+	// _import( 'com.fasejs.display.DisplayObject' ),
 	
 	_class( 'TextField' )._extends( 'DisplayObject', {
 		TextField : function(text) {
@@ -30,4 +30,4 @@ _package( 'com.fasejs.text',
 			};
 		}
 	}
-));
+);

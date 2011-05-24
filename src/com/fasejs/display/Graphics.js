@@ -9,7 +9,7 @@
  * Licensed under the MIT license.
  *
  */
- _package( 'com.fasejs.display',
+ // _package( 'com.fasejs.display',
 
 	_class('Graphics', {
 		Graphics : function(displayObject) {
@@ -78,4 +78,4 @@
 		    this._context.clearRect(0, 0, this._context.canvas.width, this._context.canvas.height);
 		}
 	}
-));
+);

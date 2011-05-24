@@ -10,7 +10,7 @@
  *
  */
 	/*
-	  Easing Equations v1.5 // all equations use this signature  (t: current time, b: beginning value, c: end value, d: duration)
+	  Easing Equations v1.5 // all equations use this signature  t: current time, b: beginning value, c: change in value, d: duration
 	  May 1, 2003
 	  (c) 2003 Robert Penner, all rights reserved. 
 	  This work is subject to the terms in http://www.robertpenner.com/easing_terms_of_use.html.  
@@ -45,7 +45,7 @@
 	  http://www.robertpenner.com/profmx
 	  http://www.amazon.com/exec/obidos/ASIN/0072223561/robertpennerc-20
 	*/
-_package( 'com.fasejs.fs.transitions',
+// _package( 'com.fasejs.fs.transitions',
 
 	_class ('Easing', {
 	// Ported to Code.js 5 / 13 / 2011 by Neuromantic
@@ -286,7 +286,7 @@ _package( 'com.fasejs.fs.transitions',
 			return Easing.easeOutBounce (t*2-d, 0, c, d) * .5 + c*.5 + b;
 		}//,
 	}//,
-));
+);
 
 
 //_trace (">> Penner easing equations loaded");

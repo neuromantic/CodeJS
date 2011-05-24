@@ -9,10 +9,10 @@
  * Licensed under the MIT license.
  *
  */
-_package( 'com.fasejs.display',
+// _package( 'com.fasejs.display',
 
-	_import( 'com.fasejs.display.Sprite' ),
- 	_import( 'com.fasejs.events.MouseEvent' ),
+	// _import( 'com.fasejs.display.Sprite' ),
+ 	// _import( 'com.fasejs.events.MouseEvent' ),
 	
 	_class( 'Stage' )._extends( 'Sprite', {
 		Stage : function( hostElement ) {
@@ -33,5 +33,5 @@ _package( 'com.fasejs.display',
 			this.mouseY( event.mouseY );
 			_trace( event.mouseY, event.mouseX );
 		}//,
-	})
+	}
 );

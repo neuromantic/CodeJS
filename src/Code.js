@@ -7,8 +7,6 @@
  * Licensed under the MIT license.
  *
  */
-
-
 (function(){
 
 	_ = {};//                                             * Reserving global._ *
@@ -220,6 +218,16 @@
 	_.loading.complete = [];
 	_.loading.queue = [];
 	_import = function( url ) {
+		window[ url.substr(url.lastIndexOf('.')+1, url.length-1) ] = new Class(); // stub
+		if( _.loading.queue.indexOf( url ) < 0 && _.loading.processed.indexOf( url ) < 0 ) {
+			_.loading.queue.push( url );
+ 			_.loading.processQueue();
+		}else{
+			_trace( 'been there, done that.' );
+		}
+ 	
+	}
+	_.loading.process = function( url ) { 
 		if( ( _.loading.processed.indexOf( url ) < 0 )  ){
 			_.loading.processed.push(url);
 			var host = document.location.host;
@@ -232,7 +240,13 @@
 			with(_xhr('GET', script, false)) {
 				send(null);
 				if (status == 200) {
+					// var _class_ = _class;
+					// _class = function(){
+						// return new Class();
+					// };
 					eval(responseText);
+					// _.definition.classFiles.push( responseText );
+					// _class = _class_
 					_.loading.complete.push(url);
 					_.loading.processQueue();
 				} else if (status == 0) {
@@ -242,62 +256,50 @@
 				};
 			};
 		}else{
-			_trace( url, 'already imported.' );
+			_trace( url, 'already processed.' );
 		};
-	};
-	
-	_.loading.batchImport = function( queue ){
- 		_.loading.queue = _.loading.queue.concat( queue );
- 		_.loading.processQueue();
 	};
 	 
 	_.loading.processQueue = function () {
-	 	
 		if ( _.loading.complete.length == _.loading.queue.length ) {
+			_trace( ' Code is ready.' );
 			return window.onCodeReady();
 		}else{
-			_import( _.loading.queue[ _.loading.complete.length] );
+			var current =  _.loading.queue[ _.loading.complete.length];
+			if(_.loading.processed.indexOf( current ) < 0 ){
+				_.loading.process( _.loading.queue[ _.loading.complete.length ] );
+			}
 		};
 	};
 	
-	_package = function( packageName, imports, classClosure ) { // Future Use
-		var branch = window;
-		for ( branchName in Array( packageName ).explode( '.' ) ) {
-			branch = branch[ branchName ] = branch[ branchName ] || {};
-		};
-		importList( imports, classClosure );
+	_package = function( ) { // Future Use
+		_trace( '_package ', arguments[ 0 ] )
 	}
-
+	
+	_.definition = {};
+	_.definition.queue = [];
+	_.definition.classFiles = [];
 	_class = function( codeName, properties ) {
 		var newClass =  ( CodeBase ? CodeBase._plus( codeName, properties ) : Class._plus( codeName, properties ) );
 	    newClass._extends = function( parentCodeName, properties ) {
-	       window[ codeName ] = window[ parentCodeName ]._plus( codeName, properties );
+	    	window[ codeName ] = window[ parentCodeName ]._plus( codeName, properties );
 	    	window[ codeName ]._codeName = codeName;
 	    };
 	    window[ codeName ] = newClass;
 		return window[ codeName ];
 	};
-	_.definition = {};
-	_.definition.queue = [];
-	_.definition._class = function( codeName, code, codeBase ) {
-		if( _.loading.queue.length > 0 ){
-				_.definition.queue.push( { codeName: codeName, code: properties } );
-		} else {
-			_.definition.define( { codeName: codeName, code: properties } );
-		};
-	};
-	_.definition.define = function ( definition ) {
-		var codeName = definition.codeName;
-		var properties = definition.code;
-		var codeBase = definition.codeBase || CodeBase;
-		var newClass =  ( codeBase ? codeBase._plus( codeName, properties ) : Class._plus( codeName, properties ) );
-	    newClass._extends = function( parentCodeName, properties ) {
-	    	window[ this.codeName ] = window[ parentCodeName ]._plus( codeName, properties );
-	    	window[ codeName ]._codeName = codeName;
-	    };
-	    window[ codeName ] = newClass;
-		return window[ codeName ];
-	};
+	_.definition.processDefinitions = function () {
+		var _package_ = _package;
+		_package = function () {};
+		var _import_ = _import;
+		_import = function () {};
+		while(_.definition.queue.length > 0){
+			eval( _.definition.classFiles.pop() )
+		}
+		_import = _import_;
+		_package = _package_;
+	}
+
 	
 // DON'T GET CUTE.
 Code = function(modules,application) {
@@ -313,7 +315,7 @@ Code = function(modules,application) {
   var _configializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;;
   // The base Class implementation -- provides _get and _set shortcuts to eliminate abiguous assignment ( is it a  property or a getSetter ? )
   this.Class = function(){};
-  
+  Class._codeName = 'Class';
   Class.prototype = {
 		_get : function( propertyName ){
 			var property = this[ propertyName ];
@@ -403,8 +405,7 @@ Code = function(modules,application) {
           return function() {
             var tmp = this._super;
             
-            // Add a new ._super() method that is the same method
-            // but on the super-class
+            // Allow this._super() to call superconstructor, and allow this._super.*() to call the super method
             if( propertyName === '_config' ) {
             	this._super = _super._config;
             }else{
@@ -412,7 +413,7 @@ Code = function(modules,application) {
             }
             
             
-            // The method only need to be bound temporarily, so we
+            // The _config method only need to be bound temporarily, so we
             // remove it when we're done executing
             var ret = fn.apply(this, arguments);        
             this._super = tmp;
@@ -421,7 +422,7 @@ Code = function(modules,application) {
           };
         })( propertyName, addition ) : addition;
         
-    	attachTarget[propertyName] = property;
+    	attachTarget[ propertyName ] = property;
     }
     for ( var index in getSetters ) {
     	var getSetterName = getSetters[index];

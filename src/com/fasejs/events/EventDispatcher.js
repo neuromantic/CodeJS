@@ -9,7 +9,7 @@
  * Licensed under the MIT license.
  *
  */
- _package( 'com.fasejs.events',
+ // _package( 'com.fasejs.events',
 	_class('EventDispatcher', {
 		private_eventHandlers : {},
 		addEventListener : function(eventType, eventHandler) {
@@ -20,7 +20,7 @@
 			if( this._.eventHandlers[ eventType ].length > 0 ) {
 				var index = this._.eventHandlers[ eventType ].indexOf( eventHandler );
 				if( index > -1 ) {
-					this.eventHandlers[ eventType ].splice( index, 1 );
+					this._.eventHandlers[ eventType ].splice( index, 1 );
 				};
 			};
 		},
@@ -33,4 +33,4 @@
 			};
 		}//,
 	}
-));
+);

@@ -9,12 +9,12 @@
  * Licensed under the MIT license.
  *
  */
- _package( 'com.fasejs.display',
- 	_import( 'com.fasejs.display.Bitmap' ),
+ // _package( 'com.fasejs.display',
+ 	// _import( 'com.fasejs.display.Bitmap' ),
 	_class( 'Loader' )._extends( 'Bitmap', {
 		Loader : function ( url ) {
 			this._super();
 			this.element().src = url;
 		}//,
 	}//,
-));
+);

@@ -9,9 +9,9 @@
  * Licensed under the MIT license.
  *
  */
-_package( 'com.fasejs.net',
+// _package( 'com.fasejs.net',
 	 
- 	_import( 'com.fasejs.events.EventDispatcher' ),
+ 	// _import( 'com.fasejs.events.EventDispatcher' ),
  	
 	_class('URLLoader')._extends('EventDispatcher', {
 	   URLRequestMethod : 'GET',
@@ -44,7 +44,7 @@ _package( 'com.fasejs.net',
 	    			if (XMLHTTP && XMLHTTP.readyState == 4) {
 	    				if (XMLHTTP.status == 200) {
 	    					var response = XMLHTTP.responseText;
-	    					_this._dispatchEvent(new LoadingEvent(LoadingEvent.LOADED , response));
+	    					_this._dispatchEvent( new LoadingEvent( LoadingEvent.LOADED , response ) );
 	    				};
 	    			};
 	    		};
@@ -53,5 +53,5 @@ _package( 'com.fasejs.net',
 	    	};
 	    }//,
 	}//,
-));
+);
 

@@ -9,9 +9,9 @@
  * Licensed under the MIT license.
  *
  */
-_package( 'com.browserjs.dom.form',
+// _package( 'com.browserjs.dom.form',
 
-	_import( 'com.browserjs.dom.form.Input' ),
+	// _import( 'com.browserjs.dom.form.Input' ),
 	
 	_class('SubmitButton')._extends('Input', {
 		SubmitButton : function( label ){
@@ -22,4 +22,4 @@ _package( 'com.browserjs.dom.form',
 			};
 		}//,
 	}//,
-));
+);
