@@ -1,4 +1,2 @@
-## Code.js TODO List 
-# Loader
-# named constructors
-# Mouse Coordinates
+# Code.js TODO List 
+Mouse Coordinates
