@@ -105,32 +105,45 @@
 			// _trace( 'setting stage of', this, 'to', this.parent().stage() );
 			this.stage( this.parent().stage() );
 		},
+		private_children : [],
 		addChild : function( child ) {
-			// _trace( 'adding', child, 'to', this );
-			this._children = this._children || [];
+_trace( 'adding', child, 'to', this );
 			if( child !== this ){
 				if( child instanceof DisplayObject ) {
 					if ( child.parent() != null) {
-						// _trace( 'removing', child, 'from', child.parent() );
+// _trace( 'removing', child, 'from', child.parent() );
 						child.parent().removeChild( child );
 					};
-					// _trace( 'appending element' );
+// _trace( 'appending element' );
 					this.element().appendChild( child.element() );
-					child.element().style.zIndex =  this._children.length;
-					// _trace('parenting', this, 'to', child );
+					child.element().style.zIndex =  this._.children.length;
+// _trace('parenting', this, 'to', child );
 					child.parent( this );
-					this._children.push( child );
+					this._.children.push( child );
 				}else{
 					_trace( child , 'is not a' , DisplayObject );
 				};
+				this._measure();
 			}else{
 				throw new Error('You cannot addChild something to itself.')
 			};
 		},
+		_measure : function ( shrunk ) {
+			if( shrunk ) {
+				this.width( 0 );
+				this.height( 0 );
+			}
+			for ( var index in this._.children ){
+				var child = this._.children[ index ];
+				this.width( Math.max( this.width()  , child.x() + child.width() ) );
+				this.height( Math.max( this.height(), child.y() + child.height() ) );
+			}
+		},
 		removeChild : function( child ) {
 			this.element().removeChild( child.element() );
-			this._children.splice( this._children.indexOf( child ), 1 );
+			this._.children.splice( this._.children.indexOf( child ), 1 );
 			child.parent( null );
+			this._measure();
 		},
 		private_stage : null,
 		stage : function( value ) {
@@ -140,8 +153,8 @@
 			// _trace( 'storing', value, 'as stage of', this );
 			this._.stage = value;
 			for ( index in this._.children ) {
-				// _trace('looping through', this._children, 'index : ',  index );
-				// _trace('setting stage of' ,this+"'s child" , this._children[index], 'to', this.stage() );
+				// _trace('looping through', this._.children, 'index : ',  index );
+				// _trace('setting stage of' ,this+"'s child" , this._.children[index], 'to', this.stage() );
 				if( this._.children[ index ] ) {
 					this._.children[ index ].stage( this.stage() );
 				};
@@ -163,6 +176,7 @@
 				var child = this.children[ index ];
 				 child.x( child._.x );
 			};
+			this.parent()._measure();
 		},
 		private_y : 0,
 		y : function( value ) {
@@ -177,18 +191,21 @@
 				var child = this._.children[ index ];
 				child.y( child._.y );
 			};
+			this.parent()._measure();
 		},
 		height : function( value ) {
 			if( value === undefined ){
 				return Number( this.element().offsetHeight );
 			}
-			this.element().style.height = value+'px';
+			this.element().style.height = value +'px';
+			this.parent() ? this.parent()._measure() : 0;
 		},
 		width : function( value ) {
-			if( value === undefined ) {
+			if( value === undefined ){
 				return Number( this.element().offsetWidth );
 			};
-			this.element().style.width = value+'px';
+			this.element().style.width = value + 'px';
+			this.parent() ? this.parent()._measure() : 0;
 		},
 		private_alpha : 1,
 		alpha : function ( value ) {

@@ -163,44 +163,36 @@ h1, h2, h3, h4, h5, h6 { font-weight: bold; }
  * Author: Neuromantic
  */
 
-
-html,body, input, div, textarea {
-	font-family:'Gotham-Book','Basic Commercial W02 Light', 'Arial';
-	text-align: left;
-	font-size: 18px;
-	font-weight: normal;
-	display: block;
-}
-#bg {
-	background-color: #E6E6E6;
-}
-#Site {
-	background-color: #000;
-	top: 0px;
-	bottom: 0px;
-	left: 0px;
-	right: 0px;
-}
-
-input, textarea {
-	padding: 5px;
-}
-
 html, body {
-	color: #666666;
 	height: 100%;
 	width: 100%;
 }
-	input, textarea, .TextField {
+html, body, input, div, textarea {
+	font-family:'Gotham-Book','Basic Commercial W02 Light', 'Arial';
+	text-align: left;
+	font-weight: normal;
+	font-size: 20px;
+	color: #666666;
+}
+#Site {
+	display: none;
+}
+input, textarea, #bg {
 	background-color: #E6E6E6;
 }
-#footer{
-	
+input, textarea {
+	padding: 5px;
+}
+#header {
+}
+#subhead {
+}
+#footer {
 	font-size: 10px;
 }
 input[type=email], textarea, .TextArea {
+	color: #E6E6E6;
 	background-color: #FFF;
-	color: #a9a9a9;
 	border: 0px;
 	width: 240px;
 	box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);

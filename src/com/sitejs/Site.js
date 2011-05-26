@@ -9,6 +9,7 @@
  */
 (function() {
 	window.onload = function () {
+		_trace( 'starting site.')
 		Code( [ Fase ], function () { // Fase
 		// // _import( 'com.fasejs.fs.transitions.Tween');
 		// // _import( 'com.fasejs.fs.transitions.Easing');
@@ -27,26 +28,29 @@
 				bg = new Sprite();
 				bg.name( 'bg' );
 				stage.addChild( bg );
+				form = new Sprite();
+				form.name( 'form' );
+				stage.addChild( form );
 				header = new TextField( 'Neuromantic makes software.' );// 'Code.js'
 				header.name( 'header' );
-				bg.addChild( header );
+				form.addChild( header );
 				subhead = new TextField( 'Contact us:' );//'Class / Object : Development Environment.'
 				subhead.name( 'subhead' );
-				bg.addChild( subhead );
+				form.addChild( subhead );
 				email = new EmailInput( 'enter your email' );
 				email.name( 'email' );
-				bg.addChild( email );
+				form.addChild( email );
 				message = new TextArea( 'type a message' );
 				message.name( 'message' );
-				bg.addChild( message );
+				form.addChild( message );
 				submit = new SubmitButton( 'send')
 				submit.name( 'submit' );
-				bg.addChild( submit );
+				form.addChild( submit );
 				graphic = new Loader( 'img/diagonal.png' );
 				stage.addChild( graphic );
 				graphic.name( 'graphic' );
 				footer = new TextField( '&copy; 2011 Neuromantic LLC. All rights reserved.' );
-				bg.addChild( footer );
+				stage.addChild( footer );
 				footer.name( 'footer' );
 			};
 			addEvents = function () {
@@ -57,23 +61,34 @@
 				email.addEventListener( FocusEvent.FOCUS, function () { 
 					var animated = (! message.visible() );
 					message.visible( true );
-					_this.layout( animated, function () {
-						Tween.to( message, 0.25, { alpha : 1 } );
-					} );
+					Tween.to( message, 0.5, { alpha : 1 } );
+				} );
+				email.addEventListener( FocusEvent.BLUR, function () { 
+					message.textColor = 0x666666;
 				} );
 				message.addEventListener( FocusEvent.FOCUS, function () { 
 					var animated = (! submit.visible() );
 					submit.visible( true );
 					_this.layout( animated, function () { 
-						Tween.to( submit, 0.25, { alpha : 1 } );
+						Tween.to( submit, 0.5, { alpha : 1 } );
 					} );
 				} );
 				submit.addEventListener(  MouseEvent.CLICK, submit_clickHandler );
+				function submit_clickHandler ( event ) {
+					submit.removeEventListener(  MouseEvent.CLICK, submit_clickHandler );
+					Tween.to( event.target, 0.25, { x : submit.x() +  message.width() - submit.width() - 5, onComplete  : hideForm  } );
+					function hideForm( event ) {
+						var components = [ subhead, email, message, submit ];
+						for( var index in components ){
+							index = Number( index );
+							var component = components[ index ];
+							Tween.to( component, 0.5, { alpha : 0 } );
+						};
+						Tween.delayedCall( 0.5, this.layout, this )
+					};
+				};
 			};
-			submit_clickHandler = function ( event ) {
-				submit.removeEventListener(  MouseEvent.CLICK, submit_clickHandler );
-				Tween.to( event.target, 0.5, { x : submit.x() +  message.width() - submit.width() - 5 } );
-			}
+			
 			init = function () {
 				var components = [ header, subhead, email, message, submit, footer, graphic ];
 				for( var index in components ){
@@ -84,49 +99,54 @@
 				message.visible( false );
 				submit.visible( false );
 			}
-			layout = function ( animated ,callback ) {
-				var components = [ header, subhead, email, message, submit ];
+			layout = function ( animated , callback ) {
+// _trace( 'layout' );
 				bg.x( 10 );
 				bg.y( 10 );
-				bg.width(  Math.max( stage.width() - 20, 300 ) );
 				email.width( 270 ); // (padding) 
 				message.width( 270 );
 				message.height( 270 );
-				var y = 10;
+				bg.width(  Math.max( stage.width() - 20, form.width() + 20 ) );
+				var y = 0
 				var bottom = y;
+				var components = [ header, subhead, email, message, submit ];
 				for( var index in components ){
 					index = Number( index );
 					var component = components[ index ];
-					component.x( Math.max( 10, ( stage.width() - 300 ) * 0.5 ) );
 					component.y( y );
 					y += component.height() + 5;
 					 if( component.visible() ) {
 					 	bottom += component.height() + 5;
 					 }
 				}
+				submit.x( 5 );
+				form.x( Math.max( 20, ( stage.width() - form.width() ) * 0.5 ) );
+				graphic.x( bg.x() + bg.width() - graphic.width() );
+				footer.x(  bg.x() + bg.width() - footer.width() - 10 );
+				var bgH = Math.max( stage.height() - 20, form.height() + graphic.height() + 20 );
+				
 				if ( animated ){ 
-					var bgH = Math.max( stage.height() - 20, bottom + graphic.height() );
 					Tween.to( bg, 0.25, {
 						height     : bgH,
 						onComplete : callback 
+					} );
+					Tween.to( form, 0.25, { 
+						y			: Math.max( 20, ( stage.height() - form.height() - graphic.height() ) * 0.5 ) 
 					} );
 					Tween.to( graphic, 0.25, {
 						y          : bg.y() + bgH - graphic.height(), 
 					} );
 					Tween.to( footer, 0.25, {
-						y          : bg.y() + bgH - footer.height() - 20,
+						y          : bg.y() + bgH - footer.height() - 5 ,
 					} );
 				}else{
-					bg.height( Math.max( stage.height() - 20, bottom + graphic.height() ) );
-					footer.y(  bg.y() + bg.height() - footer.height() - 20 );
-					graphic.y( bg.y() + bg.height() - graphic.height() );
+					bg.height( bgH);
+					form.y( Math.max( 20, ( stage.height() - form.height() - graphic.height() ) * 0.5 ) );
+					graphic.y( bg.y() + bgH - graphic.height() );
+					footer.y( bg.y() + bgH - footer.height() - 5 );
+					
 					callback ? callback() : 0;
 				}	
-				
-				graphic.x( bg.x() + bg.width()  - graphic.width()  );
-				footer.x( bg.x()  + bg.width()  - footer.width()   - 20 );
-				
-				
 			};
 			
 			start = function () {
@@ -144,4 +164,5 @@
 			start();
 		});
 	};//,
+	_trace('site ready.')
 })();

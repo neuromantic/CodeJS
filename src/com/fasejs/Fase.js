@@ -10,11 +10,10 @@
 
 //temporary
 
-(function() {
+(function ( window ) {
 	console.log('fase.');
 	window.Fase = function () {
 		return [
-			//test
 			//core
 				// 'com.fasejs.core.Debug',
 			//events
@@ -25,6 +24,8 @@
 				'com.fasejs.events.TimerEvent',
 				'com.fasejs.fs.events.TweenEvent',
 				'com.fasejs.util.Timer',
+			//jquery
+				'com.jquery.JQuery',
 			//display
 				'com.fasejs.display.Graphics',
 				'com.fasejs.display.DisplayObject',
@@ -49,5 +50,5 @@
 				'com.browserjs.dom.form.SubmitButton'
 		];
 	};
-})();
+})( window );
 

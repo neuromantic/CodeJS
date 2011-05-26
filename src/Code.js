@@ -229,6 +229,7 @@
 	}
 	_.loading.process = function( url ) { 
 		if( ( _.loading.processed.indexOf( url ) < 0 )  ){
+_trace('loading',url );
 			_.loading.processed.push(url);
 			var host = document.location.host;
 			var script = 'src/' + url.replace( /\./g, '/' ) + '.js';
@@ -262,7 +263,7 @@
 	 
 	_.loading.processQueue = function () {
 		if ( _.loading.complete.length == _.loading.queue.length ) {
-			_trace( ' Code is ready.' );
+			_trace( 'loaded', _.loading.complete.length,'classes.' );
 			return window.onCodeReady();
 		}else{
 			var current =  _.loading.queue[ _.loading.complete.length];
@@ -330,6 +331,15 @@ Code = function(modules,application) {
 				this[propertyName] = value;
 			}else{
 				( typeof this[ propertyName ] == 'function' ) ? this[ propertyName ]( value ) : this[ propertyName ] = value;
+			};
+		
+		},
+		_add : function( value, propertyName ){
+			var property = this[ propertyName ];
+			if (property  === undefined ) {
+				this[propertyName] += value;
+			}else{
+				( typeof this[ propertyName ] == 'function' ) ? this[ propertyName ]( this[ propertyName ]() + value ) : this[ propertyName ] += value;
 			};
 		}
 	};
@@ -453,7 +463,7 @@ Code = function(modules,application) {
 //		Code _configializer
 		
 
-		_trace( 'running Code.js', ( modules ? 'with '+ modules.length + ' modules' : "" ) );
+		_trace( 'running code.js', 'with '+( modules ? modules.length : "0" ), 'modules.' );
 		onCodeReady = application || function () { _trace( 'no application provided'); } ;
 		// _config to win it.
 		_class('CodeBase')._extends('Class');

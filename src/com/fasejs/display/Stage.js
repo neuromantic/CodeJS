@@ -23,11 +23,13 @@
 			    };
 			};
 			this._super( hostElement );
+			this.name('stage')
 			this.stage( this );
 			this.addEventListener( MouseEvent.MOVE, this.onMouseMove );
 			var _this = this;
 			window.onresize = function ( e ) { _this._dispatchEvent( new Event( Event.RESIZE, _this) ) }
 		},
+		_measure : function () {},
 		onMouseMove : function ( event ) {
 			this.mouseX( event.mouseX );
 			this.mouseY( event.mouseY );

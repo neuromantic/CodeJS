@@ -23,6 +23,12 @@
 			}
 			this.element().innerHTML = value;
 		},
+		textColor : function ( value ) {
+			 if ( value === undefined ) {
+			 	 return this.element().style.color;
+			 }
+			 this.element().style.color = Graphics.rgba( value, 1 );
+		},
 		setTextFormat : function(textFormat) {
 			var css = textFormat.CSS;
 			for (var prop in css) {
