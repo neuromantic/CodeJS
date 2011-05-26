@@ -43,25 +43,25 @@
 			};
 			var _this = this;
 			this.element().onmouseover = function( e ) {
-				 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.OVER, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				 _this._dispatchMouseEvent( new MouseEvent( MouseEvent.OVER, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this.element().onmouseout = function( e ) {
-				 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.OUT, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				 _this._dispatchMouseEvent( new MouseEvent( MouseEvent.OUT, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this.element().onmousedown = function ( e ) {
-				 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				 _this._dispatchMouseEvent( new MouseEvent( MouseEvent.DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this.element().onmouseup = function ( e ) {
-				_this.dispatchMouseEvent( new MouseEvent( MouseEvent.UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				_this._dispatchMouseEvent( new MouseEvent( MouseEvent.UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this.element().onkeydown = function ( e ) { 
-				_this.dispatchMouseEvent( new MouseEvent( KeyboardEvent.DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				_this._dispatchEvent( new KeyboardEvent( KeyboardEvent.DOWN ) ); 
 			};
 			this.element().onkeyup = function ( e ) { 
-				_this.dispatchMouseEvent( new MouseEvent( KeyboardEvent.UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				_this._dispatchEvent( new KeyboardEvent( KeyboardEvent.UP ) ); 
 			};
 			this.element().onkeypress = function ( e ) { 
-				_this.dispatchMouseEvent( new MouseEvent( KeyboardEvent.PRESS, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				_this._dispatchEvent( new KeyboardEvent( KeyboardEvent.PRESS ) ); 
 			};
 			this.element().onfocus = function () { 
 				_this._dispatchEvent( new FocusEvent( FocusEvent.IN ), _this );
@@ -77,9 +77,9 @@
 			this.element().style.position = 'absolute';
 			
 		},
-		dispatchMouseEvent : function( event ) {
-			event.target = this;
+		_dispatchMouseEvent : function( event ) {
 			if( this._.mouseEnabled ) {
+				event.target = this;
 				this._dispatchEvent( event );
 			};
 		},
