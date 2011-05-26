@@ -43,7 +43,7 @@
 				message = new TextArea( 'type a message' );
 				message.name( 'message' );
 				form.addChild( message );
-				submit = new SubmitButton( 'send')
+				submit = new SubmitButton( 'send' );
 				submit.name( 'submit' );
 				form.addChild( submit );
 				graphic = new Loader( 'img/diagonal.png' );
@@ -58,16 +58,20 @@
 				stage.addEventListener( Event.RESIZE, function () {
 					_this.layout();
 				} );
-				email.addEventListener( FocusEvent.FOCUS, function () { 
-					_trace(FocusEvent.FOCUS);
+				email.addEventListener( ValidationEvent.VALID, function () { 
 					var animated = (! message.visible() );
+
 					message.visible( true );
-					Tween.to( message, 0.5, { alpha : 1 } );
+					layout( animated, function () {
+						Tween.to( message, 0.5, { alpha : 1 } );
+
+					});
 				} );
 				// email.addEventListener( FocusEvent.BLUR, function () { 
 					// message.textColor = 0x666666;
 				// } );
-				message.addEventListener( FocusEvent.FOCUS, function () { 
+				message.addEventListener( FocusEvent.IN, function () { 
+_trace( 'focus messsage' );
 					var animated = (! submit.visible() );
 					submit.visible( true );
 					_this.layout( animated, function () { 
@@ -102,6 +106,7 @@
 			}
 			layout = function ( animated , callback ) {
 // _trace( 'layout' );
+// _trace( '?' );
 				bg.x( 10 );
 				bg.y( 10 );
 				email.width( 270 ); // (padding) 
@@ -125,7 +130,6 @@
 				graphic.x( bg.x() + bg.width() - graphic.width() );
 				footer.x(  bg.x() + bg.width() - footer.width() - 10 );
 				var bgH = Math.max( stage.height() - 20, form.height() + graphic.height() + 20 );
-				
 				if ( animated ){ 
 					Tween.to( bg, 0.25, {
 						height     : bgH,
@@ -140,6 +144,7 @@
 					Tween.to( footer, 0.25, {
 						y          : bg.y() + bgH - footer.height() - 5 ,
 					} );
+				
 				}else{
 					bg.height( bgH);
 					form.y( Math.max( 20, ( stage.height() - form.height() - graphic.height() ) * 0.5 ) );
@@ -147,7 +152,7 @@
 					footer.y( bg.y() + bgH - footer.height() - 5 );
 					
 					callback ? callback() : 0;
-				}	
+				}
 			};
 			
 			start = function () {

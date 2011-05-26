@@ -14,7 +14,7 @@
  	// _import( 'com.fasejs.util.Timer' ),
  	// _import( 'com.fasejs.transitions.Easing' ),
 		_class( 'Tween' )._extends( 'Timer', {
-			static_SPECIAL_PROPERTIES : ['delay', 'onStart', 'onUpdate', 'onComplete', 'context', 'onStop'],
+			static_SPECIAL_PROPERTIES : [ 'delay', 'onStart', 'onUpdate', 'onComplete', 'context', 'onStop' ],
 			static_frameRate : 100,
 			static_defaultEasing : Easing.easeInOutQuad,
 			
@@ -25,6 +25,7 @@
 			private_easing : null,
 			
 			static_to : function( target, duration, properties ) {
+// _trace( 'Tween.to', target, duration, properties );
 				var tween = new Tween( target, duration, properties );
 			},
 			
@@ -72,28 +73,21 @@
 				};
 				var _context = this._.context;
 				if( properties.onComplete ) {
-					 (function( onComplete, context ) {
 						this.addEventListener( TweenEvent.COMPLETE, function( event ) {
-							_trace( '>', context );
-							onComplete.apply( context, event ); 
+							properties.onComplete.apply( _context, [ event ] ); 
 						});
-					} )( properties.onComplete, this._.context );
 					// delete this.toProperties.onComplete ;
 				};
 				 if( properties.onStart ) {
-					  (function( onStart, context ) {
 						  this.addEventListener( TweenEvent.START, function( event ) {
-						 	 onStart.apply( context, event );
+						 	 properties.onStart.apply( _context, [ event ] );
 						  });
-					 } )( properties.onStart, this._.context );
 					 // delete this.toProperties.onStart  ;
 				 };
 				  if( properties.onUpdate ) {
-					   (function(onUpdate, context ) {
 						   this.addEventListener( TweenEvent.UPDATE, function( event ) {
-						  	  onUpdate.apply( context, event ); 
+						  	  properties.onUpdate.apply( context, [event] ); 
 						   });
-					  } )( properties.onUpdate, this._.context );
 					  // delete this.toProperties.onUpdate ;
 				  };
 				  if( properties.delay ) {

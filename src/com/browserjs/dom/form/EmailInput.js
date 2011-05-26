@@ -21,9 +21,9 @@
 				this.element().setAttribute( 'placeholder', placeholderText );
 			};
 			_this = this;
-			this.addEventListener(KeyboardEvent.PRESS, _this._onPress );
+			this.addEventListener(KeyboardEvent.UP, _this._onKeyUp );
 		},
-		 _onPress : function( event ) {
+		 _onKeyUp : function( event ) {
 			var str = event.target.element().value;
 			var filter = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i
 			if(! this.valid ) {

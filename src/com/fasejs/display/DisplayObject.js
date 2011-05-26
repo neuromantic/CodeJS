@@ -63,6 +63,15 @@
 			this.element().onkeypress = function ( e ) { 
 				_this.dispatchMouseEvent( new MouseEvent( KeyboardEvent.PRESS, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
+			this.element().onfocus = function () { 
+				_this._dispatchEvent( new FocusEvent( FocusEvent.IN ), _this );
+			};
+			this.element().onblur = function () {
+				_this._dispatchEvent( new FocusEvent( FocusEvent.OUT ), _this );
+			};
+			this.element().onchange = function () {
+				_this._dispatchEvent( new Event( Event.CHANGE ), _this );
+			};
 			
 			this.visible( this.element().style.display != 'none' );
 			this.element().style.position = 'absolute';
