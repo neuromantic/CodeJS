@@ -59,13 +59,14 @@
 					_this.layout();
 				} );
 				email.addEventListener( FocusEvent.FOCUS, function () { 
+					_trace(FocusEvent.FOCUS);
 					var animated = (! message.visible() );
 					message.visible( true );
 					Tween.to( message, 0.5, { alpha : 1 } );
 				} );
-				email.addEventListener( FocusEvent.BLUR, function () { 
-					message.textColor = 0x666666;
-				} );
+				// email.addEventListener( FocusEvent.BLUR, function () { 
+					// message.textColor = 0x666666;
+				// } );
 				message.addEventListener( FocusEvent.FOCUS, function () { 
 					var animated = (! submit.visible() );
 					submit.visible( true );

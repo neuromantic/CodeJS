@@ -8932,5 +8932,4 @@ jQuery.each([ "Height", "Width" ], function( i, name ) {
 });
 
 window.jQuery = window.$ = jQuery;
-_trace('jQuery ready.');
 })(window);

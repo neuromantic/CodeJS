@@ -19,6 +19,7 @@
 			//events
 				'com.fasejs.events.Event',
 				'com.fasejs.events.MouseEvent',
+				'com.fasejs.events.KeyboardEvent',
 				'com.fasejs.events.FocusEvent',
 				'com.fasejs.events.EventDispatcher',
 				'com.fasejs.events.TimerEvent',
@@ -45,6 +46,7 @@
 			//browser
 				'com.fasejs.browser.Address',
 				'com.browserjs.dom.form.Input',
+				'com.browserjs.dom.form.events.ValidationEvent',
 				'com.browserjs.dom.form.TextArea',
 				'com.browserjs.dom.form.EmailInput',
 				'com.browserjs.dom.form.SubmitButton'

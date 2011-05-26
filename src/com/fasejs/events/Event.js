@@ -12,6 +12,7 @@
  // _package( 'com.fasejs.events',
 	_class('Event', {
 		static_ADDED_TO_STAGE : 'addedToStage',
+		static_CHANGE : 'change',
 	 	static_RESIZE : "resize",
 		type : '',
 		target : null,

@@ -43,20 +43,27 @@
 			};
 			var _this = this;
 			this.element().onmouseover = function( e ) {
-				 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OVER, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.OVER, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this.element().onmouseout = function( e ) {
-				 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.ROLL_OUT, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.OUT, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this.element().onmousedown = function ( e ) {
-				 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.MOUSE_DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				 _this.dispatchMouseEvent( new MouseEvent( MouseEvent.DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this.element().onmouseup = function ( e ) {
-				_this.dispatchMouseEvent( new MouseEvent( MouseEvent.MOUSE_UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				_this.dispatchMouseEvent( new MouseEvent( MouseEvent.UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
-			this.element().onclick = function ( e ) { 
-				_this.dispatchMouseEvent( new MouseEvent( MouseEvent.CLICK, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+			this.element().onkeydown = function ( e ) { 
+				_this.dispatchMouseEvent( new MouseEvent( KeyboardEvent.DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
+			this.element().onkeyup = function ( e ) { 
+				_this.dispatchMouseEvent( new MouseEvent( KeyboardEvent.UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+			};
+			this.element().onkeypress = function ( e ) { 
+				_this.dispatchMouseEvent( new MouseEvent( KeyboardEvent.PRESS, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+			};
+			
 			this.visible( this.element().style.display != 'none' );
 			this.element().style.position = 'absolute';
 			

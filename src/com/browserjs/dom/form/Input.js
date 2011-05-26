@@ -1,7 +1,7 @@
 /*!
  *
  * Input.js
- * com.browser.js.dom.Input
+ * com.browser.js.dom.form.Input
  *
  * http://fasejs.com/
  *
@@ -20,6 +20,8 @@
 			_this = this;
 			this.element().onfocus = function () { _this._dispatchEvent( new FocusEvent( FocusEvent.IN ), _this ) };
 			this.element().onblur = function () { _this._dispatchEvent( new FocusEvent( FocusEvent.OUT ), _this ) };
+			this.element().onchange = function () { _this._dispatchEvent( new Event( Event.CHANGE ), _this ) };
+			
 		}//,
 	}//,
 );
