@@ -229,7 +229,7 @@
 	}
 	_.loading.process = function( url ) { 
 		if( ( _.loading.processed.indexOf( url ) < 0 )  ){
-_trace('loading',url );
+// _trace('loading',url );
 			_.loading.processed.push(url);
 			var host = document.location.host;
 			var script = 'src/' + url.replace( /\./g, '/' ) + '.js';
@@ -263,7 +263,7 @@ _trace('loading',url );
 	 
 	_.loading.processQueue = function () {
 		if ( _.loading.complete.length == _.loading.queue.length ) {
-			_trace( 'loaded', _.loading.complete.length,'classes.' );
+_trace( 'loaded', _.loading.complete.length,'classes.' );
 			return window.onCodeReady();
 		}else{
 			var current =  _.loading.queue[ _.loading.complete.length];

@@ -54,6 +54,9 @@
 			this.element().onmouseup = function ( e ) {
 				_this._dispatchMouseEvent( new MouseEvent( MouseEvent.UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
+			this.element().onclick = function ( e ) {
+				_this._dispatchMouseEvent( new MouseEvent( MouseEvent.CLICK, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+			};
 			this.element().onkeydown = function ( e ) { 
 				_this._dispatchEvent( new KeyboardEvent( KeyboardEvent.DOWN ) ); 
 			};
@@ -75,6 +78,9 @@
 			
 			this.visible( this.element().style.display != 'none' );
 			this.element().style.position = 'absolute';
+			this.element().style.whiteSpace = 'nowrap';
+			this.element().style.minWidth = 0;
+			this.element().style.minHeight = 0;
 			
 		},
 		_dispatchMouseEvent : function( event ) {
@@ -119,11 +125,12 @@
 			// _trace( 'storing', value, 'as parent of', this );
 			this._parent =  value;
 			// _trace( 'setting stage of', this, 'to', this.parent().stage() );
-			this.stage( this.parent().stage() );
+			
+			this.stage( this.parent() ? this.parent().stage() : null );
 		},
 		private_children : [],
 		addChild : function( child ) {
-_trace( 'adding', child, 'to', this );
+// _trace( 'adding', child, 'to', this );
 			if( child !== this ){
 				if( child instanceof DisplayObject ) {
 					if ( child.parent() != null) {
@@ -139,7 +146,7 @@ _trace( 'adding', child, 'to', this );
 				}else{
 					_trace( child , 'is not a' , DisplayObject );
 				};
-				this._measure();
+				this._measure( true );
 			}else{
 				throw new Error('You cannot addChild something to itself.')
 			};
@@ -166,11 +173,8 @@ _trace( 'adding', child, 'to', this );
 			if ( value === undefined ) {
 				return this._.stage;
 			};
-			// _trace( 'storing', value, 'as stage of', this );
 			this._.stage = value;
 			for ( index in this._.children ) {
-				// _trace('looping through', this._.children, 'index : ',  index );
-				// _trace('setting stage of' ,this+"'s child" , this._.children[index], 'to', this.stage() );
 				if( this._.children[ index ] ) {
 					this._.children[ index ].stage( this.stage() );
 				};
@@ -178,21 +182,20 @@ _trace( 'adding', child, 'to', this );
 		},
 		private_x : 0,
 		x : function( value ) {
-			if ( value === undefined ){
+			if ( value === undefined ) {
 				return this._.x;
 			};
 			this._.x = value;
-			var inheritedX = 0
 			if( this.parent() ) {
-				inheritedX = this.parent().x()
-			}
-			var x =  value + inheritedX;
-			this.element().style.left = this.x() + 'px';
-			for ( index in this.children ) {
-				var child = this.children[ index ];
-				 child.x( child._.x );
+				var inheritedX = ( this.parent() ? this.parent().y() : 0 );
+				var x = value + inheritedX;
+				this.element().style.left = this.x() + 'px';
+				for ( index in this._.children ) {
+					var child = this._.children[ index ];
+					child.x( child._.x );
+				};
+				this.parent()._measure( true );
 			};
-			this.parent()._measure();
 		},
 		private_y : 0,
 		y : function( value ) {
@@ -200,14 +203,16 @@ _trace( 'adding', child, 'to', this );
 				return this._.y;
 			};
 			this._.y = value;
-			var inheritedY = ( this.parent() ? this.parent().y() : 0 );
-			var y = value + inheritedY;
-			this.element().style.top = this.y() + 'px';
-			for ( index in this._.children ) {
-				var child = this._.children[ index ];
-				child.y( child._.y );
+			if( this.parent() ) {
+				var inheritedY = ( this.parent() ? this.parent().y() : 0 );
+				var y = value + inheritedY;
+				this.element().style.top = this.y() + 'px';
+				for ( index in this._.children ) {
+					var child = this._.children[ index ];
+					child.y( child._.y );
+				};
+				this.parent()._measure( true );
 			};
-			this.parent()._measure();
 		},
 		height : function( value ) {
 			if( value === undefined ){

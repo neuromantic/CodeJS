@@ -171,6 +171,7 @@ html, body, input, div, textarea {
 	font-family:'Gotham-Book','Basic Commercial W02 Light', 'Arial';
 	text-align: left;
 	font-weight: normal;
+    /*border: 1px solid black;*/
 	font-size: 20px;
 	color: #666666;
 }

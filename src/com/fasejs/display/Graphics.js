@@ -13,11 +13,15 @@
 
 	_class('Graphics', {
 		static_rgba : function( color, alpha ) {
-			alpha = alpha ? ',' + alpha : '';
-			return 'rgba('+ parseInt( color.substring( 0, 2 ), 16 ) + ','
+// _trace( color, alpha );
+			color = color.toString( 16 );
+			alpha = alpha || 1;
+			var rgba = 'rgba('+ parseInt( color.substring( 0, 2 ), 16 ) + ','
 						  + parseInt( color.substring( 2, 4 ), 16 ) + ','
 						  + parseInt( color.substring( 4, 6 ), 16 ) + ','
 						  + alpha + ')';
+// _trace( rgba )
+			return rgba;
 		},
 		private_context : null,
 		Graphics : function( displayObject ) {
