@@ -13,10 +13,19 @@
 	// _import( 'com.fasejs.text.TextField' ),
 	// _import( 'com.fasejs.events.FocusEvent' ),
 	_class( 'Input' )._extends( 'TextField', {
+		type : function ( value ){
+			if ( value === undefined ) {
+				return this.element().setAttribute( 'type' );
+			}
+			this.element().setAttribute( 'type', value );
+			this.element().onchange = (function ( _this ){ return function ( event ){
+				 _this._dispatchEvent( new Event( Event.CHANGE, _this ) ); }
+			})( this );
+		},
+		
 		Input : function( type ){
 			this.element( document.createElement( 'input' ) );
-			this.element().setAttribute( 'type', type );
-			
-		}//,
-	}//,
+			this.type( type );
+		},
+	}
 );

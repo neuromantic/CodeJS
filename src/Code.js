@@ -227,37 +227,37 @@
 		}
  	
 	}
-	_.loading.process = function( url ) { 
-		if( ( _.loading.processed.indexOf( url ) < 0 )  ){
+	_.loading.process = function( classPath ) { 
+		if( ( _.loading.processed.indexOf( classPath ) < 0 )  ){
 // _trace('loading',url );
-			_.loading.processed.push(url);
+			_.loading.processed.push( classPath) ;
 			var host = document.location.host;
-			var script = 'src/' + url.replace( /\./g, '/' ) + '.js';
+			var scriptURL = 'src/' + classPath.replace( /\./g, '/' ) + '.js';
 			_xhr = function() {
 				var request = new XMLHttpRequest();
-				request.open.apply(request, arguments);
+				request.open.apply( request, arguments );
 				return request;
 			};
-			with(_xhr('GET', script, false)) {
-				send(null);
-				if (status == 200) {
+			with( _xhr( 'GET', scriptURL, false ) ) {
+				send( null );
+				if ( status == 200 ) {
 					// var _class_ = _class;
 					// _class = function(){
 						// return new Class();
 					// };
-					eval(responseText);
+					eval( responseText );
 					// _.definition.classFiles.push( responseText );
 					// _class = _class_
-					_.loading.complete.push(url);
+					_.loading.complete.push( classPath );
 					_.loading.processQueue();
-				} else if (status == 0) {
-					eval(responseText);
+				} else if ( status == 0 ) {
+					eval( responseText );
 				} else {
-					throw new Error(status);
+					throw new Error( status );
 				};
 			};
 		}else{
-			_trace( url, 'already processed.' );
+			_trace( classPath, 'already processed.' );
 		};
 	};
 	 
@@ -353,6 +353,7 @@ Code = function(modules,application) {
     _configializing = true;
     var newPrototype = new this();
     newPrototype._codeName = codeName;
+    newPrototype.toString = function () { return '[Code '+this._codeName+']'; } 
     _configializing = false;
     
     // The dummy class constructor
@@ -364,8 +365,8 @@ Code = function(modules,application) {
        }
     }
     
-    newPrototype._ = _super._ || {};
-    newPrototype.__ = _super.__ || {};
+    newPrototype._ = _.util.deepCopy( _super._ ) || {};
+    newPrototype.__ = _.util.deepCopy( _super.__ ) || {};
     
     newPrototype.__.getters = newPrototype.__.getters || {};
     newPrototype.__.setters = newPrototype.__.setters || {};
@@ -459,10 +460,9 @@ Code = function(modules,application) {
     
     return Code;
   };
-  
+	
 //		Code _configializer
 		
-
 		_trace( 'running code.js', 'with '+( modules ? modules.length : "0" ), 'modules.' );
 		onCodeReady = application || function () { _trace( 'no application provided'); } ;
 		// _config to win it.

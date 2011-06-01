@@ -129,18 +129,26 @@
 			this.stage( this.parent() ? this.parent().stage() : null );
 		},
 		private_children : [],
+		contains : function( potentialChild ) {
+			if ( this._.children.indexOf( potentialChild ) > - 1 ) {
+				return true;
+			}
+			for( var index in this._.children ) {
+				var child = this._.children[ index ];
+				if ( child.contains( potentialChild ) ){
+					return true;
+				}
+			}
+			return false;
+		},
 		addChild : function( child ) {
-// _trace( 'adding', child, 'to', this );
 			if( child !== this ){
 				if( child instanceof DisplayObject ) {
 					if ( child.parent() != null) {
-// _trace( 'removing', child, 'from', child.parent() );
 						child.parent().removeChild( child );
 					};
-// _trace( 'appending element' );
 					this.element().appendChild( child.element() );
 					child.element().style.zIndex =  this._.children.length;
-// _trace('parenting', this, 'to', child );
 					child.parent( this );
 					this._.children.push( child );
 				}else{

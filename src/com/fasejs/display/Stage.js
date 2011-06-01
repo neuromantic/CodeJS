@@ -33,7 +33,7 @@
 		onMouseMove : function ( event ) {
 			this.mouseX( event.mouseX );
 			this.mouseY( event.mouseY );
-			_trace( event.mouseY, event.mouseX );
+			// _trace( event.mouseY, event.mouseX );    
 		}//,
 	}
 );

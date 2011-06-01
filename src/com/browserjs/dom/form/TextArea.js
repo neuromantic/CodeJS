@@ -14,11 +14,11 @@
 	// _import( 'com.fasejs.text.TextField' ),
 	// _import( 'com.browserjs.dom.form.Input' ),
 	
-	_class('TextArea')._extends('Input', {
-		TextArea : function( placeholderText ){
+	_class('TextArea')._extends('TextInput', {
+		TextArea : function( placeholder ){
 			this.element( document.createElement( 'textarea' ) );
-			if(placeholderText){
-				this.element().setAttribute( 'placeholder', placeholderText );
+			if( placeholder ){
+				this.placeholderText( placeholder );
 			}
 		}
 	}

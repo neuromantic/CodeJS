@@ -12,28 +12,31 @@
 // _package( 'com.fasejs.text', 
 	// _import( 'com.fasejs.display.DisplayObject' ),
 	
-	_class( 'TextField' )._extends( 'DisplayObject', {
-		TextField : function(text) {
-			this._super();
-			this.text(text);
-		},
-		text : function(value) {
-			if (value === undefined){
-				return this.element().innerHTML;
-			}
-			this.element().innerHTML = value;
-		},
-		textColor : function ( value ) {
-			 if ( value === undefined ) {
-			 	 return this.element().style.color;
-			 }
-			 this.element().style.color = Graphics.rgba( value, 1 );
-		},
-		setTextFormat : function(textFormat) {
-			var css = textFormat.CSS;
-			for (var prop in css) {
-				this.element().style[prop] = css[prop];
-			};
+	
+	
+_class( 'TextField' )._extends( 'DisplayObject', {
+	TextField : function( text ) {
+		this._super();
+		this.text( text );
+	},
+	text : function( value ) {
+		if ( value === undefined ) {
+			return this.element().innerHTML;
 		}
-	}
-);
+		this.element().innerHTML = value;
+	},
+	textColor : function( value ) {
+		if ( value === undefined ) {
+// eHow.com http://www.ehow.com/how_7378382_identify-text-font-color-javascript.html#ixzz1NmJ9OS6Q
+		 	var element = this.element();
+			var textColor;
+			if ( element.currentStyle ) {
+				textColor = element.currentStyle.color;
+			} else if ( window.getComputedStyle ) {
+				textColor = document.defaultView.getComputedStyle( element, null ).getPropertyValue( 'color' );
+			};
+			return Graphics.unrgba( textColor );
+		 };
+		 this.element().style.color = Graphics.rgba( value, 1 );
+	}//,
+});

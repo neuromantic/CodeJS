@@ -12,6 +12,17 @@
  // _package( 'com.fasejs.display',
 
 	_class('Graphics', {
+		static_unrgba : function( rgbaString ) {
+// _trace( color, alpha );
+			
+			function rgba( r, g, b, a ) {
+	 			return ( ( ( r ) << 24 ) | ( ( g ) << 16 ) | ( ( b ) << 8 | ( a ) ) );
+			};
+			function rgb( r, g, b ) {
+	 			return ( ( ( r ) << 16 ) | ( ( g ) << 8 ) | ( ( b ) ) );
+			};
+			return eval( rgbaString );
+		},
 		static_rgba : function( color, alpha ) {
 // _trace( color, alpha );
 			color = color.toString( 16 );

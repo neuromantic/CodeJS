@@ -15,6 +15,7 @@
 	window.Fase = function () {
 		return [
 			//core
+				'com.fasejs.util.Dictionary',
 				// 'com.fasejs.core.Debug',
 			//events
 				'com.fasejs.events.Event',
@@ -41,14 +42,16 @@
 				'com.fasejs.fs.transitions.Easing',
 				'com.fasejs.fs.transitions.Tween',
 			//net
+				'com.fasejs.net.URLRequest',
 				'com.fasejs.net.URLLoader',
 				'com.fasejs.events.LoadingEvent',
 			//browser
 				'com.fasejs.browser.Address',
 				'com.browserjs.dom.form.Input',
 				'com.browserjs.dom.form.events.ValidationEvent',
-				'com.browserjs.dom.form.TextArea',
+				'com.browserjs.dom.form.TextInput',
 				'com.browserjs.dom.form.EmailInput',
+				'com.browserjs.dom.form.TextArea',
 				'com.browserjs.dom.form.SubmitButton'
 		];
 	};

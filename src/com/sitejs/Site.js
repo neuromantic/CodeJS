@@ -20,8 +20,9 @@
 		// // _import( 'com.fasejs.events.MouseEvent' );
 		// // _import( 'com.browserjs.dom.form.EmailInput' );
 		// // _import( 'com.browserjs.dom.form.TextArea' );
+		
 			setup = function () {
-				Tween.defaultEasing = Easing.linearTween
+				Tween.defaultEasing = Easing.easeOutCubic;
 			};
 			build = function () {
 				stage = new Stage( document.body ) ;
@@ -39,11 +40,17 @@
 				email = new EmailInput( 'enter your email' );
 				email.name( 'email' );
 				// form.addChild( email );
-				message = new TextArea( 'type a message' );
+				sender = new TextInput( 'tell us your name' );
+				sender.name( 'sender' );
+				message = new TextArea( 'type your message' );
 				message.name( 'message' );
 				// form.addChild( message );
 				submit = new SubmitButton( 'send' );
 				submit.name( 'submit' );
+				
+				status = new TextField( 'Status Message' );
+				status.name( 'status' );
+				
 				// form.addChild( submit );
 				graphic = new Loader( 'img/diagonal.png' );
 				stage.addChild( graphic );
@@ -53,75 +60,107 @@
 				footer.name( 'footer' );
 			};
 			addEvents = function () {
-				var _this = this;
-				stage.addEventListener( Event.RESIZE, function () {
-					_this.layout();
-				} );
+				stage.addEventListener( Event.RESIZE, this.layout, this );
 				email.addEventListener( ValidationEvent.VALID, function () { 
-					var animated = (! message.visible() );
-
-					form.addChild( message );
+					var animated = (! form.contains(sender) );
+					form.addChild( sender );
 					layout( animated, function () {
-						Tween.to( message, 0.2, { alpha : 1, delay : 0.1 } );
-
-					});
-				} );
-				email.addEventListener( FocusEvent.IN, function () { 
-					email.textColor( 0x666666 );
-				} );
-				message.addEventListener( FocusEvent.IN, function () { 
-					message.textColor( 0x666666 );
-					var animated = (! submit.visible() );
-					form.addChild( submit );
-					_this.layout( animated, function () { 
-						Tween.to( submit, 0.2, { alpha : 1, delay : 0.1 } );
+						Tween.to( sender, 0.2, { alpha : 1, delay : 0.1 } );
 					} );
 				} );
-				submit.addEventListener(  MouseEvent.CLICK, submit_clickHandler );
+				var inputs = [sender, message, submit ];
+				for ( var index in inputs ) {
+					var input = inputs[ index ];
+					var nextInput = inputs[ Number( index ) + 1 ];
+					if ( nextInput ) {
+						input.addEventListener( FocusEvent.IN, (function( nextInput ){
+							return function () { 
+								var animated = (! form.contains( nextInput ) );
+								form.addChild( nextInput );
+								this.layout( animated, function () { 
+									Tween.to( nextInput, 0.2, { alpha : 1, delay : 0.1 } ); 
+								} );//layout
+							};
+						} )( nextInput ), this );//event
+					};//if
+				};//for
+				
+				function input_onKeyUp(){
+					this._validateForm();
+				};
+				function validateForm() {
+					var variables = {};
+					if (! email.valid() ) return false;
+					variables.senderEmail = email.text();
+					if (! sender.text().length > 0 ) return false;
+					variables.senderName = sender.text();
+					if (! message.text().length > 0 ) return false;
+					variables.senderMessage = message.text();
+					return variables;
+				};
+				submit.addEventListener(  MouseEvent.CLICK, submit_clickHandler, this );
 				function submit_clickHandler ( event ) {
-					_trace('click');
+// _trace('click');
 					submit.removeEventListener(  MouseEvent.CLICK, submit_clickHandler );
-					Tween.to( event.target, 0.2, { x : submit.x() +  message.width() - submit.width() - 5, onComplete  : hideForm  } );
+					var variables = validateForm();
+					if (variables) {
+						var varSend = new URLRequest("contactForm.php", 'POST', variables );
+						var varLoader = new URLLoader();
+						// varLoader.dataFormat = URLLoaderDataFormat.VARIABLES;
+						varLoader.addEventListener(LoadingEvent.COMPLETE, varLoader_completeHandler, this );
+						varLoader.load(varSend);
+					}
+				};
+				function varLoader_completeHandler( event ) {
+_trace( event.data )
+					status.text( ( event.data == 'win' ) ? 'We\'ll be in touch.' : 'Something went wrong.<br>Please try <a href = "mailto:info@neuromantic.com">info@neuromantic.com</a>.' );
+					this.layout( false );
+					Tween.to( submit, 0.2, { x : submit.x() +  message.width() - submit.width() - 5, onComplete  : hideForm  } );
+					Tween.delayedCall( 0.5, endFrame, this );
 					function hideForm( event ) {
-						var components = [ subhead, email, message, submit ];
+						var components = [ header, subhead, email, sender, message, submit  ];
 						for( var index in components ){
 							index = Number( index );
 							var component = components[ index ];
-							Tween.to( component, 0.2, { alpha : 0 } );
+							( function ( index ) { Tween.to( component, 0.2, { delay : ( index * 0.02 ), alpha : 0 } ) } )( index );
 						};
-						Tween.delayedCall( 0.3, function () {
-							var components = [ subhead, email, message, submit ];
-							for( var index in components ){
-								index = Number( index );
-								var component = components[ index ];
-								form.removeChild( component );
-							}
-							this.layout( true );
-								
-						}, this );
+					};
+					function endFrame(){
+						var components = [ header, subhead, email, message, submit, sender ];
+						for( var index in components ){
+							index = Number( index );
+							var component = components[ index ];
+							form.removeChild( component );
+						};
+						stage.addChild( status )
+						this.layout( false );
+						Tween.to( status, 0.2, { alpha : 1 } );
 					};
 				};
 			};
 			
 			init = function () {
-				var components = [ header, subhead, email, message, submit, graphic ];
-				for( var index in components ){
+				var components = [ header, subhead, email, message, submit, graphic, sender, status ];
+				for( var index in components ) {
 					index = Number( index );
 					var component = components[ index ];
 					component.alpha( 0 );
-				}
-			}
+				};
+			};
 			layout = function ( animated , callback ) {
 				bg.x( 10 );
 				bg.y( 10 );
 				form.width( 280 );
-				email.width( 270 ); // (padding) 
-				message.width( 270 );
+				var textInputs = [email, sender, message ];
+				for( var index in textInputs ) {
+					var textInput = textInputs[ index ];
+					textInput.width( 270 ); // (padding) 
+				}
 				message.height( 270 );
 				bg.width(  Math.max( stage.width() - 20, 300 ) );
 				var y = 0
 				var bottom = y;
-				var components = [ header, subhead, email, message, submit ];
+				var components = [ header, subhead, email, sender, message, submit ];
 				for( var index in components ){
 					index = Number( index );
 					var component = components[ index ];
@@ -134,8 +173,8 @@
 				form.height( bottom );
 				submit.x( 5 );
 				form.x( Math.max( 20, ( stage.width() - 300 ) * 0.5 ) );
+				status.x( ( stage.width() - status.width() ) * 0.5 );
 				graphic.x( bg.x() + bg.width() - graphic.width() );
-				footer.width( graphic.width );
 				footer.x(  bg.x() + bg.width() - footer.width() - 10 );
 				var bgH = Math.max( stage.height() - 20, form.height() + graphic.height() + 20 );
 				if ( animated ){ 
@@ -156,6 +195,7 @@
 				}else{
 					bg.height( bgH);
 					form.y( Math.max( 20, ( stage.height() - form.height() - graphic.height() ) * 0.5 ) );
+					status.y( ( stage.height() - graphic.height() ) * 0.5 );
 					graphic.y( bg.y() + bgH - graphic.height() );
 					footer.y( bg.y() + bgH - footer.height() - 5 );
 					
@@ -181,7 +221,7 @@
 							});
 						}});
 					});
-				}});									
+				} } );									
 			};
 			setup();
 			build();

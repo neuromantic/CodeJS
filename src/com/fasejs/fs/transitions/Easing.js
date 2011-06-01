@@ -289,4 +289,4 @@
 );
 
 
-//_trace (">> Penner easing equations loaded");
+_trace (">> Penner easing equations loaded");

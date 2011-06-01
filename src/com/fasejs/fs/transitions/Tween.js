@@ -67,34 +67,20 @@
 				this._.toProperties = properties;
 				this._.easing = properties.easing || Tween.defaultEasing;
 				this._.fromProperties = {};
-				var _properties = properties;
-				if( properties.context ) {
-					this._.context = properties.context;
-				};
-				var _context = this._.context;
+				this._.context = properties.context || this;
 				if( properties.onComplete ) {
-						this.addEventListener( TweenEvent.COMPLETE, function( event ) {
-							properties.onComplete.apply( _context, [ event ] ); 
-						});
-					// delete this.toProperties.onComplete ;
+						this.addEventListener( TweenEvent.COMPLETE, properties.onComplete, this._.context );
 				};
 				 if( properties.onStart ) {
-						  this.addEventListener( TweenEvent.START, function( event ) {
-						 	 properties.onStart.apply( _context, [ event ] );
-						  });
-					 // delete this.toProperties.onStart  ;
+						this.addEventListener( TweenEvent.START, properties.onStart, this._.context );
 				 };
 				  if( properties.onUpdate ) {
-						   this.addEventListener( TweenEvent.UPDATE, function( event ) {
-						  	  properties.onUpdate.apply( context, [event] ); 
-						   });
+						this.addEventListener( TweenEvent.UPDATE, properties.onUpdate, this._.context ); 
 					  // delete this.toProperties.onUpdate ;
 				  };
 				  if( properties.delay ) {
 					  this._.delayTimer = new Timer( properties.delay * 1000, 1 );
-					  var _this = this;
-					  this._.delayTimer.addEventListener( TimerEvent.COMPLETE, function() { _this.startTween() } );
-  // _trace('delaying tween of', this._.target );
+					  this._.delayTimer.addEventListener( TimerEvent.COMPLETE, this.startTween, this );
 					  this._.delayTimer.start();
 					  delete properties.delay;
 				  }else{

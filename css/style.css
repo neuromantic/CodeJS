@@ -179,7 +179,7 @@ html, body, input, div, textarea {
 	display: none;
 }
 input, textarea, #bg {
-	background-color: #E6E6E6;
+	background-color: #333333;
 }
 input, textarea {
 	padding: 5px;
@@ -191,11 +191,9 @@ input, textarea {
 #footer {
 	font-size: 10px;
 }
-input[type=email], textarea, .TextArea {
-	color: #E6E6E6;
+input, textarea, .TextArea, input:invalid {
 	background-color: #FFF;
 	border: 0px;
-	width: 240px;
 	box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
 	-webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
    	-moz-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.5);
