@@ -37,7 +37,7 @@ _class( 'TextField' )._extends( 'DisplayObject', {
 			};
 			return Graphics.unrgba( textColor );
 		 };
-		 _trace('changing text color of', this, 'from', this.textColor(), 'to', value)
+// _trace('changing text color of', this, 'from', this.textColor(), 'to', value)
 		 this.element().style.color = Graphics.rgba( value, 1 );
 	}//,
 });

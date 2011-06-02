@@ -20,8 +20,14 @@ _class( 'TextInput' )._extends( 'Input', {
 			return this._.placeholderText;
 		};
 		if( this._.placeholderText == null ) {
-			this.addEventListener(FocusEvent.IN,  this._clearPlaceholder );
-			this.addEventListener(FocusEvent.OUT, this._applyPlaceholder);
+			this.addEventListener( FocusEvent.IN,  this._clearPlaceholder );
+			this.addEventListener( FocusEvent.OUT, this._applyPlaceholder );
+			this.addEventListener( KeyboardEvent.DOWN, function(){
+				_trace( this.text(), this.placeholderText() );
+				if ( this.text() == this.placeholderText() ) { 
+				 	this.text('');
+				} 
+			}, this );
 		};
 		value == value || '';
 		this._.placeholderText = value;

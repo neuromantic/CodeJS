@@ -36,25 +36,18 @@
 				header.name( 'header' );
 				subhead = new TextField( 'Contact us:' );//'Class / Object : Development Environment.'
 				subhead.name( 'subhead' );
-				// form.addChild( subhead );
 				email = new EmailInput( 'enter your email' );
 				email.name( 'email' );
-				// form.addChild( email );
 				sender = new TextInput( 'tell us your name' );
 				sender.name( 'sender' );
 				message = new TextArea( 'type your message' );
 				message.name( 'message' );
-				// form.addChild( message );
 				submit = new SubmitButton( 'send' );
 				submit.name( 'submit' );
-				
 				feedback = new TextField( 'feedback Message' );
 				feedback.name( 'feedback' );
-				
-				// form.addChild( submit );
 				graphic = new Loader( 'img/diagonal.png' );
 				stage.addChild( graphic );
-				// graphic.name( 'graphic' );
 				footer = new TextField( '&copy; 2011 Neuromantic LLC. All rights reserved.' );
 				stage.addChild( footer );
 				footer.name( 'footer' );

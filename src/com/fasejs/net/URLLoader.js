@@ -45,7 +45,7 @@
 			}
 		},
 	    load : function( urlRequest ) {
-_trace( 'requesting', urlRequest );
+// _trace( 'requesting', urlRequest );
 	    	this._.xmlhttp.open( urlRequest.method, urlRequest.url, true ); // +'?' + Math.random()
 			if( urlRequest.method == 'POST' ){
 				this._setHeaders( urlRequest );
@@ -62,13 +62,13 @@ _trace( 'requesting', urlRequest );
 
 	    },
 	    _setHeaders : function( urlRequest ) {
-_trace( 'adding headers, content-length :', urlRequest.data.length )
+// _trace( 'adding headers, content-length :', urlRequest.data.length )
 	    	this._.xmlhttp.setRequestHeader( 'Content-type', 'application/x-www-form-urlencoded' );
 			this._.xmlhttp.setRequestHeader( 'Content-length', urlRequest.data.length );
 			this._.xmlhttp.setRequestHeader( 'Connection', 'close' );
 	    },
 	    _onReadyStateChange : function() {
-_trace( 'ready state changed.', this._.xmlhttp.readyState );
+// _trace( 'ready state changed.', this._.xmlhttp.readyState );
 	    	switch( this._.xmlhttp.readyState ) {
 	    		case 0 : // uninitialized
 					this._dispatchEvent( LoadingEvent.UNINITIALIZED, this );
