@@ -168,7 +168,7 @@ html, body {
 	width: 100%;
 }
 html, body, input, div, textarea {
-	font-family:'Gotham-Book','Basic Commercial W02 Light', 'Arial';
+	font-family: 'Trade Gothic W01 Light';
 	text-align: left;
 	font-weight: normal;
     /*border: 1px solid black;*/
@@ -178,8 +178,11 @@ html, body, input, div, textarea {
 #Site {
 	display: none;
 }
+img[src='http://fast.fonts.com/colophon/Webfonts-SmallBadge.gif']{
+	display: none;
+}
 input, textarea, #bg {
-	background-color: #333333;
+	background-color: #e6e6e6;
 }
 input, textarea {
 	padding: 5px;

@@ -73,7 +73,7 @@ _class( 'TextInput' )._extends( 'Input', {
 	},
 	_clearPlaceholder : function() {
 		if( this.text() == this.placeholderText() ){
-			this.text('');
+			this.element().select();
 		};
 		this.textColor( this._.styleColor );
 	}//,
