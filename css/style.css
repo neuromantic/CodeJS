@@ -140,8 +140,9 @@ input:invalid, textarea:invalid {
 
 /* These selection declarations have to be separate
    No text-shadow: twitter.com/miketaylr/status/12228805301
-   Also: hot pink! */
-::-moz-selection{ background: #ad2727; color:#fff; text-shadow: none; }
+   Also: not pink! */
+::-moz-selection{ background:#ad2727; color:#fff; text-shadow: none; }
+::-webkit-selection { background:#ad2727; color:#fff; text-shadow: none; }
 ::selection { background:#ad2727; color:#fff; text-shadow: none; }
 
 /* Bicubic resizing for non-native sized IMG:

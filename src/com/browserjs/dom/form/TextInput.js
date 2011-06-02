@@ -42,7 +42,7 @@ _class( 'TextInput' )._extends( 'Input', {
 		this._.placeholderColor = value;
 		this._applyPlaceholder()
 	},
-	private_styleColor : 0,
+	private_styleColor : 0x666666,
 	TextInput : function( placeholder, type ){
 		type = type || 'text';
 		this._super( type );
@@ -62,19 +62,22 @@ _class( 'TextInput' )._extends( 'Input', {
 			}
 		} )( this )
 	},
+//FIXME: 
 	_applyPlaceholder : function() {
-		if ( (! this.text() ) || ( this.text() == '' ) ) {
+		if ( (! this.text() ) || ( this.text() == '' ) || ( this.text() == this.placeholderText() ) ) {
 			if( this.placeholderText() !== undefined ){
-				this._.styleColor = this.textColor();
+				//this._.styleColor //this.textColor();
 				this.textColor( this.placeholderColor() );
 				this.text( this.placeholderText() );
 			};
 		};
 	},
 	_clearPlaceholder : function() {
-		if( this.text() == this.placeholderText() ){
-			this.element().select();
-		};
 		this.textColor( this._.styleColor );
+_trace(this, this._.styleColor );
+		if( this.text() == this.placeholderText() || this.text() == '' ){
+			this.text( this.placeholderText() );
+			Tween.delayedCall( 0, function(){ this.select() }, this.element() );
+		};
 	}//,
 } );

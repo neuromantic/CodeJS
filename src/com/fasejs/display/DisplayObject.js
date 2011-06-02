@@ -66,7 +66,7 @@
 			this.element().onkeypress = function ( e ) { 
 				_this._dispatchEvent( new KeyboardEvent( KeyboardEvent.PRESS ) ); 
 			};
-			this.element().onfocus = function () { 
+			this.element().onfocus = function ( e ) { 
 				_this._dispatchEvent( new FocusEvent( FocusEvent.IN ), _this );
 			};
 			this.element().onblur = function () {

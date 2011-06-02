@@ -48,8 +48,8 @@
 				submit = new SubmitButton( 'send' );
 				submit.name( 'submit' );
 				
-				status = new TextField( 'Status Message' );
-				status.name( 'status' );
+				feedback = new TextField( 'feedback Message' );
+				feedback.name( 'feedback' );
 				
 				// form.addChild( submit );
 				graphic = new Loader( 'img/diagonal.png' );
@@ -112,8 +112,8 @@
 					}
 				};
 				function varLoader_completeHandler( event ) {
-_trace( event.data )
-					status.text( ( event.data == 'win' ) ? 'We\'ll be in touch.' : 'Something went wrong.<br>Please try <a href = "mailto:info@neuromantic.com">info@neuromantic.com</a>.' );
+// _trace( event.data )
+					feedback.text( ( event.data == 'win' ) ? 'We\'ll be in touch.' : 'Something went wrong.<br>Please try <a href = "mailto:info@neuromantic.com">info@neuromantic.com</a>.' );
 					this.layout( false );
 					Tween.to( submit, 0.2, { x : submit.x() +  message.width() - submit.width() - 5, onComplete  : hideForm  } );
 					Tween.delayedCall( 0.5, endFrame, this );
@@ -132,15 +132,15 @@ _trace( event.data )
 							var component = components[ index ];
 							form.removeChild( component );
 						};
-						stage.addChild( status )
+						stage.addChild( feedback )
 						this.layout( false );
-						Tween.to( status, 0.2, { alpha : 1 } );
+						Tween.to( feedback, 0.2, { alpha : 1 } );
 					};
 				};
 			};
 			
 			init = function () {
-				var components = [ header, subhead, email, message, submit, graphic, sender, status ];
+				var components = [ header, subhead, email, message, submit, graphic, sender, feedback ];
 				for( var index in components ) {
 					index = Number( index );
 					var component = components[ index ];
@@ -173,7 +173,7 @@ _trace( event.data )
 				form.height( bottom );
 				submit.x( 5 );
 				form.x( Math.max( 20, ( stage.width() - 300 ) * 0.5 ) );
-				status.x( ( stage.width() - status.width() ) * 0.5 );
+				feedback.x( ( stage.width() - feedback.width() ) * 0.5 );
 				graphic.x( bg.x() + bg.width() - graphic.width() );
 				footer.x(  bg.x() + bg.width() - footer.width() - 10 );
 				var bgH = Math.max( stage.height() - 20, form.height() + graphic.height() + 20 );
@@ -195,7 +195,7 @@ _trace( event.data )
 				}else{
 					bg.height( bgH);
 					form.y( Math.max( 20, ( stage.height() - form.height() - graphic.height() ) * 0.5 ) );
-					status.y( ( stage.height() - graphic.height() ) * 0.5 );
+					feedback.y( ( stage.height() - graphic.height() ) * 0.5 );
 					graphic.y( bg.y() + bgH - graphic.height() );
 					footer.y( bg.y() + bgH - footer.height() - 5 );
 					

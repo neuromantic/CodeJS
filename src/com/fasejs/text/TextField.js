@@ -29,7 +29,7 @@ _class( 'TextField' )._extends( 'DisplayObject', {
 		if ( value === undefined ) {
 // eHow.com http://www.ehow.com/how_7378382_identify-text-font-color-javascript.html#ixzz1NmJ9OS6Q
 		 	var element = this.element();
-			var textColor;
+			var textColor = element.style.color;
 			if ( element.currentStyle ) {
 				textColor = element.currentStyle.color;
 			} else if ( window.getComputedStyle ) {
@@ -37,6 +37,7 @@ _class( 'TextField' )._extends( 'DisplayObject', {
 			};
 			return Graphics.unrgba( textColor );
 		 };
+		 _trace('changing text color of', this, 'from', this.textColor(), 'to', value)
 		 this.element().style.color = Graphics.rgba( value, 1 );
 	}//,
 });
