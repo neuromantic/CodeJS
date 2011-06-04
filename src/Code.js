@@ -152,6 +152,17 @@
 			return result;
 		}
 	});
+	deepCopy.register({// null
+		canCopy: function(source) {
+			return ( source === null );
+		},
+		create: function(source) {
+			return null;
+		},
+		populate: function(deepCopy, source, result) {
+			return null;
+		}
+	});
 	deepCopy.register({//date
 		canCopy: function(source) {
 			return ( source instanceof Date );
@@ -313,8 +324,10 @@ Code = function(modules,application) {
  *	
  */	
 
-  var _configializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;;
-  // The base Class implementation -- provides _get and _set shortcuts to eliminate abiguous assignment ( is it a  property or a getSetter ? )
+  var _configializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
+  // The base Class implementation -- 
+  // provides _get and _set shortcuts to eliminate abiguous assignment ( is it a  property or a getSetter ? )
+  // provides .add() to replace += 
   this.Class = function(){};
   Class._codeName = 'Class';
   Class.prototype = {
@@ -335,9 +348,10 @@ Code = function(modules,application) {
 		
 		},
 		_add : function( value, propertyName ){
+			value = value || 1;
 			var property = this[ propertyName ];
 			if (property  === undefined ) {
-				this[propertyName] += value;
+				this[propertyName] = value;
 			}else{
 				( typeof this[ propertyName ] == 'function' ) ? this[ propertyName ]( this[ propertyName ]() + value ) : this[ propertyName ] += value;
 			};
@@ -426,7 +440,7 @@ Code = function(modules,application) {
             
             // The _config method only need to be bound temporarily, so we
             // remove it when we're done executing
-            var ret = fn.apply(this, arguments);        
+            var ret = fn.apply( this, arguments );        
             this._super = tmp;
             
             return ret;

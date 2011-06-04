@@ -9,7 +9,8 @@
  */
 (function() {
 	window.onload = function () {
-		_trace( 'starting site.')
+		_trace( 'starting site.');
+		window.scroll( 0, 1 );
 		Code( [ Fase ], function () { // Fase
 		// // _import( 'com.fasejs.fs.transitions.Tween');
 		// // _import( 'com.fasejs.fs.transitions.Easing');
@@ -66,7 +67,7 @@
 					var input = inputs[ index ];
 					var nextInput = inputs[ Number( index ) + 1 ];
 					if ( nextInput ) {
-						input.addEventListener( FocusEvent.IN, (function( nextInput ){
+						input.addEventListener( ValidationEvent.VALID, (function( nextInput ){
 							return function () { 
 								var animated = (! form.contains( nextInput ) );
 								form.addChild( nextInput );
@@ -85,15 +86,14 @@
 					var variables = {};
 					if (! email.valid() ) return false;
 					variables.senderEmail = email.text();
-					if (! sender.text().length > 0 ) return false;
+					if (! sender.valid() ) return false;
 					variables.senderName = sender.text();
-					if (! message.text().length > 0 ) return false;
+					if (! message.valid() ) return false;
 					variables.senderMessage = message.text();
 					return variables;
 				};
 				submit.addEventListener(  MouseEvent.CLICK, submit_clickHandler, this );
 				function submit_clickHandler ( event ) {
-// _trace('click');
 					submit.removeEventListener(  MouseEvent.CLICK, submit_clickHandler );
 					var variables = validateForm();
 					if (variables) {
@@ -102,10 +102,9 @@
 						// varLoader.dataFormat = URLLoaderDataFormat.VARIABLES;
 						varLoader.addEventListener(LoadingEvent.COMPLETE, varLoader_completeHandler, this );
 						varLoader.load(varSend);
-					}
+					};
 				};
 				function varLoader_completeHandler( event ) {
-// _trace( event.data )
 					feedback.text( ( event.data == 'win' ) ? 'We\'ll be in touch.' : 'Something went wrong.<br>Please try <a href = "mailto:info@neuromantic.com">info@neuromantic.com</a>.' );
 					this.layout( false );
 					Tween.to( submit, 0.2, { x : submit.x() +  message.width() - submit.width() - 5, onComplete  : hideForm  } );
@@ -164,7 +163,6 @@
 					 }
 				}
 				form.height( bottom );
-				submit.x( 5 );
 				form.x( Math.max( 20, ( stage.width() - 300 ) * 0.5 ) );
 				feedback.x( ( stage.width() - feedback.width() ) * 0.5 );
 				graphic.x( bg.x() + bg.width() - graphic.width() );
@@ -194,11 +192,13 @@
 					
 					callback ? callback() : 0;
 				}
+				
 			};
 			
 			start = function () {
 				layout(false);
-				Tween.to( graphic , 0.5, { alpha : 1, onComplete : function () { 
+				Tween.to( graphic , 0.5, { alpha : 1, delay : 0.1, onComplete : function () { 
+				window.scrollTo(0,1);
 					stage.addChild( form );
 					form.addChild( header )
 					layout( true, function() {

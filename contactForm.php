@@ -21,16 +21,14 @@ $headers .= "Reply-To: " . $senderEmail;
 
 $siteName = "www.neuromantic.com";
 $to = "info@neuromantic.com";
-$toSubject = "Message from $senderName via $siteName";
+$toSubject = "Site mail from $senderName via $siteName";
 $emailBody = "From: $senderName<br/>
 Phone: $senderPhone</br>
 Email: $senderEmail<br/>
 Message:<br/>
 $senderMessage";
 
-$message = $emailBody;
-
-$ok = mail( $to, $toSubject, $message, $headers );
+$ok = mail( $to, $toSubject, $emailBody, $headers );
 
 if ( $ok ) {
 	echo "win";

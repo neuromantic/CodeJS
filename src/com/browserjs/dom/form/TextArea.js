@@ -16,6 +16,7 @@
 	
 	_class('TextArea')._extends('TextInput', {
 		TextArea : function( placeholder ){
+			this._super();
 			this.element( document.createElement( 'textarea' ) );
 			if( placeholder ){
 				this.placeholderText( placeholder );
