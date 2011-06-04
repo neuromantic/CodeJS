@@ -40,3 +40,5 @@
 `this.\* is undefined OR this._\* is undefined`
 
 	if * is a private property, reference it like this: this._.*
+
+`missing ; before statement

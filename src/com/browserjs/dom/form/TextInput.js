@@ -23,7 +23,6 @@ _class( 'TextInput' )._extends( 'Input', {
 			this.addEventListener( FocusEvent.IN,  this._clearPlaceholder );
 			this.addEventListener( FocusEvent.OUT, this._applyPlaceholder );
 			this.addEventListener( KeyboardEvent.DOWN, function(){
-// _trace( this.text(), this.placeholderText() );
 				if ( this.text() == this.placeholderText() ) { 
 				 	this.text('');
 				} 
@@ -62,7 +61,7 @@ _class( 'TextInput' )._extends( 'Input', {
 		this._validate();
 	},
 	_validate : function () {
-		if ( this.text() != this._placeholderText && this._.pattern instanceof RegExp ){
+		if ( this.text() != this._.placeholderText && this._.pattern instanceof RegExp ){
 			var str = this.text();
 			var filter = this._.pattern;
 			if (! this._.valid ) {
@@ -77,14 +76,13 @@ _class( 'TextInput' )._extends( 'Input', {
 				};
 			};
 		} 
-_trace( this, ( this._.valid ? '' : 'in' ) + 'valid', this._.pattern );
 	},
 	_keyUpHandler : function ( event ) {
 		this._validate();
 	},
 	TextInput : function( placeholder, type, validationPattern ){
 		type = type || 'text';
-		this._.pattern = validationPattern || /\S/;
+		this._.pattern = validationPattern || this._.pattern;
 		this._super( type );
 		if( placeholder ){
 			this.placeholderText( placeholder );
@@ -104,19 +102,18 @@ _trace( this, ( this._.valid ? '' : 'in' ) + 'valid', this._.pattern );
 		this.addEventListener( KeyboardEvent.UP, this._keyUpHandler, this );
 		this.pattern(validationPattern);
 	},
-//FIXME: 
+//FIXME: grab css color first - wont calculate in some browsers
 	_applyPlaceholder : function() {
 		if ( (! this.text() ) || ( this.text() == '' ) || ( this.text() == this.placeholderText() ) ) {
 			if( this.placeholderText() !== undefined ){
-				//this._.styleColor //this.textColor();
+				//this._.styleColor //this.textColor(); // store the color here
 				this.textColor( this.placeholderColor() );
 				this.text( this.placeholderText() );
 			};
 		};
 	},
 	_clearPlaceholder : function() {
-		this.textColor( this._.styleColor );
-// _trace(this, this._.styleColor );
+		this.textColor( this._.styleColor );// use stored color here
 		if( this.text() == this.placeholderText() || this.text() == '' ){
 			this.text( this.placeholderText() );
 			Tween.delayedCall( 0, function(){ this.select() }, this.element() );
