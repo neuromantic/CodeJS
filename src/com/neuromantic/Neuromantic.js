@@ -1,4 +1,5 @@
 _package( 'com.neuromantic',
+
 	_import( 'com.fasejs.fs.transitions.Tween'),
 	_import( 'com.fasejs.fs.transitions.Easing'),
 	_import( 'com.fasejs.display.Sprite' ),
@@ -13,7 +14,8 @@ _package( 'com.neuromantic',
 	_import( 'com.browserjs.dom.form.TextArea' ),
 	_import( 'com.browserjs.dom.form.SubmitButton' ),
 	_import( 'com.sitejs.Site' ),
-	_class( 'Neuromantic' )._extends( 'Site', {
+	
+	_class( 'Neuromantic' )._extends( 'Site', {	
 		private_bg : null,
 		private_form : null,
 		private_header : null,
@@ -40,7 +42,7 @@ _package( 'com.neuromantic',
 			this._.header.name( 'header' );
 			this._.subhead = new TextField( 'Contact us:' );//'Class / Object : Development Environment.'
 			this._.subhead.name( 'subhead' );
-			this._.email = new EmailInput( 'enter your this' );
+			this._.email = new EmailInput( 'enter your email.' );
 			this._.email.name( 'email' );
 			this._.sender = new TextInput( 'tell us your name' );
 			this._.sender.name( 'sender' );

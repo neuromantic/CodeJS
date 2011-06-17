@@ -16,7 +16,6 @@ _package( 'com.browserjs.dom.form',
 	 _import( 'com.browserjs.dom.form.events.ValidationEvent' ),
 	 _import( 'com.browserjs.dom.form.Input' ),
 	 
-	
 	_class( 'TextInput' )._extends( 'Input', {
 		private_placeholderText : null,
 		placeholderText : function( value ) {
@@ -110,19 +109,16 @@ _debug( 'clearing placeholder' );
 			};
 		},
 		_validate : function () {
-_trace( this, 'validating' );
 			if ( this.text() != this._.placeholderText && this._.pattern instanceof RegExp ){
 				var str = this.text();
 				var filter = this._.pattern;
 				if (! this._.valid ) {
 					if ( filter.test( str ) ) {
-_trace(this,'has become valid')
 						this._.valid = true;
 						this._dispatchEvent( new ValidationEvent( ValidationEvent.VALID ), this );
 					};
 				} else {
 					if (! filter.test( str ) ) {
-_trace(this,'has become invalid')
 						this._.valid = false;
 						this._dispatchEvent( new ValidationEvent( ValidationEvent.VOID ), this );
 					};
