@@ -9,10 +9,9 @@
  * Licensed under the MIT license.
  *
  */
-// _package( 'com.browserjs.dom.form',
+_package( 'com.browserjs.dom.form',
 
-	// _import( 'com.fasejs.text.TextField' ),
-	// _import( 'com.browserjs.dom.form.Input' ),
+	_import( 'com.browserjs.dom.form.Input' ),
 	
 	_class('TextArea')._extends('TextInput', {
 		TextArea : function( placeholder ){
@@ -22,5 +21,5 @@
 				this.placeholderText( placeholder );
 			}
 		}
-	}
+	})
 );

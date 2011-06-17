@@ -9,29 +9,35 @@
  * Licensed under the MIT license.
  *
  */
- // _package( 'com.fasejs.events',
+ _package( 'com.fasejs.events',
+ 
+ 	_import('com.fasejs.util.Dictionary' ),
+ 	
 	_class('EventDispatcher', {
+		EventDispatcher : function () {
+			this._.eventClosures = new Dictionary();
+		},
 		private_eventHandlers : {},
-		z_eventClosures : new Dictionary(),
+		private_eventClosures : null,
 		addEventListener : function(eventType, eventHandler, scope) {
 			scope = scope || this;
-// _trace( this, 'adding', eventType, 'event scope:', scope),
 			this._.eventHandlers[ eventType ] = this._.eventHandlers[eventType] || [];
 			var closure = ( function( scope ) {
 				 return function ( event ) {
-// _trace( 'handling event', event.type)
 				 	 eventHandler.apply( scope, [ event ] ); 
 				 }
 			} )( scope )
-			this.z_eventClosures._(eventHandler, closure )
-			this._.eventHandlers[ eventType ].push( closure );
+			this._.eventClosures._(eventHandler, closure )
+			this._.eventHandlers[ eventType ].push( eventHandler );
+			
+_debug( this, this._.eventClosures);
 		},
 		removeEventListener : function( eventType, eventHandler ) {
 			if( this._.eventHandlers[ eventType ].length > 0 ) {
-				var index = this._.eventHandlers[ eventType ].indexOf( this.z_eventClosures._(eventHandler) );
+				var index = this._.eventHandlers[ eventType ].indexOf( this._.eventClosures._(eventHandler) );
 				if( index > -1 ) {
 					this._.eventHandlers[ eventType ].splice( index, 1 );
-					this.z_eventClosures._( eventHandler, null );
+					this._.eventClosures._( eventHandler, null );
 				};
 			};
 		},
@@ -39,9 +45,9 @@
 			if( this._.eventHandlers[ event.type ] ) {
 				event.target = this;
 				for( index in this._.eventHandlers[ event.type ] ) {
-					this._.eventHandlers[ event.type ][ index ]( event );
+					this._.eventClosures._( this._.eventHandlers[ event.type ][ index ])( event );
 				};
 			};
 		}//,
-	}
+	})
 );

@@ -9,10 +9,10 @@
  * Licensed under the MIT license.
  *
  */
-// _package( 'com.fasejs.display',
+_package( 'com.fasejs.display',
 
- 	// _import( 'com.fasejs.display.Graphics' ),
- 	// _import( 'com.fasejs.display.DisplayObject' ),
+ 	_import( 'com.fasejs.display.Graphics' ),
+ 	_import( 'com.fasejs.display.DisplayObject' ),
  	
 	_class( 'Sprite' )._extends( 'DisplayObject', {
 		_graphics : null,
@@ -20,5 +20,5 @@
 			return this._graphics || ( this._graphics = new Graphics( this ) );
 			
 		}
-	}
+	})
 );

@@ -9,9 +9,9 @@
  * Licensed under the MIT license.
  *
  */
- // _package( 'com.fasejs.events',
+ _package( 'com.fasejs.events',
  
- 	// _import( 'com.fasejs.events.Event' ),
+ 	_import( 'com.fasejs.events.Event' ),
  	
 	_class('MouseEvent')._extends('Event', {
 		static_mouseX : function ( e ) {
@@ -52,5 +52,5 @@
 			this.mouseX = mouseX;
 			this.mouseY = mouseY;
 		}
-	}
+	})
 );

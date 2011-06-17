@@ -9,11 +9,11 @@
  * Licensed under the MIT license.
  *
  */
-  // _package( 'com.fasejs.events',
+  _package( 'com.fasejs.events',
  
- 	// _import( 'com.fasejs.events.Event' ),
+ 	_import( 'com.fasejs.events.Event' ),
 	_class('ValidationEvent')._extends('Event', {
 		static_VALID : 'valid',
 		static_VOID : 'void'
-	}
+	})//,
 );

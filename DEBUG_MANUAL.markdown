@@ -1,5 +1,5 @@
 
-# Code.js Troubleshooting
+# Code.js Debug Manual
 
 ### Code.js for Dummies like me.
 
@@ -19,7 +19,9 @@
 
     look for missing ',' between properties in class declaration
 
-    look for  missing closing characters in class declaration
+    look for incorrect ';' after property definition in class declaration instead of ','
+
+    look for missing closing characters in class declaration
 
 `missing ) in parenthetical`
  

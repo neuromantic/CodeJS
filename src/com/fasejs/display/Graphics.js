@@ -9,7 +9,7 @@
  * Licensed under the MIT license.
  *
  */
- // _package( 'com.fasejs.display',
+ _package( 'com.fasejs.display',
 
 	_class('Graphics', {
 		static_unrgba : function( rgbaString ) {
@@ -89,4 +89,5 @@
 		clear : function() {
 		    this._.context.clearRect( 0, 0, this._.context.canvas.width, this._.context.canvas.height );
 		}
-	});
+	})
+);

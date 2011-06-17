@@ -9,9 +9,10 @@
  * Licensed under the MIT license.
  *
  */
-// _package( 'com.browserjs.dom.form',
-	// _import( 'com.fasejs.text.TextField' ),
-	// _import( 'com.fasejs.events.FocusEvent' ),
+_package( 'com.browserjs.dom.form',
+	_import( 'com.fasejs.text.TextField' ),
+	_import( 'com.fasejs.events.Event' ),
+	
 	_class( 'Input' )._extends( 'TextField', {
 		type : function ( value ){
 			if ( value === undefined ) {
@@ -24,8 +25,10 @@
 		},
 		
 		Input : function( type ){
+//_debug( this, 'Input', type );
+			this._super();
 			this.element( document.createElement( 'input' ) );
 			this.type( type );
 		},
-	}
+	})
 );

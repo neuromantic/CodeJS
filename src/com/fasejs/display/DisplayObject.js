@@ -9,11 +9,11 @@
  * Licensed under the MIT license.
  *
  */
- // _package( 'com.fasejs.display',
+ _package( 'com.fasejs.display',
  
- 	// _import( 'com.fasejs.events.EventDispatcher' ),
- 	// _import( 'com.fasejs.events.MouseEvent' ),
- 	// _import( 'com.fasejs.display.Stage' ),
+ 	_import( 'com.fasejs.events.EventDispatcher' ),
+ 	_import( 'com.fasejs.events.MouseEvent' ),
+ 	_import( 'com.fasejs.display.Stage' ),
  	
 	_class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		
@@ -26,8 +26,9 @@
 			this.mouseEnabled = value;
 		},
 		DisplayObject : function( contents ) {
+//_debug( this, 'DisplayObject', contents );
+			this._super();
 			this.element( contents || document.createElement( 'div' ) );
-			
 		},
 		private_element : null,
 		element : function( value ) {
@@ -271,5 +272,5 @@
 		toString : function () {
 			return ( this.name() ) || this._super.toString();
 		}
-	}
+	})
 );

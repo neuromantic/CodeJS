@@ -45,7 +45,7 @@
 	  http://www.robertpenner.com/profmx
 	  http://www.amazon.com/exec/obidos/ASIN/0072223561/robertpennerc-20
 	*/
-// _package( 'com.fasejs.fs.transitions',
+_package( 'com.fasejs.fs.transitions',
 
 	_class ('Easing', {
 	// Ported to Code.js 5 / 13 / 2011 by Neuromantic
@@ -285,8 +285,5 @@
 			if (t < d/2) return Easing.easeInBounce (t*2, 0, c, d) * .5 + b;
 			return Easing.easeOutBounce (t*2-d, 0, c, d) * .5 + c*.5 + b;
 		}//,
-	}//,
+	})
 );
-
-
-_trace (">> Penner easing equations loaded");

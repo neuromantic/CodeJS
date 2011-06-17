@@ -9,15 +9,14 @@
  * Licensed under the MIT license.
  *
  */
-// _package( 'com.fasejs.net',
+_package( 'com.fasejs.net',
 	 
- 	// _import( 'com.fasejs.events.EventDispatcher' ),
- 	// _import( 'com.fasejs.net.URLRequest' ),
+ 	_import( 'com.fasejs.events.EventDispatcher' ),
+ 	_import( 'com.fasejs.net.URLRequest' ),
  	
- 	
-	private_xmlhttp : null,
 	_class('URLLoader')._extends('EventDispatcher', {
 		URLLoader : function () {
+			this._super()
 // http://developer.apple.com/internet/webcontent/xmlhttpreq.html
 			var request = false;
 		    // branch for native XMLHttpRequest object
@@ -88,5 +87,6 @@
 					}
 	    	};
 	    }//,
-	} );
+	})
+);
 

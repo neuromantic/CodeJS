@@ -9,7 +9,7 @@
  * Licensed under the MIT license.
  *
  */
- // _package( 'com.fasejs.events',
+ _package( 'com.fasejs.events',
 	_class('Event', {
 		static_ADDED_TO_STAGE : 'addedToStage',
 		static_CHANGE : 'change',
@@ -20,5 +20,5 @@
 			this.type = type;
 			this.target = target;
 		}//,
-	}
+	})
 );

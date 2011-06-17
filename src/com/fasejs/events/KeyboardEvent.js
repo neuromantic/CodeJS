@@ -9,9 +9,9 @@
  * Licensed under the MIT license.
  *
  */
- // _package( 'com.fasejs.events',
+ _package( 'com.fasejs.events',
  
- 	// _import( 'com.fasejs.events.Event' ),
+ 	_import( 'com.fasejs.events.Event' ),
  	
 	_class('KeyboardEvent')._extends('Event', {
 		
@@ -23,5 +23,5 @@
 		KeyboardEvent : function ( type, target ){
 			this._super( type, target );
 		}
-	}
+	})
 );
