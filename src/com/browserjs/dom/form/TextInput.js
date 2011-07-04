@@ -34,14 +34,14 @@ _package( 'com.browserjs.dom.form',
 		text : function ( value ) {
 			if ( value === undefined ){
 				return this.element().value
-			}
+			};
 			this.element().value = value;
 		},
 		private_placeholderColor : 0xCCCCCC,
 		placeholderColor : function( value ) { 
 			if( value === undefined ) {
 				return this._.placeholderColor;
-			}
+			};
 			this._.placeholderColor = value;
 			this._onFocusOut()
 		},
@@ -55,7 +55,7 @@ _package( 'com.browserjs.dom.form',
 			if ( value === undefined ) {
 				return this._.pattern;
 			};
-_debug('setting pattern of', this, 'to', value);
+_debug( 'setting pattern of', this, 'to', value );
 			this._.pattern = value;
 			this._validate();
 			this.addEventListener( KeyboardEvent.UP, this._validate, this);
@@ -81,7 +81,7 @@ _debug('setting pattern of', this, 'to', value);
 			} )( this );
 			this.pattern( validationPattern || this._.pattern );
 		},
-	//FIXME: grab css color first - wont calculate in some browsers
+//FIXME: grab css color first - wont calculate in some browsers
 		_onFocusOut : function() {
 			if ( (! this.text() ) || ( this.text() == '' ) || ( this.text() == this.placeholderText() ) ) {
 				if( this.placeholderText() !== undefined ){

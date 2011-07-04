@@ -11,7 +11,13 @@
 	_ = {// * Reserving global._ *
 		codeDebug : false,
 		util : {
-			deepCopy : deepCopy
+			deepCopy : deepCopy,
+			scope : function ( fn, scope, functionName ) {
+				return function () {
+// _debug( 'calling scoped', functionName, scope, fn );
+					 return fn.apply( scope, arguments );
+				}
+			}
 		},// util
 		loading : {
 			queue : [],
@@ -33,6 +39,7 @@
 				return window[ codeName ];
 			},// _class ( temp )
 			load : function( codePath, first ) {
+// _debug( 'loading', codePath );
 				try{
 					this.queue.push( codePath);
 					var host = document.location.host;
@@ -45,7 +52,8 @@
 					var request = _xhr( 'GET', scriptURL, false )
 					request.send( null );
 					if ( request.status == 200 ) {
-						window._import = _.loading._import;
+// _debug( '>>> loaded', codePath, '. processing imports' );
+						_import = _.loading._import;
 						_class = _.loading._class;
 						try{
 							eval( request.responseText );
@@ -54,15 +62,14 @@
 						}
 						var codeName = codePath.split( '.' ).pop();
 						window[ codeName ]._script = request.responseText//store script
-						_.definition.queue.push( codeName);// add script to definition queue
-						var progress='[ ';
-						for( var n = _.definition.queue.length; n < this.queue.length; n++ ) {
-							 progress += this.queue[ n ].split( '.' ).pop() + ' ' ;
-						};// for
-						_debug( progress, ']' );
+						_.definition.queue.push( codeName );// add script to definition queue
+						_debug( 'L[ ' + this.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
+						_debug( 'D[ ' + _.definition.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
+// _debug( '<<< finished loading tasks for', codePath)
 						if( this.queue.length == _.definition.queue.length ){
 							_.definition.defineClasses();
 						}// if
+						
 					} else if ( status == 0 ) {
 						// eval( responseText );
 					} else {// else if
@@ -108,9 +115,9 @@ _debug( 'defining classes' );
 				if( index >= 0 ) {
 					var code = window [ codeName ];
 					this.queue.splice( index, 1);
-// _debug( 'defining class', codeName );
+_debug( 'defining class', codeName );
 					if ( code._super ){
-// _debug( 'defining superclass', code._super );
+_debug( 'defining superclass', code._super );
 						this.define(code._super);
 					}// if
 // _debug( 'evaluating script', code._script );
@@ -157,7 +164,7 @@ _debug( this.queue.length, 'definitions remain.' );
 		
 	/* 
 	 * 
-	 * ClassObject is a modification of
+	 * Class is a modification of
 	 * 'Class' originally by the immortal John Resig
 	 * thanks For Sure, Rad!
 	 * 
@@ -215,16 +222,33 @@ _debug( this.queue.length, 'definitions remain.' );
 		  // All construction is actually done in the _config method (declared using the new Class name as string (codeName ) )
 		  this._ = _.util.deepCopy( this._ );
 		  
-		 // if ( [ 'TimerEvent',
-		 		// 'TweenEvent',
-		 		// 'MouseEvent',
-		 		// 'Dictionary',
-		 		// 'Tween' ].indexOf( this._codeName ) < 0 ) {
-		 	// _debug( 'new', this._codeName );
-		 // }
-		  if ( !_.definition.initializing && this._config ) {
-		 	this._config.apply(this, arguments);
-		   }
+		 
+			if ( !_.definition.initializing ){
+				
+if ( this._codeName.indexOf( 'Event' ) < 0 && [ 'Dictionary' ].indexOf( this._codeName ) < 0 ) {
+	_debug( 'new', this._codeName );
+};
+				for ( var propertyName in this ){
+					var property = this[ propertyName ];
+					if ( typeof property == 'function' && [  'toString',
+															 '_get',
+															 '_set',
+															 '_add' ].indexOf( propertyName) < 0 ){
+// _debug( 'scoping', propertyName, 'to', this );
+						this[ propertyName ] = _.util.scope( property, this, propertyName );
+					};//if
+				};//for
+				
+				for ( var propertyName in this._ ){
+					var property = this._[ propertyName ];
+					if ( typeof property == 'function' ){
+						this._[ propertyName ] = _.util.scope( property, this );
+					}//if
+				}//for
+			  	if( this._config ) {
+			 		this._config.apply( this, arguments );
+			  	};
+			}
 		}
 		
 		newPrototype._ = _super._ ? _.util.deepCopy( _super._ ) : {}; // private space
@@ -368,7 +392,7 @@ _debug('code ready.')
 			return target;
 		};
 	};
-	function copy(target) {
+	function copy( target ) {
 		if (typeof target !== 'object' ) {
 			return target;
 		} else {

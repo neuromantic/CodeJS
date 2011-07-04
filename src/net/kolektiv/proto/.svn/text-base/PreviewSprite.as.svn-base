@@ -1,0 +1,33 @@
+package net.kolektiv.proto
+{
+	import net.kolektiv.utils.Debug;
+	import flash.display.Sprite;
+
+	public class PreviewSprite extends Sprite
+	{
+        protected var _width:uint;
+        protected var _height:uint;
+        protected var _color:uint;
+        protected var _aspect:Number;
+        
+        public function PreviewSprite(w:uint=0,h:uint=0,c:uint=0)
+		{
+			Debug.info("new PreviewSprite(",w,",",h,",",c,")");
+			_width = w;
+			_height = h;
+			_aspect = w/h;
+			_color = _color;
+			drawBG();
+        }
+		public function drawBG():void{
+			with(graphics){
+				beginFill(_color);
+				drawRect(0,0,_width,_height);
+				endFill();
+			}
+		}
+        override public function toString():String{
+        	return "VideoPreview{width:"+_width+",height:"+_height+",_color:"+_color+"}";	
+		}
+	}
+}

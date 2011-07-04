@@ -1,0 +1,123 @@
+package net.kolektiv.proto
+{
+	import flash.display.Sprite;
+	import flash.events.AsyncErrorEvent;
+	import flash.events.NetStatusEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.media.Video;
+	import flash.net.NetConnection;
+	import flash.net.NetStream;
+	
+	import net.kolektiv.utils.Debug;
+	
+	public class VideoSprite extends Sprite
+	{
+		private var _video:Video;
+		private var _connection:NetConnection;
+		private var _stream:NetStream;
+		private var _url:String = "";
+        private var _width:uint;
+        private var _height:uint;
+        private var _color:uint;
+        private var _duration:Number;
+        private var _aspect:Number;
+        
+        public function VideoSprite(w:uint,h:uint,c:uint,u:String="")
+		{
+			Debug.info("new VideoSprite(",u,",",w,",",h,",",c,")");
+			_width = w;
+			_height = h;
+			_aspect = w/h;
+			_url= u;
+			_color = _color;
+			drawBG();
+			if(u!=""){
+				_video  = new Video(w,h);
+				_video.smoothing = true;
+				_connection = new NetConnection();
+	            _connection.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+	            _connection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+	            _connection.connect(null);
+  			}
+            
+        }
+      public function onXMPData(infoObject:Object):void
+      {
+      	//Debug.info("XMPData receieved from",_url);
+      }
+      public function onMetaData(infoObject:Object):void
+      {
+      	Debug.info("MetaData receieved from",_url);
+           if(infoObject._duration != null)
+           {
+                _duration = infoObject.duration
+           }
+           var h:uint = infoObject.height;
+           var w:uint = infoObject.width;
+           if(h != 0 && w != 0)
+           {
+               layoutVideo(w,h);
+           }
+      }
+
+	protected function layoutVideo(w:uint,h:uint):void{
+                var aspect:Number = w/h;
+                Debug.say("aspect:",aspect);
+                if(aspect>_aspect){//wide
+	                w = Math.min(w,_width);
+	                h = w/aspect;
+                }else{//tall
+                	h = Math.min(h,_height);
+                	w = h*aspect
+                }
+                _video.height = h;
+                _video.width = w;
+                _video.x = (_width-w) * .5;
+                _video.y = (_height-h) * .5;
+	}
+
+        protected function netStatusHandler(event:NetStatusEvent):void {
+        	Debug.info("NetStatusEvent:",event.info.code);
+            switch (event.info.code) {
+                case "NetConnection.Connect.Success":
+                	buildVideo();
+                break;
+                case "NetStream.Play.StreamNotFound":
+                    Debug.error("Unable to locate _video: " + _url);
+                break;
+            }
+        }
+		protected function buildVideo():void {
+            _stream = new NetStream(_connection);
+            _stream.client = this;
+            _video.attachNetStream(_stream);
+			addChild(_video);
+        }
+		public function drawBG():void{
+			with(graphics){
+				beginFill(0);
+				drawRect(0,0,_width,_height);
+				endFill();
+			}
+		}
+        public function play():void {
+           if(_url!="") _stream.play(_url);
+        }
+        public function stop():void {
+           _stream.close()
+           _video.clear();
+        }
+
+        protected function securityErrorHandler(event:SecurityErrorEvent):void {
+            Debug.error("securityErrorHandler: " + event);
+        }
+        
+        protected function asyncErrorHandler(event:AsyncErrorEvent):void {
+            Debug.error("AsyncErrorEvent:" + event);
+        }
+        override public function toString():String{
+        	return "VideoSprite{_url:"+_url+",width:"+_width+",height:"+_height+",_color:"+_color+"}";
+        }
+    }
+ }
+		

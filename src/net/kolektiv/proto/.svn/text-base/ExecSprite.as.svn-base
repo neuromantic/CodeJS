@@ -1,0 +1,172 @@
+package net.kolektiv.proto {
+	import com.greensock.OverwriteManager;
+	import com.greensock.TweenLite;
+	import flash.display.DisplayObject;
+	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
+	
+	public class ExecSprite extends Sprite {
+		public static const LAYOUT_COMPLETE:String = "layoutComplete";
+		protected var _height:Number;
+		override public function get height():Number {
+			if ( targetSize ) {
+				return targetSize.height;
+			} else {
+				return _height || getRect( parent ).height;
+			}
+		}
+		override public function set height( value:Number ):void {
+			_height = value;
+			layout();
+		}
+		public var presentationDuration:Number = 0.5;
+		public var ready:Boolean;
+		protected var _width:Number;
+		override public function get width():Number {
+			if ( targetSize ) {
+				return targetSize.width;
+			} else {
+				return _width || getRect( parent ).width;
+			}
+		}
+		override public function set width( value:Number ):void {
+			_width = value
+			layout();
+		}
+		protected var animatedLayoutDuration:Number = 0.5;
+		protected var animationOverlap:Number = 0;
+		protected var childTransforms:Dictionary; /*of Point*/
+		protected var firstLayout:Boolean = true;
+		protected var targetSize:Rectangle;
+		public function ExecSprite() {
+			super();
+		}
+		public function exec():void {
+			setup();
+			build();
+			if ( stage ) {
+				stageReady();
+			} else {
+				addEventListener( Event.ADDED_TO_STAGE, addedToStageListener );
+			}
+		}
+		public function hide():void {
+			this.visible = false;
+		}
+		public function init():void {
+			//trace("init");
+		}
+		public function show():void {
+			this.visible = true;
+		}
+		public function start():void {
+			//trace("start");
+		}
+		public function stop():void {
+			//trace("stop")
+		}
+		public function trigger():void {
+			init();
+			start();
+		}
+		protected function addEvents():void {
+			//trace("layout")
+		}
+		protected function addedToStageListener( event:Event ):void {
+			removeEventListener( Event.ADDED_TO_STAGE, addedToStageListener );
+			stageReady()
+		}
+		protected function build():void {
+			//trace("build");
+		}
+		protected function draw():void {
+		}
+		protected function layout( animated:Boolean = false ):void {
+			animated = animated && !firstLayout
+			storeTargetSize();
+			if ( animated && childTransforms ) {
+				var duration:Number = 0;
+				for ( var key:Object in childTransforms ) {
+					var child:DisplayObject = DisplayObject( key );
+					var target:Rectangle = getChildRect( child );
+					var transform:Rectangle = childTransforms[ child ];
+					if ( !target.equals( transform ) && contains( DisplayObject( child ) ) ) {
+						duration = animatedLayoutDuration;
+						child.x = transform.x;
+						child.y = transform.y;
+						child.width = transform.width;
+						child.height = transform.height;
+						TweenLite.to( child, duration, { x: target.x, y: target.y, height: target.height, width: target.width, overwrite: OverwriteManager.AUTO } );
+					}
+				}
+				var hasNew:Boolean;
+				var delay:Number = ( 1 - animationOverlap ) * duration;
+				for ( var n:int = 0; n < numChildren; n++ ) {
+					var newChild:DisplayObject = getChildAt( n );
+					if ( !childTransforms[ newChild ] ) {
+						var speed:Number = ( newChild is ExecSprite ) ? ExecSprite( newChild ).presentationDuration : presentationDuration;
+						presentChild( newChild, speed, delay );
+						hasNew = true
+					}
+				}
+				if ( hasNew ) {
+					duration += speed;
+				}
+				TweenLite.delayedCall( duration, onLayoutComplete );
+			} else {
+				onLayoutComplete();
+			}
+			draw();
+		}
+		protected function onLayoutComplete():void {
+			if ( this.numChildren > 0 ) {
+				storeLayout();
+			}
+			firstLayout = false;
+			clearTargetSize();
+		}
+		protected function presentChild( newChild:DisplayObject, duration:Number, delay:Number = 0 ):Number {
+			newChild.alpha = 0;
+			TweenLite.to( newChild, duration, { alpha: 1, delay: delay, overwrite: OverwriteManager.AUTO } );
+			return duration
+		}
+		protected function setup():void {
+			//trace("setup");
+		}
+		protected function stageReady():void {
+			if ( !ready ) {
+				addEvents();
+				ready = true;
+				layout();
+				trigger();
+			}
+		}
+		protected function storeLayout():void {
+			childTransforms = new Dictionary();
+			for ( var n:int = 0; n < this.numChildren; n++ ) {
+				var child:DisplayObject = this.getChildAt( n );
+				storeChildRect( child );
+			}
+		}
+		protected function updateStoredLayout():void {
+			for ( var child:Object in childTransforms ) {
+				storeChildRect( child );
+			}
+		}
+		private function clearTargetSize():void {
+			targetSize = null;
+		}
+		private function getChildRect( child:DisplayObject ):Rectangle {
+			return new Rectangle( child.x, child.y, child.width, child.height );
+		}
+		private function storeChildRect( child:Object ):void {
+			childTransforms[ child ] = new Rectangle( child.x, child.y, child.width, child.height );
+		}
+		private function storeTargetSize():void {
+			clearTargetSize();
+			targetSize = new Rectangle( x, y, width, height );
+		}
+	}
+}

@@ -15,7 +15,9 @@
  	
 	_class('EventDispatcher', {
 		EventDispatcher : function () {
+// _debug( 'new EventDispatcher' )
 			this._.eventClosures = new Dictionary();
+// _debug( 'EventDispatcher constructed.')
 		},
 		private_eventHandlers : {},
 		private_eventClosures : null,
@@ -30,7 +32,7 @@
 			this._.eventClosures._(eventHandler, closure )
 			this._.eventHandlers[ eventType ].push( eventHandler );
 			
-_debug( this, this._.eventClosures);
+// _debug( this, this._.eventClosures);
 		},
 		removeEventListener : function( eventType, eventHandler ) {
 			if( this._.eventHandlers[ eventType ].length > 0 ) {

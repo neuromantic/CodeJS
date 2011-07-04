@@ -13,10 +13,8 @@
  _package( 'com.fasejs.util',
 	_class('Dictionary', {
 		Dictionary : function () {
-			this._keys = [];
-			this._values = [];
 		},
-		_ : /* ( function ( o ) { return */ function ( key, value ) {
+		_ :  function ( key, value ) {
 			var o = this;
 			if ( value === undefined ) {
 				return o._value( key ) // get
@@ -32,7 +30,7 @@
 			}else{
 				o._values[ index ] = value; // set
 			}
-		},// } )( this ),
+		},
 		_keys : [],
 		_values : [],
 		_keyIndex : function( key ){

@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/kolektiv/!svn/ver/10/trunk/src/net/kolektiv/proto
+END
+VideoSprite.as
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/kolektiv/!svn/ver/8/trunk/src/net/kolektiv/proto/VideoSprite.as
+END
+BitmapPreview.as
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/kolektiv/!svn/ver/8/trunk/src/net/kolektiv/proto/BitmapPreview.as
+END
+App.as
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/kolektiv/!svn/ver/26/trunk/src/net/kolektiv/proto/App.as
+END
+DataLoader.as
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/kolektiv/!svn/ver/26/trunk/src/net/kolektiv/proto/DataLoader.as
+END
+PreviewSprite.as
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/kolektiv/!svn/ver/8/trunk/src/net/kolektiv/proto/PreviewSprite.as
+END
+VideoPreview.as
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/kolektiv/!svn/ver/8/trunk/src/net/kolektiv/proto/VideoPreview.as
+END
+DataBuild.as
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/kolektiv/!svn/ver/8/trunk/src/net/kolektiv/proto/DataBuild.as
+END
+ExecSprite.as
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/kolektiv/!svn/ver/26/trunk/src/net/kolektiv/proto/ExecSprite.as
+END

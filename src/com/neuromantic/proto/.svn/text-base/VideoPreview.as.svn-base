@@ -1,0 +1,111 @@
+package net.kolektiv.proto
+{
+	import flash.events.AsyncErrorEvent;
+	import flash.events.NetStatusEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.media.Video;
+	import flash.net.NetConnection;
+	import flash.net.NetStream;
+	
+	import net.kolektiv.utils.Debug;
+	
+	public class VideoPreview extends PreviewSprite
+	{
+		private var _video:Video;
+		private var _connection:NetConnection;
+		private var _stream:NetStream;
+        private var _duration:Number;
+        private var _url:String;
+        
+        public function VideoPreview(u:String="",w:uint=0,h:uint=0,c:uint=0)
+		{
+			super(w,h,c);
+			Debug.info("new VideoPreview(",u,",",w,",",h,",",c,")");
+			_url= u;
+			_color = _color;
+			drawBG();
+			if(u!=""){
+				_video  = new Video(w,h);
+				_video.smoothing = true;
+				_connection = new NetConnection();
+	            _connection.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+	            _connection.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+	            _connection.connect(null);
+  			}
+            
+        }
+      public function onXMPData(infoObject:Object):void
+      {
+      	//Debug.info("XMPData receieved from",_url);
+      }
+      public function onMetaData(infoObject:Object):void
+      {
+      	//Debug.event("MetaData receieved from",_url);
+           if(infoObject._duration != null)
+           {
+                _duration = infoObject.duration
+           }
+           var h:uint = infoObject.height;
+           var w:uint = infoObject.width;
+           if(h != 0 && w != 0)
+           {
+               layoutVideo(w,h);
+           }
+      }
+
+	protected function layoutVideo(w:uint,h:uint):void{
+                var aspect:Number = w/h;
+                if(aspect>_aspect){//wide
+	                w = Math.min(w,_width);
+	                h = w/aspect;
+                }else{//tall
+                	h = Math.min(h,_height);
+                	w = h*aspect
+                }
+                _video.height = h;
+                _video.width = w;
+                _video.x = (_width-w) * .5;
+                _video.y = (_height-h) * .5;
+	}
+
+        protected function netStatusHandler(event:NetStatusEvent):void {
+        	//Debug.event("NetStatusEvent:",event.info.code);
+            switch (event.info.code) {
+                case "NetConnection.Connect.Success":
+                	buildVideo();
+                break;
+                case "NetStream.Play.StreamNotFound":
+                    Debug.error("Unable to locate _video: " + _url);
+                break;
+            }
+        }
+		protected function buildVideo():void {
+			Debug.info("buildVideo");
+            _stream = new NetStream(_connection);
+            _stream.client = this;
+            _video.attachNetStream(_stream);
+			addChild(_video);
+        }
+        public function play():void {
+        	Debug.info(this,"play");
+        	if(_url!="") _stream.play(_url);
+        }
+        public function stop():void {
+        	Debug.info(this,"stop");
+           _stream.close()
+           _video.clear();
+        }
+
+        protected function securityErrorHandler(event:SecurityErrorEvent):void {
+            Debug.error("securityErrorHandler: " + event);
+        }
+        
+        protected function asyncErrorHandler(event:AsyncErrorEvent):void {
+            Debug.error("AsyncErrorEvent:" + event);
+        }
+        override public function toString():String{
+        	return "VideoPreview";
+        }
+    }
+ }
+		

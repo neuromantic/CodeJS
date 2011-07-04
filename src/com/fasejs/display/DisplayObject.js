@@ -25,63 +25,62 @@
 			}
 			this.mouseEnabled = value;
 		},
-		DisplayObject : function( contents ) {
-//_debug( this, 'DisplayObject', contents );
+		DisplayObject : function( hostElement ) {
 			this._super();
-			this.element( contents || document.createElement( 'div' ) );
+			this.element( hostElement || document.createElement( 'div' ) );
 		},
 		private_element : null,
 		element : function( value ) {
 			if( value === undefined ) {
-				return  this._.element;
+				return this._.element;
 			};
 			this._.element = value;
-			this.element().className = this._codeName;
-			if( this.element().id ){
-				this.name( this.element().id )
-			}else if( this.name() ) {
-				this.element().id = this.name();
+			this._.element.className = this._codeName;
+			if( this._.element.id ){
+				this.name( this._.element.id )
+			}else if( this._.name ) {
+				this._.element.id = this._.name;
 			};
 			var _this = this;
-			this.element().onmouseover = function( e ) {
+			this._.element.onmouseover = function( e ) {
 				 _this._dispatchMouseEvent( new MouseEvent( MouseEvent.OVER, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
-			this.element().onmouseout = function( e ) {
+			this._.element.onmouseout = function( e ) {
 				 _this._dispatchMouseEvent( new MouseEvent( MouseEvent.OUT, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
-			this.element().onmousedown = function ( e ) {
+			this._.element.onmousedown = function ( e ) {
 				 _this._dispatchMouseEvent( new MouseEvent( MouseEvent.DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
-			this.element().onmouseup = function ( e ) {
+			this._.element.onmouseup = function ( e ) {
 				_this._dispatchMouseEvent( new MouseEvent( MouseEvent.UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
-			this.element().onclick = function ( e ) {
+			this._.element.onclick = function ( e ) {
 				_this._dispatchMouseEvent( new MouseEvent( MouseEvent.CLICK, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
-			this.element().onkeydown = function ( e ) { 
+			this._.element.onkeydown = function ( e ) { 
 				_this._dispatchEvent( new KeyboardEvent( KeyboardEvent.DOWN ) ); 
 			};
-			this.element().onkeyup = function ( e ) { 
+			this._.element.onkeyup = function ( e ) { 
 				_this._dispatchEvent( new KeyboardEvent( KeyboardEvent.UP ) ); 
 			};
-			this.element().onkeypress = function ( e ) { 
+			this._.element.onkeypress = function ( e ) { 
 				_this._dispatchEvent( new KeyboardEvent( KeyboardEvent.PRESS ) ); 
 			};
-			this.element().onfocus = function ( e ) { 
+			this._.element.onfocus = function ( e ) { 
 				_this._dispatchEvent( new FocusEvent( FocusEvent.IN ), _this );
 			};
-			this.element().onblur = function () {
+			this._.element.onblur = function () {
 				_this._dispatchEvent( new FocusEvent( FocusEvent.OUT ), _this );
 			};
-			this.element().onchange = function () {
+			this._.element.onchange = function () {
 				_this._dispatchEvent( new Event( Event.CHANGE ), _this );
 			};
 			
-			this.visible( this.element().style.display != 'none' );
-			this.element().style.position = 'absolute';
-			this.element().style.whiteSpace = 'nowrap';
-			this.element().style.minWidth = 0;
-			this.element().style.minHeight = 0;
+			this.visible( this._.element.style.display != 'none' );
+			this._.element.style.position = 'absolute';
+			this._.element.style.whiteSpace = 'nowrap';
+			this._.element.style.minWidth = 0;
+			this._.element.style.minHeight = 0;
 			
 		},
 		_dispatchMouseEvent : function( event ) {
@@ -95,7 +94,7 @@
 			if ( value === undefined ) {
 				return this._.mouseX;
 			};
-			this._.mouseX = value - this.x();
+			this._.mouseX = value - this._.x;
 			for( var child in this.children ) {
 				child.mouseX( this.mouseX() );
 			};
@@ -105,7 +104,7 @@
 			if ( value === undefined ) {
 				return this._.mouseY
 			};
-			this._.mouseY = value - this.y();
+			this._.mouseY = value - this._.y;
 			for( var child in this.children ) {
 				child.mouseY( this.mouseY() );
 			};
@@ -115,19 +114,29 @@
 				return this._.name;
 			};
 			this._.name = value;
-			if( this.element() ) {
-				this.element().id = this.name();
+			if( this._.element ) {
+				this._.element.id = this._.name;
+			};
+		},
+		private_stage : null,
+		stage : function( value ) {
+			if ( value === undefined ) {
+				return this._.stage;
+			};
+			this._.stage = value;
+			for ( index in this._.children ) {
+				if( this._.children[ index ] ) {
+					this._.children[ index ].stage( this._.stage );
+				};
 			};
 		},
 		parent : function( value ) {
 			if ( value === undefined ) {
-				return this._parent;
+				return this._.parent;
 			};
-			// _trace( 'storing', value, 'as parent of', this );
-			this._parent =  value;
-			// _trace( 'setting stage of', this, 'to', this.parent().stage() );
+			this._.parent =  value;
 			
-			this.stage( this.parent() ? this.parent().stage() : null );
+			this.stage( this._.parent ? this._.parent.stage() : null );
 		},
 		private_children : [],
 		contains : function( potentialChild ) {
@@ -143,12 +152,13 @@
 			return false;
 		},
 		addChild : function( child ) {
+_debug( this, 'addChild', child, child._.element, child.element(), child.element );
 			if( child !== this ){
 				if( child instanceof DisplayObject ) {
-					if ( child.parent() != null) {
+					if ( child.parent() != null ) {
 						child.parent().removeChild( child );
 					};
-					this.element().appendChild( child.element() );
+					this._.element.appendChild( child.element() );
 					child.element().style.zIndex =  this._.children.length;
 					child.parent( this );
 					this._.children.push( child );
@@ -156,38 +166,27 @@
 					_trace( child , 'is not a' , DisplayObject );
 				};
 				this._measure( true );
-			}else{
+			} else {
 				throw new Error('You cannot addChild something to itself.')
 			};
 		},
 		_measure : function ( shrunk ) {
+// _debug( this, '_measure', shrunk );
 			if( shrunk ) {
-				this.width( 0 );
-				this.height( 0 );
+				this._.element.style.width = '0px'
+				this._.element.style.height = '0px'
 			}
 			for ( var index in this._.children ){
 				var child = this._.children[ index ];
-				this.width( Math.max( this.width()  , child.x() + child.width() ) );
-				this.height( Math.max( this.height(), child.y() + child.height() ) );
+				this._.element.style.width = Math.max( this.width(), child.x() + child.width() ) + 'px';
+				this._.element.style.height = Math.max( this.height(), child.y() + child.height() ) + 'px';
 			}
 		},
 		removeChild : function( child ) {
-			this.element().removeChild( child.element() );
+			this._.element.removeChild( child.element() );
 			this._.children.splice( this._.children.indexOf( child ), 1 );
 			child.parent( null );
 			this._measure();
-		},
-		private_stage : null,
-		stage : function( value ) {
-			if ( value === undefined ) {
-				return this._.stage;
-			};
-			this._.stage = value;
-			for ( index in this._.children ) {
-				if( this._.children[ index ] ) {
-					this._.children[ index ].stage( this.stage() );
-				};
-			};
 		},
 		private_x : 0,
 		x : function( value ) {
@@ -195,15 +194,15 @@
 				return this._.x;
 			};
 			this._.x = value;
-			if( this.parent() ) {
-				var inheritedX = ( this.parent() ? this.parent().y() : 0 );
+			if( this._.parent ) {
+				var inheritedX = ( this._.parent ? this._.parent.y() : 0 );
 				var x = value + inheritedX;
-				this.element().style.left = this.x() + 'px';
+				this._.element.style.left = this._.x + 'px';
 				for ( index in this._.children ) {
 					var child = this._.children[ index ];
 					child.x( child._.x );
 				};
-				this.parent()._measure( true );
+				this._.parent._measure( true );
 			};
 		},
 		private_y : 0,
@@ -212,30 +211,30 @@
 				return this._.y;
 			};
 			this._.y = value;
-			if( this.parent() ) {
-				var inheritedY = ( this.parent() ? this.parent().y() : 0 );
+			if( this._.parent ) {
+				var inheritedY = ( this._.parent ? this._.parent.y() : 0 );
 				var y = value + inheritedY;
-				this.element().style.top = this.y() + 'px';
+				this._.element.style.top = this._.y + 'px';
 				for ( index in this._.children ) {
 					var child = this._.children[ index ];
 					child.y( child._.y );
 				};
-				this.parent()._measure( true );
+				this._.parent._measure( true );
 			};
 		},
 		height : function( value ) {
 			if( value === undefined ){
-				return Number( this.element().offsetHeight );
+				return Number( this._.element.offsetHeight );
 			}
-			this.element().style.height = value +'px';
-			this.parent() ? this.parent()._measure() : 0;
+			this._.element.style.height = value +'px';
+			this._.parent ? this._.parent._measure() : 0;
 		},
 		width : function( value ) {
 			if( value === undefined ){
-				return Number( this.element().offsetWidth );
+				return Number( this._.element.offsetWidth );
 			};
-			this.element().style.width = value + 'px';
-			this.parent() ? this.parent()._measure() : 0;
+			this._.element.style.width = value + 'px';
+			this._.parent ? this._.parent._measure() : 0;
 		},
 		private_alpha : 1,
 		alpha : function ( value ) {
@@ -243,34 +242,34 @@
 				return this._.alpha;
 				
 			};
-			this.element().style.opacity = value;
-	   		// this.element().style.filter = 'alpha(opacity=' + value * 100 + ')';
+			this._.element.style.opacity = value;
+	   		// this._.element.style.filter = 'alpha(opacity=' + value * 100 + ')';
 	   		this._.alpha = value;
 		},
 		private_visible : null,
 		visible : function( value ) {
 			if ( value === undefined ) {
 				if(this._.value === null){
-					this._.visible = this.element().style.display != 'none';
+					this._.visible = this._.element.style.display != 'none';
 				};
 				return this._.visible;
 			};
 			this._.visible = value;
-			this.element().style.display = this.visible() ? 'block' : 'none';
+			this._.element.style.display = this._.visible ? 'block' : 'none';
 			for( index in this._.children ) {
-				this._.children[ index ].visible( this.visible() );
+				this._.children[ index ].visible( this._.visible );
 			};
 			
 		},
 		autoAlpha : function (value) {
 			if ( value === undefined ) {
-				return this.alpha();
+				return this._.name;
 			}
 			this.alpha( value );
-			this.visible( this.alpha() > 0 );
+			this.visible( this._.name > 0 );
 		},
 		toString : function () {
-			return ( this.name() ) || this._super.toString();
+			return ( this._.name ) || this._super.toString();
 		}
 	})
 );
