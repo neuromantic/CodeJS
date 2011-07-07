@@ -33,7 +33,7 @@ _package( 'com.fasejs.display',
 			window.onresize = function ( e ) { _this._dispatchEvent( new Event( Event.RESIZE, _this) ) }
 // _debug( 'Stage constructed.')
 		},
-		_measure : function () {},
+		private_measure : function () {},
 		// onMouseMove : function ( event ) {
 			// this.mouseX( event.mouseX );
 			// this.mouseY( event.mouseY );

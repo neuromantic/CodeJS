@@ -1,7 +1,7 @@
  /*!
  *
  * Site.js
- * com.sitejs.Site.js
+ * com.neuromantic.proto.Site
  * 
  * http://fasejs.com/
  *
@@ -9,26 +9,22 @@
  * Licensed under the MIT license.
  *
  */
-_package( 'com.sitejs', 
+_package( 'com.neuromantic.proto', 
 
+	_import( 'com.neuromantic.proto.ExecSprite' ),
 	_import( 'com.fasejs.display.Stage' ),
 	
-	_class( 'Site', {
-		stage : null,
+	_class( 'Site' )._extends( 'ExecSprite', {
 		Site : function () {
-			this.stage = new Stage( document.body );
-			this.setup();
-			this.build();
-			this.addEvents();
-			this.init();
-			this.layout();
-			this.start();
+			this._super( document.body );
+			this.stage( new Stage( document.body ) );
+			this.exec();
+_debug( 'Site constructed.')
 		},
-		setup : function () {},
-		build : function () {},
-		addEvents : function () {},
-		init : function () {},
-		layout : function () {},
-		start : function () {}
-	}
-));
+		private_measure : function () {},
+		_addEvents : function () {
+			this._super._addEvents();
+		}//,
+	})
+)
+	

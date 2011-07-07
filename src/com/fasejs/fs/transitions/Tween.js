@@ -30,7 +30,6 @@ _package( 'com.fasejs.fs.transitions',
 // // _debug( 'Tween.to', target, duration, properties );
 			var tween = new Tween( target, duration, properties );
 		},
-		
 		static_delayedCall : function( delay, toCall, scope ) {
 			var tween = new Tween( 'delayedCall' , 0, { delay : delay, onComplete : toCall, scope : scope } );
 		},
@@ -45,7 +44,6 @@ _package( 'com.fasejs.fs.transitions',
 			};
 			var tween = new Tween( target, duration, deltaProperties );
 		},
-
 		static_from : function( target, duration, properties ) {
 			var originalProperties = {};
 			for ( var propertyName in properties ) {
@@ -58,10 +56,9 @@ _package( 'com.fasejs.fs.transitions',
 			};
 			var tween = new Tween( target, duration, originalProperties );
 		},
-		
 		Tween : function( target, duration, properties ) {
 			this._super( 1000 / Tween.frameRate );
-			this.addEventListener( TimerEvent.TIMER, this._timerHandler );
+			this.addEventListener( TimerEvent.TIMER, this._.timerHandler );
 			this._.target = target;
 			this._.tweenDuration = duration;
 			this._.toProperties = properties;
@@ -89,36 +86,33 @@ _package( 'com.fasejs.fs.transitions',
 			  };
 			
 		},
-		  _currentTime : function () {
-			  // var seconds = seconds
-				  return Date.now() * 0.001;
-			  },
-  			
-			  _elapsedTime : function () {
-				  return this._currentTime() - this._.startTime;
-			  },
-  			
-			  kill : function ( finish ) {
-				  if( this._.delayTimer ){
-					  this._.delayTimer.stop();
-					  this._.delayTimer = null;
-				  }
-				  this.stopTween( finish )
-			  },
-  			
-			  private_delayTimer : null,
-			  _timerHandler : function( event ){
-				  event.target.updateTween();
-			  },
-  			
-			  startTween : function () {
-  // _debug( 'starting tween of', this._.target );
+	 	private_currentTime : function () {
+		  // var seconds = seconds
+			  return Date.now() * 0.001;
+	  	},
+		private_elapsedTime : function () {
+			  return this._.currentTime() - this._.startTime;
+		},
+	  	kill : function ( finish ) {
+		  if( this._.delayTimer ){
+			  this._.delayTimer.stop();
+			  this._.delayTimer = null;
+		  }
+		  this.stopTween( finish )
+		 },
+		
+	  	private_delayTimer : null,
+	  	private_timerHandler : function( event ){
+			event.target.updateTween();
+		},
+  		startTween : function () {
+  _debug( 'starting tween of', this._.target );
 				  this._dispatchEvent( new TweenEvent( TweenEvent.START , this ) );
-				  this._.startTime = this._currentTime();
+				  this._.startTime = this._.currentTime();
 				  for ( var propertyName in this._.toProperties ) {
 					  if( Tween.SPECIAL_PROPERTIES.indexOf( propertyName ) < 0 ){
 						  this._.fromProperties[ propertyName ] = this._.target._get( propertyName );
-  // _debug( this._.target, propertyName, ':', this._.fromProperties[ propertyName ], '-->', this._.toProperties[ propertyName ], 'over',this._.tweenDuration,'s' );
+  _debug( this._.target, propertyName, ':', this._.fromProperties[ propertyName ], '-->', this._.toProperties[ propertyName ], 'over',this._.tweenDuration,'s' );
 					  }
 				  };
 				  if ( this.tweenDuration === 0 ) {
@@ -127,24 +121,24 @@ _package( 'com.fasejs.fs.transitions',
 				  this.start();
 			  },
 			  updateTween : function () {
-  // _debug( 'updating tween of', this._.target );
+  _debug( 'updating tween of', this._.target );
 			  this._dispatchEvent( new TweenEvent( TweenEvent.UPDATING , this ) );
 			  var previousValues  = {};
 			  for ( var propertyName in this._.toProperties ) { //all equations use this signature  t: current time, b: beginning value, c: change in value, d: duration
 					  if( Tween.SPECIAL_PROPERTIES.indexOf( propertyName ) < 0 ){
-						  var newValue = this._.easing( this._elapsedTime(), this._.fromProperties[ propertyName ], this._.toProperties[ propertyName ] - this._.fromProperties[ propertyName ], this._.tweenDuration );
+						  var newValue = this._.easing( this._.elapsedTime(), this._.fromProperties[ propertyName ], this._.toProperties[ propertyName ] - this._.fromProperties[ propertyName ], this._.tweenDuration );
 						  previousValues[ propertyName ] = this._.target._get(propertyName);
 						  this._.target._set( propertyName , newValue );
-  // _debug( String( this._elapsedTime() ).substr(0,5),'s', this._.target, propertyName, ':',previousValues[ propertyName ], '-->', this._.target._get( propertyName ) );
+  _debug( String( this._.elapsedTime() ).substr(0,5),'s', this._.target, propertyName, ':',previousValues[ propertyName ], '-->', this._.target._get( propertyName ) );
 					  }
 				  };
 				  this._dispatchEvent( new TweenEvent( TweenEvent.UPDATE , this, previousValues ) );
-				  if( this._elapsedTime() >= this._.tweenDuration ) {
+				  if( this._.elapsedTime() >= this._.tweenDuration ) {
 					  return this.stopTween( true );
 				  };
 			  },
 			  stopTween : function ( finish ) {
-  // _debug( 'stopping tween of', this._.target );
+  _debug( 'stopping tween of', this._.target );
 			  if( finish ) {
 				  for( var propertyName in this._.toProperties ) {
 					  if( Tween.SPECIAL_PROPERTIES.indexOf( propertyName ) < 0 ){

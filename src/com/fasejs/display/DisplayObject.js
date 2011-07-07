@@ -43,19 +43,19 @@
 			};
 			var _this = this;
 			this._.element.onmouseover = function( e ) {
-				 _this._dispatchMouseEvent( new MouseEvent( MouseEvent.OVER, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				 _this._.dispatchMouseEvent( new MouseEvent( MouseEvent.OVER, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this._.element.onmouseout = function( e ) {
-				 _this._dispatchMouseEvent( new MouseEvent( MouseEvent.OUT, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				 _this._.dispatchMouseEvent( new MouseEvent( MouseEvent.OUT, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this._.element.onmousedown = function ( e ) {
-				 _this._dispatchMouseEvent( new MouseEvent( MouseEvent.DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				 _this._.dispatchMouseEvent( new MouseEvent( MouseEvent.DOWN, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this._.element.onmouseup = function ( e ) {
-				_this._dispatchMouseEvent( new MouseEvent( MouseEvent.UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				_this._.dispatchMouseEvent( new MouseEvent( MouseEvent.UP, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this._.element.onclick = function ( e ) {
-				_this._dispatchMouseEvent( new MouseEvent( MouseEvent.CLICK, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
+				_this._.dispatchMouseEvent( new MouseEvent( MouseEvent.CLICK, MouseEvent.mouseX( e ), MouseEvent.mouseY( e ) ) ); 
 			};
 			this._.element.onkeydown = function ( e ) { 
 				_this._dispatchEvent( new KeyboardEvent( KeyboardEvent.DOWN ) ); 
@@ -83,7 +83,7 @@
 			this._.element.style.minHeight = 0;
 			
 		},
-		_dispatchMouseEvent : function( event ) {
+		private_dispatchMouseEvent : function( event ) {
 			if( this._.mouseEnabled ) {
 				event.target = this;
 				this._dispatchEvent( event );
@@ -114,6 +114,7 @@
 				return this._.name;
 			};
 			this._.name = value;
+			this.toString = this.name
 			if( this._.element ) {
 				this._.element.id = this._.name;
 			};
@@ -165,12 +166,12 @@ _debug( this, 'addChild', child, child._.element, child.element(), child.element
 				}else{
 					_trace( child , 'is not a' , DisplayObject );
 				};
-				this._measure( true );
+				this._.measure( true );
 			} else {
 				throw new Error('You cannot addChild something to itself.')
 			};
 		},
-		_measure : function ( shrunk ) {
+		private_measure : function ( shrunk ) {
 // _debug( this, '_measure', shrunk );
 			if( shrunk ) {
 				this._.element.style.width = '0px'
@@ -186,7 +187,7 @@ _debug( this, 'addChild', child, child._.element, child.element(), child.element
 			this._.element.removeChild( child.element() );
 			this._.children.splice( this._.children.indexOf( child ), 1 );
 			child.parent( null );
-			this._measure();
+			this._.measure();
 		},
 		private_x : 0,
 		x : function( value ) {
@@ -202,7 +203,7 @@ _debug( this, 'addChild', child, child._.element, child.element(), child.element
 					var child = this._.children[ index ];
 					child.x( child._.x );
 				};
-				this._.parent._measure( true );
+				this._.parent._.measure( true );
 			};
 		},
 		private_y : 0,
@@ -219,7 +220,7 @@ _debug( this, 'addChild', child, child._.element, child.element(), child.element
 					var child = this._.children[ index ];
 					child.y( child._.y );
 				};
-				this._.parent._measure( true );
+				this._.parent._.measure( true );
 			};
 		},
 		height : function( value ) {
@@ -227,14 +228,14 @@ _debug( this, 'addChild', child, child._.element, child.element(), child.element
 				return Number( this._.element.offsetHeight );
 			}
 			this._.element.style.height = value +'px';
-			this._.parent ? this._.parent._measure() : 0;
+			this._.parent ? this._.parent._.measure() : 0;
 		},
 		width : function( value ) {
 			if( value === undefined ){
 				return Number( this._.element.offsetWidth );
 			};
 			this._.element.style.width = value + 'px';
-			this._.parent ? this._.parent._measure() : 0;
+			this._.parent ? this._.parent._.measure() : 0;
 		},
 		private_alpha : 1,
 		alpha : function ( value ) {
@@ -263,13 +264,13 @@ _debug( this, 'addChild', child, child._.element, child.element(), child.element
 		},
 		autoAlpha : function (value) {
 			if ( value === undefined ) {
-				return this._.name;
+				return this._.alpha;
 			}
 			this.alpha( value );
-			this.visible( this._.name > 0 );
-		},
-		toString : function () {
-			return ( this._.name ) || this._super.toString();
-		}
+			this.visible( this._.alpha > 0 );
+		},// },
+		// toString : function () {
+			// return ( this._.name ) || this._super.toString();
+		// }
 	})
 );

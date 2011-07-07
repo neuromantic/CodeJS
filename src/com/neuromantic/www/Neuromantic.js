@@ -1,4 +1,4 @@
-_package( 'com.neuromantic',
+_package( 'com.neuromantic.www',
 
 	_import( 'com.fasejs.fs.transitions.Tween'),
 	_import( 'com.fasejs.fs.transitions.Easing'),
@@ -13,7 +13,7 @@ _package( 'com.neuromantic',
 	_import( 'com.browserjs.dom.form.EmailInput' ),
 	_import( 'com.browserjs.dom.form.TextArea' ),
 	_import( 'com.browserjs.dom.form.SubmitButton' ),
-	_import( 'com.sitejs.Site' ),
+	_import( 'com.neuromantic.proto.Site' ),
 	
 	_class( 'Neuromantic' )._extends( 'Site', {	
 		private_bg : null,
@@ -24,20 +24,23 @@ _package( 'com.neuromantic',
 		private_sender : null,
 		private_message : null,
 		private_submit : null,
+		private_thanks : null,
 		private_feedback : null,
 		private_graphic : null,
 		private_footer : null,
-		
-		setup : function () {
+
+		_setup : function () {
+			this._super._setup();
 			Tween.defaultEasing = Easing.easeOutCubic;
 		},
-		build : function () {
+		_build : function () {
+			this._super._build();
 			this._.bg = new Sprite();
 			this._.bg.name( 'bg' );
-			this.stage.addChild( this._.bg );
+			this.addChild( this._.bg );
 			this._.form = new Sprite();
 			this._.form.name( 'form' );
-			this.stage.addChild( this._.form );
+			this.addChild( this._.form );
 			this._.header = new TextField( 'Neuromantic makes software.' );// 'Code.js'
 			this._.header.name( 'header' );
 			this._.subhead = new TextField( 'Contact us:' );//'Class / Object : Development Environment.'
@@ -52,74 +55,68 @@ _package( 'com.neuromantic',
 			this._.submit.name( 'submit' );
 			this._.feedback = new TextField( 'feedback readout' );
 			this._.feedback.name( 'feedback' );
-			this._.graphics = new Loader( 'img/diagonal.png' );
-			this.stage.addChild( this._.graphics );
+			this._.graphic = new Loader( 'img/diagonal.png' );
+			this.addChild( this._.graphic );
 			this._.footer = new TextField( '&copy; 2011 Neuromantic LLC. All rights reserved.' );
-			this.stage.addChild( this._.footer );
+			this.addChild( this._.footer );
 			this._.footer.name( 'footer' );
 		},
-		addEvents : function () {
-			var _this = this;
-			this._.email.addEventListener( ValidationEvent.VALID, function () { 
-				var animated = (! this._.form.contains( _this._.sender ) );
-				this._.form.addChild( _this._.sender );
-				this.layout( animated, function () {
-					Tween.to( _this._.sender, 0.2, { alpha : 1, delay : 0.1 } );
-				} );
-			} , this );
-			var inputs = [ this._.sender, this._.message, this._.submit ];
+		private_showNextInput : function ( event ) {
+			var inputs = [this._.email, this._.sender, this._.message, this._.submit ];
+			var index = inputs.indexOf( event.target );
+			var nextInput = inputs[ Number( index ) + 1 ];
+			if ( nextInput ) {
+				var animated = (! this._.form.contains( nextInput ) );
+				this._.form.addChild( nextInput );
+				this._layout( animated, function () {
+					Tween.to( nextInput, 0.2, { alpha : 1, delay : 0.1 } );
+				} );// layout
+			};//if
+		},
+		_addEvents : function () {
+			this._super._addEvents();
+			this.stage().addEventListener( Event.RESIZE, function( event ) { this._layout( false ) } );
+			var inputs = [this._.email, this._.sender, this._.message, this._.submit ];
 			for ( var index in inputs ) {
 				var input = inputs[ index ];
 				var nextInput = inputs[ Number( index ) + 1 ];
 				if ( nextInput ) {
-					input.addEventListener( ValidationEvent.VALID, (function( nextInput ){
-						return function () { 
-_debug( this, 'is valid. Tweening', nextInput )
-							var animated = (! this._.form.contains( nextInput ) );
-							this._.form.addChild( nextInput );
-							this.layout( animated, ( function ( nextInput ) { 
-								return function () { 
-_debug( this, 'layout complete. Ready to tween,', nextInput )
-									Tween.to( nextInput, 0.2, { alpha : 1, delay : 0.1 } ); 
-								} 
-							} )( nextInput ) );//layout
-						};
-					} )( nextInput ), _this );//event
+					input.addEventListener( ValidationEvent.VALID, this._.showNextInput );
 				};//if
 			};//for
 			
-			this._.submit.addEventListener(  MouseEvent.CLICK, submit_clickHandler, this );
-			function submit_clickHandler ( event ) {
-				event.target.removeEventListener(  MouseEvent.CLICK, submit_clickHandler );
-				var variables = this.validateForm();
-				if (variables) {
-					var varSend = new URLRequest("contactForm.php", 'POST', variables );
-					var varLoader = new URLLoader();
-					// varLoader.dataFormat = URLLoaderDataFormat.VARIABLES;
-					varLoader.addEventListener(LoadingEvent.COMPLETE, varLoader_completeHandler, this );
-					varLoader.load(varSend);
-				};
-			};
-			function varLoader_completeHandler( event ) {
-				event.target.removeEventListener(LoadingEvent.COMPLETE, varLoader_completeHandler);
-				this._.feedback.text( ( event.data == 'win' ) ? 'We\'ll be in touch.' : 'Something went wrong.<br>Please try <a href = "mailto:info@neuromantic.com">info@neuromantic.com</a>.' );
-				this.layout( false );
-				Tween.to( this._.submit, 0.2, { x : this._.submit.x() +  this._.message.width() - this._.submit.width() - 5, onComplete  : this.hideForm, scope : this  } );
-				Tween.delayedCall( 0.5, this.endFrame, this );
+			this._.submit.addEventListener(  MouseEvent.CLICK, this._.submit_clickHandler );
+		},
+		private_submit_clickHandler : function ( event ) {
+			event.target.removeEventListener(  MouseEvent.CLICK, this._.submit_clickHandler );
+			var variables = this._.validateForm();
+			if (variables) {
+				var varSend = new URLRequest("contactForm.php", 'POST', variables );
+				var varLoader = new URLLoader();
+				// varLoader.dataFormat = URLLoaderDataFormat.VARIABLES;
+				varLoader.addEventListener(LoadingEvent.COMPLETE, this._.varLoader_completeHandler, this );
+				varLoader.load(varSend);
 			};
 		},
-		endFrame : function(){
+		 private_varLoader_completeHandler : function( event ) {
+			event.target.removeEventListener( LoadingEvent.COMPLETE, this._.varLoader_completeHandler );
+			this._.feedback.text( ( event.data == 'win' ) ? 'We\'ll be in touch.' : 'Something went wrong.<br>Please try <a href = "mailto:info@neuromantic.com">info@neuromantic.com</a>.' );
+			this._layout( false );
+			Tween.to( this._.submit, 0.2, { x : this._.submit.x() +  this._.message.width() - this._.submit.width() - 5, onComplete  : this._.hideForm,  } );
+			Tween.delayedCall( 0.5,  this._.endFrame);
+		},
+		private_endFrame : function(){
 				var components = [ this._.header, this._.subhead, this._.email, this._.message, this._.submit, this._.sender ];
 				for( var index in components ){
 					index = Number( index );
 					var component = components[ index ];
 					this._.form.removeChild( component );
 				};
-				this.stage.addChild( this._.feedback )
-				this.layout( false );
+				this.addChild( this._.feedback )
+				this._layout( false );
 				Tween.to( this._.feedback, 0.2, { alpha : 1 } );
 		},
-		hideForm : function( event ) {
+		private_hideForm : function( event ) {
 				var components = [ this._.header, this._.subhead, this._.email, this._.sender, this._.message, this._.submit  ];
 				for( var index in components ){
 					index = Number( index );
@@ -127,7 +124,7 @@ _debug( this, 'layout complete. Ready to tween,', nextInput )
 					( function ( index, component ) { Tween.to( component, 0.2, { delay : ( index * 0.02 ), alpha : 0 } ) } )( index, component );
 				};
 		},
-		validateForm : function () {
+		private_validateForm : function () {
 			var variables = {};
 			if (! this._.email.valid() ) return false;
 			variables.senderEmail = this._.email.text();
@@ -137,15 +134,18 @@ _debug( this, 'layout complete. Ready to tween,', nextInput )
 			variables.senderMessage = this._.message.text();
 			return variables;
 		},
-		init : function () {
-			var components = [ this._.header, this._.subhead, this._.email, this._.message, this._.submit, this._.graphics, this._.sender, this._.feedback ];
+		_init : function () {
+			this._super._init();
+			var components = [ this._.header, this._.subhead, this._.email, this._.message, this._.submit, this._.graphic, this._.sender, this._.feedback ];
 			for( var index in components ) {
 				index = Number( index );
 				var component = components[ index ];
 				component.alpha( 0 );
 			};
 		},
-		layout : function ( animated , callback ) {
+		_layout : function ( animated , callback ) {
+			callback ? callback = _.util.scope( callback, this ) : 0;
+			this._super._layout();
 			this._.bg.x( 10 );
 			this._.bg.y( 10 );
 			this._.form.width( 280 );
@@ -155,7 +155,7 @@ _debug( this, 'layout complete. Ready to tween,', nextInput )
 				textInput.width( 270 ); // (padding) 
 			}
 			this._.message.height( 270 );
-			this._.bg.width(  Math.max( this.stage.width() - 20, 300 ) );
+			this._.bg.width(  Math.max( this.width() - 20, 300 ) );
 			var y = 0
 			var bottom = y;
 			var components = [ this._.header, this._.subhead, this._.email, this._.sender, this._.message, this._.submit ];
@@ -169,23 +169,23 @@ _debug( this, 'layout complete. Ready to tween,', nextInput )
 				 }
 			}
 			this._.form.height( bottom );
-			this._.form.x( Math.max( 20, ( this.stage.width() - 300 ) * 0.5 ) );
-			this._.feedback.x( ( this.stage.width() - this._.feedback.width() ) * 0.5 );
-			this._.graphics.x( this._.bg.x() + this._.bg.width() - this._.graphics.width() );
+			this._.form.x( Math.max( 20, ( this.width() - 300 ) * 0.5 ) );
+			this._.feedback.x( ( this.width() - this._.feedback.width() ) * 0.5 );
+			this._.graphic.x( this._.bg.x() + this._.bg.width() - this._.graphic.width() );
 			this._.footer.x(  this._.bg.x() + this._.bg.width() - this._.footer.width() - 10 );
-			var bgH = Math.max( this.stage.height() - 20, this._.form.height() + this._.graphics.height() + 20 );
+			var bgH = Math.max( this.height() - 20, this._.form.height() + this._.graphic.height() + 20 );
 			if ( animated ){ 
 				Tween.to( this._.bg, 0.1, {
 					height     : bgH,
 					onComplete : function() { 
-						callback()
+						callback ? callback() : 0;
 					}//, 
 				} );
 				Tween.to( this._.form, 0.1, { 
-					y			: Math.max( 20, ( this.stage.height() - this._.form.height() - this._.graphics.height() ) * 0.5 ) 
+					y			: Math.max( 20, ( this.height() - this._.form.height() - this._.graphic.height() ) * 0.5 ) 
 				} );
-				Tween.to( this._.graphics, 0.1, {
-					y          : this._.bg.y() + bgH - this._.graphics.height() 
+				Tween.to( this._.graphic, 0.1, {
+					y          : this._.bg.y() + bgH - this._.graphic.height() 
 				} );
 				Tween.to( this._.footer, 0.1, {
 					y          : this._.bg.y() + bgH - this._.footer.height() - 5 
@@ -193,28 +193,33 @@ _debug( this, 'layout complete. Ready to tween,', nextInput )
 			
 			}else{
 				this._.bg.height( bgH );
-				this._.form.y( Math.max( 20, ( this.stage.height() - this._.form.height() - this._.graphics.height() ) * 0.5 ) );
-				this._.feedback.y( ( this.stage.height() - this._.graphics.height() ) * 0.5 );
-				this._.graphics.y( this._.bg.y() + bgH - this._.graphics.height() );
+				this._.form.y( Math.max( 20, ( this.height() - this._.form.height() - this._.graphic.height() ) * 0.5 ) );
+				this._.feedback.y( ( this.height() - this._.graphic.height() ) * 0.5 );
+				this._.graphic.y( this._.bg.y() + bgH - this._.graphic.height() );
 				this._.footer.y( this._.bg.y() + bgH - this._.footer.height() - 5 );
 				callback ? callback() : 0;
 			}
 		},
 		
-		start : function () {
+		_start : function () {
+			this._super._start();
 			var _this = this;
-			_this.layout(false);
-			Tween.to( _this._.graphics , 0.5, { alpha : 1, delay : 0.1, onComplete : function () { 
+_debug( '1' ,_this._layout );
+			_this._layout(false);
+			Tween.to( _this._.graphic , 0.5, { alpha : 1, delay : 0.1, onComplete : function () { 
 			window.scrollTo(0,1);
-				_this.stage.addChild( _this._.form );
-				_this._.form.addChild( _this._.header )
-				_this.layout( true, function() {
+				_this.addChild( _this._.form );
+				_this._.form.addChild( _this._.header );
+_debug( '2' );
+				_this._layout( true, function() {
 					Tween.to( _this._.header  , 0.5, { alpha : 1, onComplete : function () {
 						_this._.form.addChild( _this._.subhead);
-						_this.layout( true, function() {
+_debug( '3' );
+						_this._layout( true, function() {
 							Tween.to( _this._.subhead , 0.5, { alpha : 1, onComplete : function () {
 								_this._.form.addChild( _this._.email );
-								_this.layout( true, function() {
+_debug( '4' );
+								_this._layout( true, function() {
 									Tween.to( _this._.email   , 0.5, { alpha : 1 } );
 								});
 							}});

@@ -23,13 +23,13 @@ _package( 'com.browserjs.dom.form',
 				return this._.placeholderText;
 			};
 			if( this._.placeholderText == null ) {
-				this.addEventListener( FocusEvent.IN,  this._onFocusIn );
-				this.addEventListener( FocusEvent.OUT, this._onFocusOut );
+				this.addEventListener( FocusEvent.IN,  this._.onFocusIn );
+				this.addEventListener( FocusEvent.OUT, this._.onFocusOut );
 			};
 			value == value || '';
 			this._.placeholderText = value;
 			this.element().setAttribute( 'placeholder', value );
-			this._onFocusOut(); 
+			this._.onFocusOut(); 
 		},
 		text : function ( value ) {
 			if ( value === undefined ){
@@ -43,11 +43,11 @@ _package( 'com.browserjs.dom.form',
 				return this._.placeholderColor;
 			};
 			this._.placeholderColor = value;
-			this._onFocusOut()
+			this._.onFocusOut()
 		},
 		private_styleColor : 0x666666,
 		private_valid : false,
-		valid : function() {
+		valid : function() { // read only
 			return this._.valid;
 		},
 		private_pattern : /\S/i,
@@ -57,8 +57,8 @@ _package( 'com.browserjs.dom.form',
 			};
 _debug( 'setting pattern of', this, 'to', value );
 			this._.pattern = value;
-			this._validate();
-			this.addEventListener( KeyboardEvent.UP, this._validate, this);
+			this._.validate();
+			this.addEventListener( KeyboardEvent.UP, this._.validate, this);
 		},
 		TextInput : function( placeholder, type, validationPattern ){
 //_debug( this, 'TextInput' );
@@ -82,7 +82,7 @@ _debug( 'setting pattern of', this, 'to', value );
 			this.pattern( validationPattern || this._.pattern );
 		},
 //FIXME: grab css color first - wont calculate in some browsers
-		_onFocusOut : function() {
+		private_onFocusOut : function() {
 			if ( (! this.text() ) || ( this.text() == '' ) || ( this.text() == this.placeholderText() ) ) {
 				if( this.placeholderText() !== undefined ){
 					//this._.styleColor //this.textColor(); // store the color here
@@ -91,24 +91,21 @@ _debug( 'setting pattern of', this, 'to', value );
 				};
 			};
 		},
-		_onFocusIn : function() {
+		private_onFocusIn : function() {
 			if( this.text() == this.placeholderText() || this.text() == '' ){
-				// this.text( this.placeholderText() );
-				// Tween.delayedCall( 0, function(){  this.cursorPosition( 0 ); }, this );
-				function onKeyDown( e ) {
-_debug( 'clearing placeholder' );
-					this.removeEventListener( KeyboardEvent.DOWN, onKeyDown, this );
-					if ( this.text() == this.placeholderText() ) { 
-						this.textColor( this._.styleColor );// use stored color here
-					 	this.text('');
-					}
-				}
-				
-				this.addEventListener( KeyboardEvent.DOWN, onKeyDown, this );
+				this.addEventListener( KeyboardEvent.DOWN, this._.onKeyDown );
 				
 			};
 		},
-		_validate : function () {
+		private_onKeyDown : function ( e ) {
+_debug( 'clearing placeholder' );
+			this.removeEventListener( KeyboardEvent.DOWN, this._.onKeyDown );
+			if ( this.text() == this.placeholderText() ) { 
+				this.textColor( this._.styleColor );// use stored color here
+			 	this.text('');
+			}
+		},
+		private_validate : function () {
 			if ( this.text() != this._.placeholderText && this._.pattern instanceof RegExp ){
 				var str = this.text();
 				var filter = this._.pattern;
@@ -125,8 +122,8 @@ _debug( 'clearing placeholder' );
 				};
 			};
 		},
-		_keyUpHandler : function ( event ) {
-			this._validate();
+		private_keyUpHandler : function ( event ) {
+			this._.validate();
 		}//,
 	})
 );
