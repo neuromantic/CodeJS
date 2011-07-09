@@ -17,6 +17,9 @@
 // _debug( 'calling scoped', functionName, scope, fn );
 					 return fn.apply( scope, arguments );
 				}
+			},
+			isMethod : function( property ) {
+				return ( ( typeof property == 'function' ) && ( ! ( property instanceof RegExp ) ) );
 			}
 		},// util
 		loading : {
@@ -230,18 +233,14 @@ if ( this._codeName.indexOf( 'Event' ) < 0 && [ 'Dictionary' ].indexOf( this._co
 };
 				for ( var propertyName in this ){
 					var property = this[ propertyName ];
-					if ( typeof property == 'function' && [  'toString',
-															 '_get',
-															 '_set',
-															 '_add' ].indexOf( propertyName) < 0 ){
-// _debug( 'scoping', propertyName, 'to', this );
+					if ( _.util.isMethod( property ) && [ 'toString', '_get','_set', '_add' ].indexOf( propertyName) < 0 ){
 						this[ propertyName ] = _.util.scope( property, this, propertyName );
 					};//if
 				};//for
 				
 				for ( var propertyName in this._ ){
 					var property = this._[ propertyName ];
-					if ( typeof property == 'function' ){
+					if ( _.util.isMethod( property ) ){
 						this._[ propertyName ] = _.util.scope( property, this );
 					}//if
 				}//for

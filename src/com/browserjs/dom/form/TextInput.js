@@ -61,7 +61,6 @@ _debug( 'setting pattern of', this, 'to', value );
 			this.addEventListener( KeyboardEvent.UP, this._.validate, this);
 		},
 		TextInput : function( placeholder, type, validationPattern ){
-//_debug( this, 'TextInput' );
 			type = type || 'text';
 			this._super( type );
 			if( placeholder ){
@@ -102,11 +101,11 @@ _debug( 'setting pattern of', this, 'to', value );
 			if ( this.text() == this.placeholderText() ) { 
 				this.textColor( this._.styleColor );// use stored color here
 			 	this.text('');
-_debug( 'clearing placeholder' );
+_debug( this, 'clearing placeholder' );
 			}
 		},
 		private_validate : function () {
-_debug( this, 'validating')
+_debug( this, 'validating against', this._.pattern );
 			if ( this.text() != this._.placeholderText && this._.pattern instanceof RegExp ){
 				var str = this.text();
 				var filter = this._.pattern;
