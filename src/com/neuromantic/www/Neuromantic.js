@@ -61,10 +61,11 @@ _package( 'com.neuromantic.www',
 			this.addChild( this._.footer );
 			this._.footer.name( 'footer' );
 		},
-		private_showNextInput : function ( event ) {
+		private_onInputValid : function ( event ) {
 			var inputs = [this._.email, this._.sender, this._.message, this._.submit ];
 			var index = inputs.indexOf( event.target );
 			var nextInput = inputs[ Number( index ) + 1 ];
+			_debug('showing', nextInput)
 			if ( nextInput ) {
 				var animated = (! this._.form.contains( nextInput ) );
 				this._.form.addChild( nextInput );
@@ -73,33 +74,37 @@ _package( 'com.neuromantic.www',
 				} );// layout
 			};//if
 		},
+		
 		_addEvents : function () {
 			this._super._addEvents();
-			this.stage().addEventListener( Event.RESIZE, function( event ) { this._layout( false ) } );
+			this.stage().addEventListener( Event.RESIZE, this._.onStageResize );
 			var inputs = [this._.email, this._.sender, this._.message, this._.submit ];
 			for ( var index in inputs ) {
 				var input = inputs[ index ];
 				var nextInput = inputs[ Number( index ) + 1 ];
 				if ( nextInput ) {
-					input.addEventListener( ValidationEvent.VALID, this._.showNextInput );
+					input.addEventListener( ValidationEvent.VALID, this._.onInputValid );
 				};//if
 			};//for
-			
-			this._.submit.addEventListener(  MouseEvent.CLICK, this._.submit_clickHandler );
+			this._.submit.addEventListener(  MouseEvent.CLICK, this._.onSubmitClick );
 		},
-		private_submit_clickHandler : function ( event ) {
-			event.target.removeEventListener(  MouseEvent.CLICK, this._.submit_clickHandler );
+		
+		private_onStageResize : function( event ) { 
+			this._layout( false );
+		},
+		private_onSubmitClick : function ( event ) {
+			event.target.removeEventListener(  MouseEvent.CLICK, this._.onSubmitClick );
 			var variables = this._.validateForm();
 			if (variables) {
 				var varSend = new URLRequest("contactForm.php", 'POST', variables );
 				var varLoader = new URLLoader();
 				// varLoader.dataFormat = URLLoaderDataFormat.VARIABLES;
-				varLoader.addEventListener(LoadingEvent.COMPLETE, this._.varLoader_completeHandler, this );
+				varLoader.addEventListener(LoadingEvent.COMPLETE, this._.onLoaderComplete, this );
 				varLoader.load(varSend);
 			};
 		},
-		 private_varLoader_completeHandler : function( event ) {
-			event.target.removeEventListener( LoadingEvent.COMPLETE, this._.varLoader_completeHandler );
+		 private_onLoaderComplete : function( event ) {
+			event.target.removeEventListener( LoadingEvent.COMPLETE, this._.onLoaderComplete );
 			this._.feedback.text( ( event.data == 'win' ) ? 'We\'ll be in touch.' : 'Something went wrong.<br>Please try <a href = "mailto:info@neuromantic.com">info@neuromantic.com</a>.' );
 			this._layout( false );
 			Tween.to( this._.submit, 0.2, { x : this._.submit.x() +  this._.message.width() - this._.submit.width() - 5, onComplete  : this._.hideForm,  } );
@@ -204,21 +209,17 @@ _package( 'com.neuromantic.www',
 		_start : function () {
 			this._super._start();
 			var _this = this;
-_debug( '1' ,_this._layout );
 			_this._layout(false);
 			Tween.to( _this._.graphic , 0.5, { alpha : 1, delay : 0.1, onComplete : function () { 
 			window.scrollTo(0,1);
 				_this.addChild( _this._.form );
 				_this._.form.addChild( _this._.header );
-_debug( '2' );
 				_this._layout( true, function() {
 					Tween.to( _this._.header  , 0.5, { alpha : 1, onComplete : function () {
 						_this._.form.addChild( _this._.subhead);
-_debug( '3' );
 						_this._layout( true, function() {
 							Tween.to( _this._.subhead , 0.5, { alpha : 1, onComplete : function () {
 								_this._.form.addChild( _this._.email );
-_debug( '4' );
 								_this._layout( true, function() {
 									Tween.to( _this._.email   , 0.5, { alpha : 1 } );
 								});

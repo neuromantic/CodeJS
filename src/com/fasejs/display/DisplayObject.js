@@ -153,7 +153,7 @@
 			return false;
 		},
 		addChild : function( child ) {
-_debug( this, 'addChild', child, child._.element, child.element(), child.element );
+// _debug( this, 'addChild', child, child._.element, child.element(), child.element );
 			if( child !== this ){
 				if( child instanceof DisplayObject ) {
 					if ( child.parent() != null ) {

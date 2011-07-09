@@ -106,13 +106,13 @@ _package( 'com.fasejs.fs.transitions',
 			event.target.updateTween();
 		},
   		startTween : function () {
-  _debug( 'starting tween of', this._.target );
+  // _debug( 'starting tween of', this._.target );
 				  this._dispatchEvent( new TweenEvent( TweenEvent.START , this ) );
 				  this._.startTime = this._.currentTime();
 				  for ( var propertyName in this._.toProperties ) {
 					  if( Tween.SPECIAL_PROPERTIES.indexOf( propertyName ) < 0 ){
 						  this._.fromProperties[ propertyName ] = this._.target._get( propertyName );
-  _debug( this._.target, propertyName, ':', this._.fromProperties[ propertyName ], '-->', this._.toProperties[ propertyName ], 'over',this._.tweenDuration,'s' );
+  // _debug( this._.target, propertyName, ':', this._.fromProperties[ propertyName ], '-->', this._.toProperties[ propertyName ], 'over',this._.tweenDuration,'s' );
 					  }
 				  };
 				  if ( this.tweenDuration === 0 ) {
@@ -121,7 +121,7 @@ _package( 'com.fasejs.fs.transitions',
 				  this.start();
 			  },
 			  updateTween : function () {
-  _debug( 'updating tween of', this._.target );
+  // _debug( 'updating tween of', this._.target );
 			  this._dispatchEvent( new TweenEvent( TweenEvent.UPDATING , this ) );
 			  var previousValues  = {};
 			  for ( var propertyName in this._.toProperties ) { //all equations use this signature  t: current time, b: beginning value, c: change in value, d: duration
@@ -129,7 +129,7 @@ _package( 'com.fasejs.fs.transitions',
 						  var newValue = this._.easing( this._.elapsedTime(), this._.fromProperties[ propertyName ], this._.toProperties[ propertyName ] - this._.fromProperties[ propertyName ], this._.tweenDuration );
 						  previousValues[ propertyName ] = this._.target._get(propertyName);
 						  this._.target._set( propertyName , newValue );
-  _debug( String( this._.elapsedTime() ).substr(0,5),'s', this._.target, propertyName, ':',previousValues[ propertyName ], '-->', this._.target._get( propertyName ) );
+  // _debug( String( this._.elapsedTime() ).substr(0,5),'s', this._.target, propertyName, ':',previousValues[ propertyName ], '-->', this._.target._get( propertyName ) );
 					  }
 				  };
 				  this._dispatchEvent( new TweenEvent( TweenEvent.UPDATE , this, previousValues ) );
@@ -138,7 +138,7 @@ _package( 'com.fasejs.fs.transitions',
 				  };
 			  },
 			  stopTween : function ( finish ) {
-  _debug( 'stopping tween of', this._.target );
+  // _debug( 'stopping tween of', this._.target );
 			  if( finish ) {
 				  for( var propertyName in this._.toProperties ) {
 					  if( Tween.SPECIAL_PROPERTIES.indexOf( propertyName ) < 0 ){

@@ -98,24 +98,27 @@ _debug( 'setting pattern of', this, 'to', value );
 			};
 		},
 		private_onKeyDown : function ( e ) {
-_debug( 'clearing placeholder' );
 			this.removeEventListener( KeyboardEvent.DOWN, this._.onKeyDown );
 			if ( this.text() == this.placeholderText() ) { 
 				this.textColor( this._.styleColor );// use stored color here
 			 	this.text('');
+_debug( 'clearing placeholder' );
 			}
 		},
 		private_validate : function () {
+_debug( this, 'validating')
 			if ( this.text() != this._.placeholderText && this._.pattern instanceof RegExp ){
 				var str = this.text();
 				var filter = this._.pattern;
 				if (! this._.valid ) {
 					if ( filter.test( str ) ) {
+_debug( this, 'valid');
 						this._.valid = true;
 						this._dispatchEvent( new ValidationEvent( ValidationEvent.VALID ), this );
 					};
 				} else {
 					if (! filter.test( str ) ) {
+_debug( this, 'void');
 						this._.valid = false;
 						this._dispatchEvent( new ValidationEvent( ValidationEvent.VOID ), this );
 					};
@@ -123,6 +126,7 @@ _debug( 'clearing placeholder' );
 			};
 		},
 		private_keyUpHandler : function ( event ) {
+_debug(this,'key up')
 			this._.validate();
 		}//,
 	})
