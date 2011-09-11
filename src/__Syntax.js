@@ -1,6 +1,6 @@
 /*!
  *
- * Code.js
+ * Syntax.js
  * http://fasejs.com/
  *
  * Copyright 2011, Neuromantic Industries & For Sure, Rad!
@@ -9,10 +9,10 @@
  */
 (function () {
 	if( window._ ){
-		window._backup_ = { _ : _ }; // baby got bak
+		window._BAK_ = { _ : _ };// baby got bak
 	}
-	window._ = {// * Reserving global._ *
-		codeDebug : false,
+	window._ = {// * Reserving window._ *
+		codeDebug : true,
 		util : {
 			deepCopy : deepCopy,
 			scope : function ( fn, scope, functionName ) {
@@ -95,9 +95,9 @@
 _debug( '_class', codeName );
 				if(! window[ codeName ]._constructor ) { // if class is stub
 					var newClass = Class._plus( codeName, properties );// create the class from ClassObject
-					newClass._extends = function( parentCodeName, properties ) {
-_debug( '_extends', parentCodeName );
-							window[ codeName ] = window[ parentCodeName ]._plus( codeName, properties );
+					newClass._extends = function( parentName, properties ) {
+_debug( '_extends', parentName );
+							window[ codeName ] = window[ parentName ]._plus( codeName, properties );
 						 	window[ codeName ]._codeName = codeName;
 					};// _extends
 					window[ codeName ] = newClass;
@@ -170,8 +170,7 @@ _debug( this.queue.length, 'definitions remain.' );
 		
 	/* 
 	 * 
-	 * Class is a modification of
-	 * 'Class' originally by the immortal John Resig
+	 * Modified Class, original author the immortal John Resig.
 	 * thanks For Sure, Rad!
 	 * 
 	 * http://bit.ly/4U5H
@@ -220,7 +219,7 @@ _debug( this.queue.length, 'definitions remain.' );
 		_.definition.initializing = true;
 		var newPrototype = new this();
 		newPrototype._codeName = codeName;
-		newPrototype.toString = function () { return '[Code '+this._codeName+']'; } 
+		newPrototype.toString = function () { return '[ Instance of ' + this._codeName + ']'; };
 		_.definition.initializing = false;
 		
 		// The dummy class constructor
@@ -315,12 +314,13 @@ if ( this._codeName.indexOf( 'Event' ) < 0 && [ 'Dictionary' ].indexOf( this._co
 		            
 		            // Allow this._super() to call superconstructor, and allow this._super.*() to call the super method
 		            if( propertyName === '_config' ) {
-		            	this._super = _super._config;
+		            	this._super = ( function ( _super) { return function () {
+		            		_super._config.apply( this, arguments );
+		           		}})( _super );
 		            }else{
 		            	this._super = _super;
 		            }
-		            
-		            
+
 		            // The _config method only need to be bound temporarily, so we
 		            // remove it when we're done executing
 		            var ret = fn.apply( this, arguments );        
@@ -338,18 +338,6 @@ if ( this._codeName.indexOf( 'Event' ) < 0 && [ 'Dictionary' ].indexOf( this._co
 			attachTarget[ propertyName ] = property;
 _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 		}
-		// TODO: getter/setters proper
-		// for ( var index in getSetters ) {
-			// var getSetterName = getSetters[index];
-			// newPrototype[ getSetterName ] = (function ( getFunction, setFunction ) { return function ( value ) {
-				// getFunction = getFunction || function () {};
-				// setFunction = getFunction || function () {};
-				// if ( value === undefined ) {
-					// return getFunction.call( this )
-				// }
-				// setFunction.apply( this, value );
-			// } } )( additions['get_' + getSetterName ] )( additions[ 'set_' + getSetterName ] );
-		// }
 		// Populate our constructed prototype object
 		ClassObject.prototype = newPrototype;
 		
@@ -363,17 +351,17 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 	};
 			
 			
-	window.Code = function( applicationCodePath ) {
-_debug( 'starting Code with application', applicationCodePath );
-		var applicationCodeName = applicationCodePath.split( '.' ).pop();
-		_.application = ( function( applicationCodeName ) {
+	window.Syntax = function( applicationPath ) {
+_debug( 'starting Syntax with application', applicationPath );
+		var applicationName = applicationPath.split( '.' ).pop();
+		_.application = ( function( applicationName ) {
 			return function () {
-_debug( 'starting', applicationCodeName )
-			 	_.application = new window[ applicationCodeName ]();
+_debug( 'starting', applicationName )
+			 	_.application = new window[ applicationName ]();
 			}// return function
-		} )( applicationCodeName );//closure
-		_import( applicationCodePath );
-		window.Code = window._
+		} )( applicationName );//closure
+		_import( applicationPath );
+		window.Syntax = window._
 	}
 _debug('code ready.')
 
@@ -422,7 +410,7 @@ _debug('code ready.')
 		for ( var key in config ) this[key] = config[key];
 	};
 	DeepCopier.prototype = {
-		CodeConstructor: DeepCopier,
+		Constructor: DeepCopier,
 		canCopy: function(source) { return false; },
 		create: function(source) { },
 		populate: function(deepCopyAlgorithm, source, result) {}
@@ -436,7 +424,7 @@ _debug('code ready.')
 		this.depth = 0;
 	 };
 	DeepCopyAlgorithm.prototype = { 
-		CodeConstructor : DeepCopyAlgorithm,
+		Constructor : DeepCopyAlgorithm,
 		maxDepth : 256,			
 		cacheResult : function(source, result) {
 			this.copiedObjects.push([source, result]);
@@ -584,7 +572,7 @@ _debug('code ready.')
 		populate: function(deepCopy, source, result) {
 			for ( var i in source._keys ){
 				result._keys[ i ] = source._keys[ i ];
-				result._values[ i ] = deepCopy( source.values[ i ])
+				result._values[ i ] = deepCopy( source.values[ i ] );
 			};
 		}
 	});
