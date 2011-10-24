@@ -1,6 +1,6 @@
 # Code.js
 
-## Welcome to Web 3.0
+## Welcome to CodeJS
 
 
  
@@ -13,7 +13,7 @@
 ## Why?
 
   * We want to put the art back into front end development, and allow creative coders to focus on more beautiful things than cross-browser development, or copying and pasting old XHTML, CSS, JS, etc.
-  * Code( 'MyApp.js') { provides HTML5 *without* hiccups.
+  * Code( 'MyApp') { provides HTML5 *without* hiccups.
   
 ## What does it get me?
   * Create classes AS3-style, then import them at runtime to extend and use them in other classes.
