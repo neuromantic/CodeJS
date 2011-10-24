@@ -28,23 +28,23 @@
    
 ## What's it Like?
 
-  `_package( '',
-   _import( 'com.fasejs.fs.transitions.Tween'),
-   _import( 'com.fasejs.fs.transitions.Easing'),
-   _import( 'com.fasejs.display.Sprite' ),
-   _import( 'com.fasejs.net.URLLoader' ),
-   _import( 'com.fasejs.net.URLRequest' ),
-   _import( 'com.fasejs.display.Loader' ),
-   _import( 'com.fasejs.text.TextField' ),
-   _import( 'com.fasejs.events.Event' ),
-   _import( 'com.fasejs.events.MouseEvent' ),
-   _import( 'com.fasejs.events.LoadingEvent' ),
-   _import( 'com.browserjs.dom.form.EmailInput' ),
-   _import( 'com.browserjs.dom.form.TextArea' ),
-   _import( 'com.browserjs.dom.form.SubmitButton' ),
-   _import( 'com.neuromantic.proto.Site' ),
+    _package( '',
+        _import( 'com.fasejs.fs.transitions.Tween'),
+        _import( 'com.fasejs.fs.transitions.Easing'),
+        _import( 'com.fasejs.display.Sprite' ),
+        _import( 'com.fasejs.net.URLLoader' ),
+        _import( 'com.fasejs.net.URLRequest' ),
+        _import( 'com.fasejs.display.Loader' ),
+        _import( 'com.fasejs.text.TextField' ),
+        _import( 'com.fasejs.events.Event' ),
+        _import( 'com.fasejs.events.MouseEvent' ),
+        _import( 'com.fasejs.events.LoadingEvent' ),
+        _import( 'com.browserjs.dom.form.EmailInput' ),
+        _import( 'com.browserjs.dom.form.TextArea' ),
+        _import( 'com.browserjs.dom.form.SubmitButton' ),
+        _import( 'com.neuromantic.proto.Site' ),
   
-   _class('Neuromantic')._extends('Site',`
+        _class('Neuromantic')._extends('Site',
    ... and so on.
   
  
