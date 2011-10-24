@@ -44,7 +44,15 @@
         _import( 'com.browserjs.dom.form.SubmitButton' ),
         _import( 'com.neuromantic.proto.Site' ),
   
-        _class('Neuromantic')._extends('Site',
+        _class('MyApp')._extends('Site', {
+            private_title : null,
+            get_title : function () {
+                return this._.value;
+            },
+            set_title : function ( value ) {
+                this._.title = value;
+                document.title = value;
+            },
    ... and so on.
   
  
