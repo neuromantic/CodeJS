@@ -62,6 +62,7 @@ _debug( 'setting pattern of', this, 'to', value );
 		},
 		TextInput : function( placeholder, type, validationPattern ){
 			type = type || 'text';
+			validationPattern = validationPattern || /\S/i;
 			this._super( type );
 			if( placeholder ){
 				this.placeholderText( placeholder );
@@ -78,7 +79,7 @@ _debug( 'setting pattern of', this, 'to', value );
 					_this._dispatchEvent( new ValidationEvent( ValidationEvent.VOID, _this ) );
 				}
 			} )( this );
-			this.pattern( validationPattern || this._.pattern );
+			this.pattern( validationPattern );
 		},
 //FIXME: grab css color first - wont calculate in some browsers
 		private_onFocusOut : function() {

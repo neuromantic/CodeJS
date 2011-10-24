@@ -15,11 +15,13 @@ _package( 'com.browserjs.dom.form',
 	
 	_class('TextArea')._extends('TextInput', {
 		TextArea : function( placeholder ){
-			this._super();
-			this.element( document.createElement( 'textarea' ) );
-			if( placeholder ){
-				this.placeholderText( placeholder );
+			this._super(placeholder, 'textarea');
+		},
+		multiline : function ( value ) {
+			if (value === undefined){
+				return this._.element.wrap == 'soft' || 'hard' ;
 			}
+			this._.element.wrap = value ? 'soft' : '';
 		}
 	})
 );

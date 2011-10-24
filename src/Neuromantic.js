@@ -42,9 +42,9 @@ _debug('Neuromantic.build()');
 			this._.form = new Sprite();
 			this._.form.name( 'form' );
 			this.addChild( this._.form );
-			this._.header = new TextField( 'Neuromantic makes software.' );// 'Code.js'
+			this._.header = new TextField( 'Neuromantic makes software.' );// 'Syntax.js'
 			this._.header.name( 'header' );
-			this._.subhead = new TextField( 'Contact us:' );//'Class / Object : Development Environment.'
+			this._.subhead = new TextField( 'Contact us:' );// 'Synthesized Actionscript.'
 			this._.subhead.name( 'subhead' );
 			this._.email = new EmailInput( 'enter your email.' );
 			this._.email.name( 'email' );
@@ -215,9 +215,12 @@ _debug('Neuromantic.build()');
 			window.scrollTo( 0, 1 );
 				_this.addChild( _this._.form );
 				_this._.form.addChild( _this._.header );
+				_this._.header.rotation(180);
+				_trace('rotation',_this._.header.rotation());
 				_this._layout( true, function() {
+					Tween.to( _this._.header, 0.5, {rotation : 0} );
 					Tween.to( _this._.header  , 0.5, { alpha : 1, onComplete : function () {
-						_this._.form.addChild( _this._.subhead);
+						_this._.form.addChild( _this._.subhead );
 						_this._layout( true, function() {
 							Tween.to( _this._.subhead , 0.5, { alpha : 1, onComplete : function () {
 								_this._.form.addChild( _this._.email );

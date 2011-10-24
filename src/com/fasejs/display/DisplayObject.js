@@ -14,28 +14,29 @@
  	_import( 'com.fasejs.events.EventDispatcher' ),
  	_import( 'com.fasejs.events.MouseEvent' ),
  	_import( 'com.fasejs.display.Stage' ),
+ 	_import( 'com.jquery.$'),
  	
 	_class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		
 		static_count : 0,
-		private_mouseEnabled : true,
-		mouseEnabled : function( value ) {
-			if ( value === undefined ){
-				return this._mouseEnabled;
-			}
-			this.mouseEnabled = value;
-		},
+		// private_mouseEnabled : true,
+		// get_mouseEnabled : function () {
+			// return this._.mouseEnabled;
+		//},
+		//set_mouseEnabled : function ( value ) {}
+			// this._.mouseEnabled = value;
+		// },
 		DisplayObject : function( hostElement ) {
 			this._super();
 			this.element( hostElement || document.createElement( 'div' ) );
 		},
 		private_element : null,
-		element : function( value ) {
-			if( value === undefined ) {
-				return this._.element;
-			};
+		get_element : function () {
+			return this._.element;
+		},
+		set_element : function ( value ) {
 			this._.element = value;
-			this._.element.className = this._codeName;
+			this._.element.className = this._className;
 			if( this._.element.id ){
 				this.name( this._.element.id )
 			}else if( this._.name ) {
@@ -109,15 +110,14 @@
 				child.mouseY( this.mouseY() );
 			};
 		},
-		name : function( value ) {
-			if( value === undefined ) {
-				return this._.name;
-			};
+		set_name : function( value ) {
 			this._.name = value;
-			this.toString = this.name
 			if( this._.element ) {
 				this._.element.id = this._.name;
 			};
+		},
+		get_name : function () {
+				return this._.name || this;
 		},
 		private_stage : null,
 		stage : function( value ) {
@@ -153,7 +153,6 @@
 			return false;
 		},
 		addChild : function( child ) {
-// _debug( this, 'addChild', child, child._.element, child.element(), child.element );
 			if( child !== this ){
 				if( child instanceof DisplayObject ) {
 					if ( child.parent() != null ) {
@@ -172,7 +171,6 @@
 			};
 		},
 		private_measure : function ( shrunk ) {
-// _debug( this, '_measure', shrunk );
 			if( shrunk ) {
 				this._.element.style.width = '0px'
 				this._.element.style.height = '0px'
@@ -190,10 +188,12 @@
 			this._.measure();
 		},
 		private_x : 0,
-		x : function( value ) {
+		get_x : function( value ) {
 			if ( value === undefined ) {
 				return this._.x;
 			};
+		},
+		set_x : function( value ) {
 			this._.x = value;
 			if( this._.parent ) {
 				var inheritedX = ( this._.parent ? this._.parent.y() : 0 );
@@ -207,11 +207,12 @@
 			};
 		},
 		private_y : 0,
-		y : function( value ) {
-			if ( value === undefined ) {
+		get_y : function () {
 				return this._.y;
-			};
+		},
+		set_y : function( value ) {
 			this._.y = value;
+			
 			if( this._.parent ) {
 				var inheritedY = ( this._.parent ? this._.parent.y() : 0 );
 				var y = value + inheritedY;
@@ -223,38 +224,72 @@
 				this._.parent._.measure( true );
 			};
 		},
-		height : function( value ) {
-			if( value === undefined ){
-				return Number( this._.element.offsetHeight );
+		private_rotation : 0,
+		get_rotation : function () {
+				return this._.rotation;
+		},
+		set_rotation : function ( value ) {
+			$( this._.element ).css( {
+			    'transform': 'rotate('+value+'deg)',
+			    '-moz-transform': 'rotate('+value+'deg)',
+			    '-o-transform': 'rotate('+value+'deg)',
+			    '-webkit-transform': 'rotate('+value+'deg)',
+			});
+			this._.rotation = value;
+			//TODO: remove jQuery dependency, implement cross-browser rotation
+			function degreesToRadians(num) {
+				return (num) * Math.PI / 180;
 			}
+			function createIEMatrixString(M) {
+				return 'M11=' + M.e(1, 1) + ', M12=' + M.e(1,2) + ', M21=' + M.e(2,1) + ', M22=' + M.e(2,2);
+			}
+			function rotateElement(e, deg) {
+				deg_str = deg + "";
+				rotate_transform = "rotate(" + deg + "deg)";
+				matrix_str = createIEMatrixString(Matrix.Rotation(degreesToRadians(deg)));
+				filter_str = "progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', " + matrix_str + ")";
+			
+				e.style["rotation"] = deg_str + "deg"; // CSS3
+				e.style.MozTransform = rotate_transform; // Moz
+				e.style.OTransform = rotate_transform; // Opera
+				e.style.WebkitTransform = rotate_transform; // Webkit/Safari/Chrome
+				e.style.filter = filter_str; // IE 6/7
+				e.style.MsFilter = filter_str; // IE 8
+				e.style["zoom"] = "1"; // ??? Probably IEs
+			}
+			
+		},
+		get_height : function( ) {
+			return Number( this._.element.offsetHeight );
+		},
+		set_height : function( value ) {
 			this._.element.style.height = value +'px';
 			this._.parent ? this._.parent._.measure() : 0;
 		},
-		width : function( value ) {
-			if( value === undefined ){
+		get_width : function () {
 				return Number( this._.element.offsetWidth );
-			};
+		},
+		set_width : function( value ) {
 			this._.element.style.width = value + 'px';
 			this._.parent ? this._.parent._.measure() : 0;
 		},
 		private_alpha : 1,
-		alpha : function ( value ) {
-			if( value === undefined ){
+		get_alpha : function () {
 				return this._.alpha;
-				
-			};
+		},
+		set_alpha : function ( value ) {
 			this._.element.style.opacity = value;
 	   		// this._.element.style.filter = 'alpha(opacity=' + value * 100 + ')';
 	   		this._.alpha = value;
 		},
 		private_visible : null,
-		visible : function( value ) {
-			if ( value === undefined ) {
-				if(this._.value === null){
+		get_visible : function () {
+				if(this._.visible === null){
 					this._.visible = this._.element.style.display != 'none';
 				};
 				return this._.visible;
-			};
+		},
+		set_visible : function ( value ) {
 			this._.visible = value;
 			this._.element.style.display = this._.visible ? 'block' : 'none';
 			for( index in this._.children ) {
@@ -262,15 +297,15 @@
 			};
 			
 		},
-		autoAlpha : function (value) {
-			if ( value === undefined ) {
+		get_autoAlpha : function () {
 				return this._.alpha;
-			}
+		},
+		set_autoAlpha : function (value) {
 			this.alpha( value );
 			this.visible( this._.alpha > 0 );
-		},// },
-		// toString : function () {
-			// return ( this._.name ) || this._super.toString();
-		// }
+		},
+		toString : function () {
+			return ( this._.name ) || this._super.toString();
+		}
 	})
 );
