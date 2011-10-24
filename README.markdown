@@ -18,7 +18,7 @@
 ## Want to Contribute?
   
   * Email `git@neuromantic.com` to be added to the git repo.
-  * `git clone git@github.com:neuromantic/CodeJS/codejs.git`.
+  * `git clone git@github.com:neuromantic/CodeJS.git`.
   
 ## What's it like?
  Actionscript 3.0 on an iPad.
