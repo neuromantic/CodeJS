@@ -1,6 +1,6 @@
 # Code.js
 
-## Welcome to Web 3.0
+## Welcome to CodeJS
 
 
  
