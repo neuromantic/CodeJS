@@ -13,28 +13,13 @@
 ## Why?
 
   * We want to put the art back into front end development, and allow creative coders to focus on more beautiful things than cross-browser development, or copying and pasting old XHTML, CSS, JS, etc.
-  * Code( [ Fase, Site ], function () { provides HTML5 *without* hiccups.
+  * Code( 'MyApp.js') { provides HTML5 *without* hiccups.
   
 ## Want to Contribute?
   
   * Email `git@neuromantic.com` to be added to the git repo.
-  * `git clone git@github.com:FaseJS/fasejs.git`.
+  * `git clone git@github.com:neuromantic/CodeJS/codejs.git`.
   
 ## What's it like?
-    /*!
-     *
-     * Site.js
-     * http://fasejs.com/
-     *
-     * Copyright 2011, Neuromantic Industries & For Sure, Rad!
-     * Licensed under the MIT license.
-     *
-     */
-    (function() {
-        window.onload = function () {
-            Code( [ Fase, Browser ], function(){
-                 var stage = new Stage( new Document( 'body' ) );
+ Actionscript 3.0 on an iPad.
 
-
-  * *[http://FaseJS.com/](http://FaseJS.com/)*
-  * *[http://twitter.com/NeuromanticLLC/](http://twitter.com/NeuromanticLLC/)*
