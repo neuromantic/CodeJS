@@ -8,7 +8,7 @@
  
   * Code.js is a dialect of javascript that will make it natural for AS3 programmers to transition into Web standards.
   * The project aims to be truly cross-browser under the hood, so users will only need to think about their creative goals.
-  * Code.js is a compact js library that faswcilitates another library called Fase.js, a collection of classes familiar to Flash developers for creating and manipulating a DisplayList within the DOM.
+  * Code.js is a compact js library that powers another library called Fase.js, a collection of classes familiar to Flash developers for creating and manipulating a DisplayList within the DOM.
   
 ## Why?
 
