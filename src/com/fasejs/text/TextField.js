@@ -3,7 +3,7 @@
  * TextField.js
  * com.fasejs.text.TextField
  *
- * http://fasejs.com/
+ * https://github.com/neuromantic/CodeJS/
  *
  * Copyright 2011, Neuromantic Industries & For Sure, Rad!
  * Licensed under the MIT license.
