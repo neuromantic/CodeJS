@@ -2,8 +2,6 @@
 
 ## Welcome to CodeJS
 
-
- 
  **Class / Object Development Evironment for Javascript**
  
   * Code.js is a dialect of javascript that will make it natural for AS3 programmers to transition into Web standards.
