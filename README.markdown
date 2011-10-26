@@ -1,4 +1,4 @@
-# SOMETHING HAS GONE TERRIBLY WRONG
+# CodeJS
 
 ## Welcome to CodeJS. 
 
