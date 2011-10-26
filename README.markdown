@@ -1,9 +1,6 @@
 # SOMETHING HAS GONE TERRIBLY WRONG
 
 ## Welcome to CodeJS. 
-## We are working to repair this project. 
-## The final working state of the codebase is lost in limbo somwhere and we're trying to recover it.
-## Sit tight.
 
  **Class / Object Development Evironment for Javascript**
  
