@@ -20,15 +20,16 @@
 		
 		static_count : 0,
 		// private_mouseEnabled : true,
-		// get_mouseEnabled : function () {
-			// return this._.mouseEnabled;
-		//},
-		//set_mouseEnabled : function ( value ) {}
+		// mouseEnabled : function( value ) {
+			// if ( value === undefined ){
+				// return this._.mouseEnabled;
+			// }
 			// this._.mouseEnabled = value;
 		// },
 		DisplayObject : function( hostElement ) {
 			this._super();
-			this.element( hostElement || document.createElement( 'div' ) );
+			hostElement = hostElement || document.createElement( 'div' );
+			this.element( hostElement );
 		},
 		private_element : null,
 		get_element : function () {
@@ -117,7 +118,7 @@
 			};
 		},
 		get_name : function () {
-				return this._.name || this;
+				return this._.name;
 		},
 		private_stage : null,
 		stage : function( value ) {
@@ -153,6 +154,7 @@
 			return false;
 		},
 		addChild : function( child ) {
+// _debug( this, 'addChild', child, child._.element, child.element(), child.element );
 			if( child !== this ){
 				if( child instanceof DisplayObject ) {
 					if ( child.parent() != null ) {
@@ -171,6 +173,7 @@
 			};
 		},
 		private_measure : function ( shrunk ) {
+// _debug( this, '_measure', shrunk );
 			if( shrunk ) {
 				this._.element.style.width = '0px'
 				this._.element.style.height = '0px'
@@ -189,9 +192,7 @@
 		},
 		private_x : 0,
 		get_x : function( value ) {
-			if ( value === undefined ) {
-				return this._.x;
-			};
+			return this._.x;
 		},
 		set_x : function( value ) {
 			this._.x = value;
@@ -212,7 +213,6 @@
 		},
 		set_y : function( value ) {
 			this._.y = value;
-			
 			if( this._.parent ) {
 				var inheritedY = ( this._.parent ? this._.parent.y() : 0 );
 				var y = value + inheritedY;

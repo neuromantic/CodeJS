@@ -1,4 +1,5 @@
 _package( '',
+	_debug('Neuromantic'),
 	_import( 'com.fasejs.fs.transitions.Tween'),
 	_import( 'com.fasejs.fs.transitions.Easing'),
 	_import( 'com.fasejs.display.Sprite' ),
