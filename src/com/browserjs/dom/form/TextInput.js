@@ -18,10 +18,10 @@ _package( 'com.browserjs.dom.form',
 	 
 	_class( 'TextInput' )._extends( 'Input', {
 		private_placeholderText : null,
-		placeholderText : function( value ) {
-			if ( value === undefined ){
-				return this._.placeholderText;
-			};
+		get_placeholderText : function () {
+			return this._.placeholderText;
+		},
+		set_placeholderText : function( value ) {
 			if( this._.placeholderText == null ) {
 				this.addEventListener( FocusEvent.IN,  this._.onFocusIn );
 				this.addEventListener( FocusEvent.OUT, this._.onFocusOut );
@@ -31,31 +31,30 @@ _package( 'com.browserjs.dom.form',
 			this.element().setAttribute( 'placeholder', value );
 			this._.onFocusOut(); 
 		},
-		text : function ( value ) {
-			if ( value === undefined ){
-				return this.element().value
-			};
+		get_text : function () {
+			return this.element().value;
+		},
+		set_text : function ( value ) {
 			this.element().value = value;
 		},
 		private_placeholderColor : 0xCCCCCC,
-		placeholderColor : function( value ) { 
-			if( value === undefined ) {
-				return this._.placeholderColor;
-			};
+		get_placeholderColor : function () { 
+			return this._.placeholderColor;
+		},
+		set_placeholderColor : function( value ) { 
 			this._.placeholderColor = value;
 			this._.onFocusOut()
 		},
 		private_styleColor : 0x666666,
 		private_valid : false,
-		valid : function() { // read only
+		get_valid : function() { // read only
 			return this._.valid;
 		},
 		private_pattern : /\S/i,
-		pattern : function( value ) {
-			if ( value === undefined ) {
-				return this._.pattern;
-			};
-_debug( 'setting pattern of', this, 'to', value );
+		get_pattern : function( value ) {
+			return this._.pattern;
+		},
+		set_pattern : function( value ) {
 			this._.pattern = value;
 			this._.validate();
 			this.addEventListener( KeyboardEvent.UP, this._.validate, this);
@@ -126,7 +125,6 @@ _debug( this, 'void');
 			};
 		},
 		private_keyUpHandler : function ( event ) {
-_debug(this,'key up')
 			this._.validate();
 		}//,
 	})

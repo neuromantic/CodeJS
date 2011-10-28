@@ -20,10 +20,10 @@
 		
 		static_count : 0,
 		// private_mouseEnabled : true,
-		// mouseEnabled : function( value ) {
-			// if ( value === undefined ){
-				// return this._.mouseEnabled;
-			// }
+		// get_mouseEnabled : function () {
+			// return this._.mouseEnabled;
+		//},
+		//set_mouseEnabled : function( value ) {
 			// this._.mouseEnabled = value;
 		// },
 		DisplayObject : function( hostElement ) {
@@ -92,20 +92,20 @@
 			};
 		},
 		private_mouseX : 0,
-		mouseX : function( value ) {
-			if ( value === undefined ) {
-				return this._.mouseX;
-			};
+		get_mouseX : function () {
+			return this._.mouseX;
+		},
+		set_mouseX : function( value ) {
 			this._.mouseX = value - this._.x;
 			for( var child in this.children ) {
 				child.mouseX( this.mouseX() );
 			};
 		},
 		private_mouseY : 0,
-		mouseY : function( value ) {
-			if ( value === undefined ) {
-				return this._.mouseY
-			};
+		get_mouseY : function () {
+			return this._.mouseY
+		},
+		set_mouseY : function( value ) {
 			this._.mouseY = value - this._.y;
 			for( var child in this.children ) {
 				child.mouseY( this.mouseY() );
@@ -121,10 +121,10 @@
 				return this._.name;
 		},
 		private_stage : null,
-		stage : function( value ) {
-			if ( value === undefined ) {
-				return this._.stage;
-			};
+		get_stage : function( value ) {
+			return this._.stage;
+		},
+		set_stage : function( value ) {
 			this._.stage = value;
 			for ( index in this._.children ) {
 				if( this._.children[ index ] ) {
@@ -132,12 +132,11 @@
 				};
 			};
 		},
-		parent : function( value ) {
-			if ( value === undefined ) {
-				return this._.parent;
-			};
+		get_parent : function () {
+			return this._.parent;
+		},
+		set_parent : function( value ) {
 			this._.parent =  value;
-			
 			this.stage( this._.parent ? this._.parent.stage() : null );
 		},
 		private_children : [],

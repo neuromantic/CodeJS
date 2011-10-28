@@ -14,10 +14,10 @@ _package( 'com.browserjs.dom.form',
 	_import( 'com.fasejs.events.Event' ),
 	
 	_class( 'Input' )._extends( 'TextField', {
-		type : function ( value ){
-			if ( value === undefined ) {
-				return this.element().setAttribute( 'type' );
-			}
+		get_type : function () {
+			return this.element().setAttribute( 'type' );
+		},
+		set_type : function ( value ){
 			this.element().setAttribute( 'type', value );
 			this.element().onchange = (function ( _this ){ return function ( event ){
 				 _this._dispatchEvent( new Event( Event.CHANGE, _this ) ); }

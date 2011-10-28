@@ -21,14 +21,13 @@ _package( 'com.fasejs.text',
 			this._super();
 			this.text( text );
 		},
-		text : function( value ) {
-			if ( value === undefined ) {
-				return this.element().innerHTML;
-			}
+		get_text : function () {
+			return this.element().innerHTML;
+		},
+		set_text : function( value ) {
 			this.element().innerHTML = value;
 		},
-		textColor : function( value ) {
-			if ( value === undefined ) {
+		get_textColor : function () {
 	// eHow.com http://www.ehow.com/how_7378382_identify-text-font-color-javascript.html#ixzz1NmJ9OS6Q
 			 	var element = this.element();
 				var textColor = element.style.color;
@@ -38,8 +37,8 @@ _package( 'com.fasejs.text',
 					textColor = document.defaultView.getComputedStyle( element, null ).getPropertyValue( 'color' );
 				};
 				return Graphics.unrgba( textColor );
-			 };
-	// _trace('changing text color of', this, 'from', this.textColor(), 'to', value)
+		},
+		set_textColor : function( value ) {
 			 this.element().style.color = Graphics.rgba( value, 1 );
 		}//,
 		//TODO: text selection

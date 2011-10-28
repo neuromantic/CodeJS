@@ -49,10 +49,10 @@
 				this.height( Math.max( this.height(), child.y() + child.height() ) );
 			};
 		},
-		stage : function( value ) {
-			if ( value === undefined ) {
-				return this._super.stage();
-			};
+		get_stage : function () {
+			return this._super.stage();
+		},
+		set_stage : function( value ) {
 			this._super.stage( value );
 			for ( index in this._.children ) {
 				if( this._.children[ index ] ) {
@@ -86,10 +86,10 @@
 				child.x( child._.x );
 			};
 		},
-		visible : function( value ) {
-			if ( value === undefined ) {
+		get_visible : function( value ) {
 				return this._super.visible();
-			};
+		},
+		set_visible : function( value ) {
 			this._super.visible( value );
 			_trace(this, 'visible', this._.children)
 			for( index in this._.children ) {
