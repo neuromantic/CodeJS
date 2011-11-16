@@ -45,7 +45,7 @@
         _class('MyApp')._extends('Site', {
             private_title : null,
             get_title : function () {
-                return this._.value;
+                return this._.title;
             },
             set_title : function ( value ) {
                 this._.title = value;
