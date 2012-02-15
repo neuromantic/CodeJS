@@ -1,17 +1,17 @@
-# CodeJS
+# Mozart.js
 
-## Welcome to CodeJS. 
+## Welcome to Mozart. 
 
- **Class / Object Development Evironment for Javascript**
+ **Classical Inheritance for Javascript**
  
-  * Code.js is a dialect of javascript that will make it natural for AS3 programmers to transition into Web standards.
+  * Mozart is a dialect of javascript that permits classical inheritance via any number of imported class files. Modeled after ECMAScript 4, Mozart enables powerful language features such as scoped local variables, accessor functions, static properties, simulated private properties, type checking and packages. 
   * The project aims to be truly cross-browser under the hood, so users will only need to think about their creative goals.
-  * Code.js is a compact js library that powers another library called Fase.js, a collection of classes familiar to Flash developers for creating and manipulating a DisplayList within the DOM.
+  * Mozart.js is at the core of Fase.js, a collection of classes familiar to Flash developers for creating and manipulating a DisplayList and handling Events within the DOM.
   
 ## Why?
 
-  * We want to put the art back into front end development, and allow creative coders to focus on more beautiful things than cross-browser development, or copying and pasting old XHTML, CSS, JS, etc.
-  * onload = "Code( 'MyApp' )"  provides HTML5 *without* hiccups.
+  *For all the shit it takes, Adobe's Flash platform produced at least one excellent achievement in rapid application development: ActionScript 3.0. Say what you will about Flash's platform, plugin, or politics, programming in its proprietary parlance mkes pure code a pure pleasure. It has all of the modern, application-class language features of Java plus the dynamic scripty goodness of JavaScript. And so does Mozart. While modern JavaScripting techniques help you to code around JavaScript's quirks and scoping faux pas, Mozart transports you to a place where these problems do not even exist.
+
   
 ## What does it get me?
   * Create classes AS3-style, then import them at runtime to extend and use them in other classes.
