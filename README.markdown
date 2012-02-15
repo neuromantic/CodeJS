@@ -10,7 +10,7 @@
   
 ## Why?
 
-  *For all the shit it takes, Adobe's Flash platform produced at least one excellent achievement in rapid application development: ActionScript 3.0. Say what you will about Flash's platform, plugin, or politics, programming in its proprietary parlance mkes pure code a pure pleasure. It has all of the modern, application-class language features of Java plus the dynamic scripty goodness of JavaScript. And so does Mozart. While modern JavaScripting techniques help you to code around JavaScript's quirks and scoping faux pas, Mozart transports you to a place where these problems do not even exist.
+  * For all the shit it takes, Adobe's Flash platform produced at least one excellent achievement in rapid application development: ActionScript 3.0. Say what you will about Flash's platform, plugin, or politics, programming in its proprietary parlance mkes pure code a pure pleasure. It has all of the modern, application-class language features of Java plus the dynamic scripty goodness of JavaScript. And so does Mozart. While modern JavaScripting techniques help you to code around JavaScript's quirks and scoping faux pas, Mozart transports you to a place where these problems do not even exist.
 
   
 ## What does it get me?
