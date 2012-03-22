@@ -1,16 +1,16 @@
-# Mozart.js
+# CodeJS
 
-## Welcome to Mozart. 
+## Welcome to CodeJS. 
 
- **Classical Inheritance for Javascript**
+ **Class / Object Development for Javascript**
  
-  * Mozart is a dialect of javascript that permits classical inheritance via any number of imported class files. Modeled after ECMAScript 4, Mozart enables powerful language features such as scoped local variables, accessor functions, static properties, simulated private properties, type checking and packages. 
+  * CodeJS is a dialect of javascript that permits classical inheritance via any number of imported class files. Modeled after ECMAScript 4, Mozart enables powerful language features such as scoped local variables, accessor functions, static properties, simulated private properties, type checking and packages. 
   * The project aims to be truly cross-browser under the hood, so users will only need to think about their creative goals.
-  * Mozart.js is at the core of Fase.js, a collection of classes familiar to Flash developers for creating and manipulating a DisplayList and handling Events within the DOM.
+  * Code.js is at the core of Fase.js, a collection of classes familiar to Flash developers for creating and manipulating a DisplayList and handling Events within the DOM.
   
 ## Why?
 
-  * For all the shit it takes, Adobe's Flash platform produced at least one excellent achievement in rapid application development: ActionScript 3.0. Say what you will about Flash's platform, plugin, or politics, programming in its proprietary parlance mkes pure code a pure pleasure. It has all of the modern, application-class language features of Java plus the dynamic scripty goodness of JavaScript. And so does Mozart. While modern JavaScripting techniques help you to code around JavaScript's quirks and scoping faux pas, Mozart transports you to a place where these problems do not even exist.
+  * For all the shit it takes, Adobe's Flash platform produced at least one excellent achievement in rapid application development: ActionScript 3.0. Say what you will about Flash's platform, plugin, or politics, programming in its proprietary parlance makes pure code a pure pleasure. It has all of the modern, application-class language features of Java plus the dynamic scripty goodness of JavaScript. And so does CodeJS. While modern JavaScripting techniques help you to code around JavaScript's quirks and scoping faux pas, Code transports you to a place where these problems do not even exist.
 
   
 ## What does it get me?
