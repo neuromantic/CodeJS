@@ -2,7 +2,7 @@
  *
  * Code.js
  * 
- * Synthesized Actionscript on Javascript
+ * Class / Object Descripion Engine for Javascript
  * 
  * https://github.com/neuromantic/CodeJS
  *
@@ -11,11 +11,13 @@
  *
  */
 
-(function () {
-	if( window._ ){
-		window.old_ = window._;
-	} 
-	window._ = {// * Reserving global._ *
+( function ( ) {
+	var fs;
+	global = ( typeof window == 'object') ? window : ( typeof global == 'object') ? global : { dev: null }; 
+	if ( typeof require == 'function' ) {
+		fs = require( 'fs' );
+	}
+	var _ = {
 		debugging : true,
 		util : {
 			deepCopy : deepCopy,
@@ -37,62 +39,72 @@
 			queue : [],
 			_import : function( classPath, immediately ) {
 				if( _.loading.queue.indexOf( classPath ) < 0 ) {
-//_debug( 'importing', classPath );
+_debug( 'importing', classPath );
 					_.loading.load( classPath );// push path into loading queue
 					
 				}// if
 			},// _import
 			_class : function ( className ) {
-//_debug( 'creating stub class for', className );
+_debug( 'creating stub class for', className );
 				var stub = { 
 					_extends : function( superName ) {
 						this._super = superName;//set super name for definition tree
 					}// _extends
 				};// return object
-				window[ className ] = stub;
-				return window[ className ];
+				global[ className ] = stub;
+				return global[ className ];
 			},// _class ( temp )
 			load : function( classPath, first ) {
-//_debug( 'loading', classPath );
+_debug( 'loading', classPath );
+				var scriptPath = classPath.replace( /\./g, '/' ) + '.js';
 				try{
 					this.queue.push( classPath);
-					var host = document.location.host;
-					var scriptURL = 'src/' + classPath.replace( /\./g, '/' ) + '.js';
-					function _xhr () { 
-						var request = new XMLHttpRequest();
-						request.open.apply( request, arguments );
-						return request;
-					};// _xhr
-					var request = _xhr( 'GET', scriptURL, false )
-					request.send( null );
-					if ( request.status == 200 ) {
-//_debug( '>>> loaded', classPath, '. processing imports' );
-						_import = _.loading._import;
-						_class = _.loading._class;
+					if( fs ){//server
+_debug( 'from local file system' );
 						try{
-							eval( request.responseText );
-						}catch( error ){
-							throw 'error completing imports for '+  classPath + '. Error Text :' + error;
+_debug( 'file:', scriptPath );
+							var response = fs.readFileSync( scriptPath, 'ascii' );
+						}catch(error){
+_debug( 'file system error');
+							throw(error);
 						}
-						var className = classPath.split( '.' ).pop();
-						window[ className ]._script = request.responseText//store script
-						_.definition.queue.push( className );// add script to definition queue
-						//_debug( 'L[ ' + this.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
-						//_debug( 'D[ ' + _.definition.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
-//_debug( '<<< finished loading tasks for', classPath)
-						if( this.queue.length == _.definition.queue.length ){
-							_.definition.defineClasses();
-						}// if
-						
-					} else if ( status == 0 ) {
-						// eval( responseText );
-					} else {// else if
-						throw status ;
-					};// else
+					} else {//client // ( typeof XMLHttpRequest == "function" )
+_debug( 'from remote location' );
+						var scriptURL = 'src/' + scriptPath;
+						var request = new XMLHttpRequest();
+						request.open( 'GET', scriptURL, false );
+						request.send( null );
+						if ( request.status == 200 ) {
+							var response = request.responseText
+						} else if ( request.status == 0 ) {
+							// eval( responseText );
+						} else {// else if
+							throw new Error( request.status );
+						};// else
+					}  
 				}catch( error ){
-						throw 'error loading '+  classPath + '. Error Text :' + error;
+_debug( 'error loading', classPath, 'Error Status:', error.message);
+					throw error;
 				}
-			},// load
+//_debug( '>>> loaded', classPath, '. processing imports' );
+				_import = _.loading._import;//load
+				_class = _.loading._class;//stub
+				try{
+					eval( response );
+				}catch( error ){
+_debug( 'error completing imports for '+  classPath + '. Error Text:' + error.message );
+					throw error;
+				}
+				var className = classPath.split( '.' ).pop();
+				global[ className ]._script = response;//store script
+				_.definition.queue.push(className );// add script to definition queue
+//_debug( 'L[ ' + this.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
+//_debug( 'D[ ' + _.definition.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
+//_debug( '<<< finished loading tasks for', classPath)
+				if( this.queue.length == _.definition.queue.length ){
+					_.definition.defineClasses();
+				}// if
+			}//, load
 		},// loading
 		definition : {
 			initializing : false,
@@ -100,47 +112,48 @@
 			_import : function( classPath, immediately ) {
 			},// _import
 			_class : function( className, properties ) {
-//_debug( '_class', className );
-				if(! window[ className ]._constructor ) { // if class is stub
+_debug( '_class', className );
+				if(! global[ className ]._constructor ) { // if class is stub
 					var newClass = Class._plus( className, properties );// create the class from ClassObject
 					newClass._extends = function( parentClassName, properties ) {
-//_debug( '_extends', parentClassName );
-							window[ className ] = window[ parentClassName ]._plus( className, properties );
-						 	window[ className ]._className = className;
+_debug( '_extends', parentClassName );
+							global[ className ] = global[ parentClassName ]._plus( className, properties );
+						 	global[ className ]._className = className;
 					};// _extends
-					window[ className ] = newClass;
+					global[ className ] = newClass;
 				} 
-				return window[ className ]
+				return global[ className ]
 			 },// _class
 			defineClasses : function () {
-//_debug( 'defining classes' );
+_debug( 'defining classes' );
 				var className;
 				while ( className = this.queue[ 0 ] ) {
-					if (! window[ className ]._constructor ) {
+					if (! global[ className ]._constructor ) {
 						this.define( className );
 					}// if
 				}// while
 				_.application();// app is good to go.
 			},// defineClasses
 			define : function ( className ) {
-				window._class = _.definition._class;// switch _class
-				window._import = _.definition._import;// switch _import
+				_class = _.definition._class;// define
+				_import = _.definition._import;// null
 				var index = this.queue.indexOf( className );
 				if( index >= 0 ) {
-					var classObject = window [ className ];
+					var classObject = global [ className ];
 					this.queue.splice( index, 1);
-//_debug( 'defining class', className );
+_debug( 'defining class', className );
 					if ( classObject._super ){
-//_debug( 'defining superclass', classObject._super );
+_debug( 'defining superclass', classObject._super );
 						this.define(classObject._super);
 					}// if
 //_debug( 'evaluating script', classObject._script );
 					try{
 						eval( classObject._script );
 					}catch( error ){
-						throw 'error defining '+ className + '. Error Text :' + error;
+_debug( 'error defining', className, 'Error Text:', error.message )
+						throw error;
 					}
-//_debug( this.queue.length, 'definitions remain.' );
+_debug( this.queue.length, 'definitions remain.' );
 				}// if
 			}//define
 		}// definition
@@ -171,8 +184,6 @@
 	};// _package
 	
 	_import = _.loading._import;
-
-
 	
 	// DON'T GET CUTE.
 		
@@ -189,7 +200,7 @@
 	  // The base Class implementation -- 
 	  // provides _get and _set shortcuts to eliminate abiguous assignment ( is it a  property or a getSetter ? )
 	  // provides .add() to replace += 
-	  window.Class = function(){};
+	  var Class = function(){};
 	  Class._className = 'Class';
 	  Class.prototype = {
 			_get : function( propertyName ){
@@ -237,9 +248,7 @@
 		  this._ = _.util.deepCopy( this._ );
 		  this.__ = _.util.deepCopy( this.__ );
 		  
-		 
 			if ( !_.definition.initializing ){
-				
 				if ( this._className.indexOf( 'Event' ) < 0 && [ 'Dictionary' ].indexOf( this._className ) < 0 ) {
 					//_debug( 'new', this._className );
 				};
@@ -344,7 +353,6 @@
 		}
 		
 		// Create getter / setter properties
-		//TODO: scope? testing now...
 		for ( var index in newPrototype.__.getSetterNames ){
 			var getSetterName = newPrototype.__.getSetterNames[ index ];
 //_debug( 'property name:', getSetterName);			
@@ -381,18 +389,19 @@
 	};
 			
 			
-	window.Code = function( applicationClassPath ) {
+	function Code ( applicationClassPath ) {
 //_debug( 'starting Code with application', applicationClassPath );
 		var applicationClassName = applicationClassPath.split( '.' ).pop();
 		_.application = ( function( applicationClassName ) {
 			return function () {
 //_debug( 'starting', applicationClassName )
-			 	_.application = new window[ applicationClassName ]();
+			 	_.application = new global[ applicationClassName ]();
 			}// return function
 		} )( applicationClassName );//closure
 		_import( applicationClassPath );
-		window.Code = window._;
 	}
+	Code._ = _;
+	global.Code = Code;
 //_debug('Code ready.')
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -402,7 +411,6 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 	//	DEEP COPY props http://oranlooney.com/deep-copy-javascript/
-// TODO: Externalize this portion to protect DNA / prevent codecancer
 	/* This section is part of OWL JavaScript Utilities.
 
 	OWL JavaScript Utilities is free software: you can redistribute it and/or 
@@ -670,12 +678,12 @@
 	// for the cloneNode method.  The global document is also defined to
 	// be a Node, but is a special case in many ways.
 	function isNode(source) {
-		if ( window.Node ) {
+		if ( global.Node ) {
 			return source instanceof Node;
 		} else {
 			// the document is a special Node and doesn't have many of
 			// the common properties so we use an identity check instead.
-			if ( source === document ) return true;
+			if ( typeof document == 'object' && source === document ) return true;
 			return (
 				typeof source.nodeType === 'number' &&
 				source.attributes &&
@@ -691,7 +699,7 @@
 
 		create: function(source) {
 			// there can only be one (document).
-			if ( source === document ) return document;
+			if (typeof document == 'object' && source === document ) return document;
 
 			// start with a shallow copy.  We'll handle the deep copy of
 			// its children ourselves.
@@ -700,7 +708,7 @@
 
 		populate: function(deepCopy, source, result) {
 			// we're not copying the global document, so don't have to populate it either.
-			if ( source === document ) return document;
+			if ( typeof document == 'object' && source === document ) return document;
 
 			// if this Node has children, deep copy them one-by-one.
 			if ( source.childNodes && source.childNodes.length ) {
@@ -724,4 +732,6 @@
 			};
 		}
 	});
+
+return Code;
 })();
