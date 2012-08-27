@@ -27,7 +27,8 @@
 					for (var i = 0; i < arguments.length; i++) {
 						s+=arguments[i]+","
 					}
-// _debug( 'calling scoped', functionName, scope, s );
+					s = s.substring(0,-1)
+// _debug( scope + '.' + functionName+'(' + s + ')' );
 					 return fn.apply( scope, arguments );
 				}
 			},
@@ -56,21 +57,21 @@ _debug( 'creating stub class for', className );
 			},// _class ( temp )
 			load : function( classPath, first ) {
 _debug( 'loading', classPath );
-				var scriptPath = classPath.replace( /\./g, '/' ) + '.js';
+				var scriptPath = 'src/' + classPath.replace( /\./g, '/' ) + '.js';
 				try{
 					this.queue.push( classPath);
 					if( fs ){//server
 _debug( 'from local file system' );
 						try{
 _debug( 'file:', scriptPath );
-							var response = fs.readFileSync( scriptPath, 'ascii' );
+							var response = fs.readFileSync(  scriptPath, 'ascii' );
 						}catch(error){
 _debug( 'file system error');
 							throw(error);
 						}
 					} else {//client // ( typeof XMLHttpRequest == "function" )
 _debug( 'from remote location' );
-						var scriptURL = 'src/' + scriptPath;
+						var scriptURL = scriptPath;
 						var request = new XMLHttpRequest();
 						request.open( 'GET', scriptURL, false );
 						request.send( null );
@@ -79,14 +80,14 @@ _debug( 'from remote location' );
 						} else if ( request.status == 0 ) {
 							// eval( responseText );
 						} else {// else if
-							throw new Error( request.status );
+						    throw new Error( request.status );
 						};// else
 					}  
 				}catch( error ){
 _debug( 'error loading', classPath, 'Error Status:', error.message);
 					throw error;
 				}
-//_debug( '>>> loaded', classPath, '. processing imports' );
+_debug( '>>> loaded', classPath, '. processing imports' );
 				_import = _.loading._import;//load
 				_class = _.loading._class;//stub
 				try{
@@ -98,19 +99,19 @@ _debug( 'error completing imports for '+  classPath + '. Error Text:' + error.me
 				var className = classPath.split( '.' ).pop();
 				global[ className ]._script = response;//store script
 				_.definition.queue.push(className );// add script to definition queue
-//_debug( 'L[ ' + this.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
-//_debug( 'D[ ' + _.definition.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
-//_debug( '<<< finished loading tasks for', classPath)
+_debug( 'L[ ' + this.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
+_debug( 'D[ ' + _.definition.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
+_debug( '<<< finished loading tasks for', classPath)
 				if( this.queue.length == _.definition.queue.length ){
 					_.definition.defineClasses();
 				}// if
-			}//, load
+			}//, load()
 		},// loading
 		definition : {
 			initializing : false,
 			queue : [],
 			_import : function( classPath, immediately ) {
-			},// _import
+			},// _import 
 			_class : function( className, properties ) {
 _debug( '_class', className );
 				if(! global[ className ]._constructor ) { // if class is stub
@@ -146,7 +147,7 @@ _debug( 'defining class', className );
 _debug( 'defining superclass', classObject._super );
 						this.define(classObject._super);
 					}// if
-//_debug( 'evaluating script', classObject._script );
+_debug( 'evaluating script', classObject._script );
 					try{
 						eval( classObject._script );
 					}catch( error ){
@@ -239,7 +240,7 @@ _debug( this.queue.length, 'definitions remain.' );
 		_.definition.initializing = true;
 		var newPrototype = new this();
 		newPrototype._className = className;
-		newPrototype.toString = function () { return '[Code '+this._className+']'; } 
+		newPrototype.toString = function () { return '['+this._className+']'; } 
 		_.definition.initializing = false;
 		
 		// The dummy class constructor
@@ -284,7 +285,7 @@ _debug( this.queue.length, 'definitions remain.' );
 			var propertyDefault = '[function]';
 			var attachTarget = {};
 			
-		// TODO: getter/setters proper
+		// TODO: getter/setters proper ?
 		
 			if ( name.indexOf( 'private_' ) >= 0 ) {
 				propertyKeyword = 'private';
@@ -322,7 +323,7 @@ _debug( this.queue.length, 'definitions remain.' );
 			if ( typeof addition == 'function'  ){//&& fnTest.test(addition)
 		      	propertyType = 'function'
 		      	property = ( typeof _super[propertyName] == 'function' ) ? 
-		        (function(propertyName, fn){
+		        ( function( propertyName, fn ){
 		          return function() {
 		            var tmp = this._super;
 		            
@@ -332,7 +333,6 @@ _debug( this.queue.length, 'definitions remain.' );
 		            }else{
 		            	this._super = _super;
 		            }
-		            
 		            
 		            // The _config method only need to be bound temporarily, so we
 		            // remove it when we're done executing
@@ -349,7 +349,7 @@ _debug( this.queue.length, 'definitions remain.' );
 		    }
 		    
 			attachTarget[ propertyName ] = property;
-//_debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
+_debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 		}
 		
 		// Create getter / setter properties
@@ -360,7 +360,7 @@ _debug( this.queue.length, 'definitions remain.' );
 //_debug( 'getter function:', getter) ;		
 			var setter = newPrototype.__.setters[getSetterName ];
 //_debug( 'setter function:', setter );		
-			newPrototype[ getSetterName ] = (function( getter, setter, getSetterName ){
+			newPrototype[ getSetterName ] = ( function( getter, setter, getSetterName ){
 				return function ( value ) {
 					if( value === undefined ) {
 						if( getter ) {
@@ -373,7 +373,7 @@ _debug( this.queue.length, 'definitions remain.' );
 						setter.call( this, value );
 					}
 				}
-			})( getter, setter, getSetterName);
+			})( getter, setter, getSetterName );
 		};
 
 		// Populate our constructed prototype object
@@ -382,7 +382,7 @@ _debug( this.queue.length, 'definitions remain.' );
 		// Enforce the constructor to be what we expect
 		ClassObject.constructor = ClassObject;
 		
-		// And make this class extendable
+		// And make this class extensible
 		ClassObject._plus = arguments.callee;
 		
 		return ClassObject;
@@ -398,7 +398,7 @@ _debug( this.queue.length, 'definitions remain.' );
 			 	_.application = new global[ applicationClassName ]();
 			}// return function
 		} )( applicationClassName );//closure
-		_import( applicationClassPath );
+		_import(  applicationClassPath );
 	}
 	Code._ = _;
 	global.Code = Code;

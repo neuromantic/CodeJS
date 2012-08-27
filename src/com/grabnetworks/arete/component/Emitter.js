@@ -1,12 +1,12 @@
 /*!
  *
  * Component.js
- * com.grabnetworks.arete.Emitter
+ * com.grabnetworks.arete.component.Emitter
  *
  */
 _package( 'com.grabnetworks.arete',
  	
-	_import( 'com.grabnetworks.arete.Transmitter' ),
+	_import( 'com.grabnetworks.arete.component.Transmitter' ),
 
 	_class( 'Emitter' )._extends( 'Transmitter', {
 		emit : function( message ) {
