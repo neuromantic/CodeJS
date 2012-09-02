@@ -4,7 +4,7 @@
  * 
  * Class / Object Descripion Engine for Javascript
  * 
- * https://github.com/neuromantic/CodeJS
+ * https://github.com/neuromantic/CodeJS\
  *
  * Copyright 2011, Neuromantic Industries & For Sure, Rad!
  * Licensed under the MIT license.
@@ -14,6 +14,8 @@
 ( function ( ) {
 	var fs;
 	global = ( typeof window == 'object') ? window : ( typeof global == 'object') ? global : { dev: null }; 
+	console = console || {};
+	console.log = console.log || function () {};
 	if ( typeof require == 'function' ) {
 		fs = require( 'fs' );
 	}
@@ -30,32 +32,33 @@
 					s = s.substring(0,-1)
 // _debug( scope + '.' + functionName+'(' + s + ')' );
 					 return fn.apply( scope, arguments );
-				}
-			},
+				}//closure
+			},//scope
 			isMethod : function( property ) {
 				return ( ( typeof property == 'function' ) && ( ! ( property instanceof RegExp ) ) );
-			}
+			}//isMethod
 		},// util
-		loading : {
+		loader : {
 			queue : [],
-			_import : function( classPath, immediately ) {
-				if( _.loading.queue.indexOf( classPath ) < 0 ) {
+			_import : function( classPath, immediately ) {//--------------------------------------------------------------- loader._import (load)
+				if( _.loader.queue.indexOf( classPath ) < 0 ) {
 _debug( 'importing', classPath );
-					_.loading.load( classPath );// push path into loading queue
-					
+					_.loader.load( classPath );// push path into loading queue
 				}// if
 			},// _import
-			_class : function ( className ) {
+			_class : function ( className ) {//--------------------------------------------------------------- loader._class (stub)
 _debug( 'creating stub class for', className );
 				var stub = { 
 					_extends : function( superName ) {
 						this._super = superName;//set super name for definition tree
 					}// _extends
-				};// return object
+				};// stub
 				global[ className ] = stub;
 				return global[ className ];
-			},// _class ( temp )
+			},// _class
 			load : function( classPath, first ) {
+				_import = this._import;//load
+				_class = this._class;//stub
 _debug( 'loading', classPath );
 				var scriptPath = 'src/' + classPath.replace( /\./g, '/' ) + '.js';
 				try{
@@ -70,7 +73,7 @@ _debug( 'file system error');
 							throw(error);
 						}
 					} else {//client // ( typeof XMLHttpRequest == "function" )
-_debug( 'from remote location' );
+_debug( 'from server' );
 						var scriptURL = scriptPath;
 						var request = new XMLHttpRequest();
 						request.open( 'GET', scriptURL, false );
@@ -87,9 +90,7 @@ _debug( 'from remote location' );
 _debug( 'error loading', classPath, 'Error Status:', error.message);
 					throw error;
 				}
-_debug( '>>> loaded', classPath, '. processing imports' );
-				_import = _.loading._import;//load
-				_class = _.loading._class;//stub
+_debug( 'loaded', classPath, '. processing imports' );
 				try{
 					eval( response );
 				}catch( error ){
@@ -98,73 +99,79 @@ _debug( 'error completing imports for '+  classPath + '. Error Text:' + error.me
 				}
 				var className = classPath.split( '.' ).pop();
 				global[ className ]._script = response;//store script
-				_.definition.queue.push(className );// add script to definition queue
-_debug( 'L[ ' + this.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
-_debug( 'D[ ' + _.definition.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
-_debug( '<<< finished loading tasks for', classPath)
-				if( this.queue.length == _.definition.queue.length ){
-					_.definition.defineClasses();
+				_.compiler.queue.push(className );// add script to compilation queue
+//_debug( 'L[ ' + this.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
+//_debug( 'D[ ' + _.definition.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
+//_debug( '<<< finished loading tasks for', classPath)
+				if( this.queue.length == _.compiler.queue.length ){
+					_.compiler.compileClasses();
 				}// if
-			}//, load()
-		},// loading
-		definition : {
-			initializing : false,
+			}//, load
+		},// loader
+		compiler : {
+			buffer :'',
 			queue : [],
-			_import : function( classPath, immediately ) {
-			},// _import 
-			_class : function( className, properties ) {
+			_import : function( classPath, immediately ) {//--------------------------------------------------------------- interpreter._import (compile)
+				var className = classPath.split( '.' ).pop();
+				_.compiler.compile( className );
+			},// _import
+			_class : function( className ) {//--------------------------------------------------------------- interpreter._class (null)
+				return {_extends:function (){}}
+			},// _import
+			compileClasses : function () {
+_debug( 'compiling classes' );
+				_import = this._import;
+				_class = this._class;
+				var className;
+				while ( className = this.queue[ 0 ] ) {
+					this.compile( className );
+				}// while
+				 _.interpreter.defineClasses()
+			},// compileClasses
+			compile : function ( className ) {
+				var index = this.queue.indexOf( className );
+				if ( index >= 0 ) {
+					this.queue.splice( index, 1 );
+					var classObject = global [ className ];
+_debug( 'adding class', className );
+					eval( classObject._script );
+					this.buffer = this.buffer.concat( classObject._script  );
+_debug( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
+				}// if
+			}//compile
+		},// compiler
+		interpreter : {
+			initializing : false,
+			application: '',
+			_import : function( classPath, immediately ) {//--------------------------------------------------------------- interpreter._import (null)
+			},// _import
+			_class : function( className, properties ) {//--------------------------------------------------------------- interpreter._class define
 _debug( '_class', className );
 				if(! global[ className ]._constructor ) { // if class is stub
-					var newClass = Class._plus( className, properties );// create the class from ClassObject
+					var newClass = Class._plus( className, properties );// create the class from Class object
 					newClass._extends = function( parentClassName, properties ) {
 _debug( '_extends', parentClassName );
 							global[ className ] = global[ parentClassName ]._plus( className, properties );
 						 	global[ className ]._className = className;
-					};// _extends
+					}// _extends
 					global[ className ] = newClass;
-				} 
+				} //if
+				_.interpreter.application = className;
 				return global[ className ]
 			 },// _class
 			defineClasses : function () {
 _debug( 'defining classes' );
-				var className;
-				while ( className = this.queue[ 0 ] ) {
-					if (! global[ className ]._constructor ) {
-						this.define( className );
-					}// if
-				}// while
-				_.application();// app is good to go.
-			},// defineClasses
-			define : function ( className ) {
-				_class = _.definition._class;// define
-				_import = _.definition._import;// null
-				var index = this.queue.indexOf( className );
-				if( index >= 0 ) {
-					var classObject = global [ className ];
-					this.queue.splice( index, 1);
-_debug( 'defining class', className );
-					if ( classObject._super ){
-_debug( 'defining superclass', classObject._super );
-						this.define(classObject._super);
-					}// if
-_debug( 'evaluating script', classObject._script );
-					try{
-						eval( classObject._script );
-					}catch( error ){
-_debug( 'error defining', className, 'Error Text:', error.message )
-						throw error;
-					}
-_debug( this.queue.length, 'definitions remain.' );
-				}// if
-			}//define
-		}// definition
+				_import = this._import; // null
+				_class = this._class; // define / extend class
+				eval( _.compiler.buffer );
+_debug ('instantiate', this.application );
+				new global[ this.application ]();
+			}//defineClasses
+		}// interpreter
 	};// _
-	console = console || {};
-	console.log = console.log || function () {};
-			
-	_null = function () {// null binding reserved for future use
-		return null;
-	};// _null
+//	_null = function () {// null binding reserved for future use
+//		return null;
+//	};// _null
 	
 	_trace = function () {
 		var output = "";
@@ -178,21 +185,19 @@ _debug( this.queue.length, 'definitions remain.' );
 	
 	_debug = function () {
 		if( _.debugging ) _trace.apply( this, arguments );
-	};// ////_debug
+	};//
 	
 	_package = function() { // Future Use
 // _trace( 'package', arguments[ 0 ] );
 	};// _package
 	
-	_import = _.loading._import;
 	
 	// DON'T GET CUTE.
 		
 	/* 
 	 * 
-	 * Class is a modification of
-	 * 'Class' originally by the immortal John Resig
-	 * thanks For Sure, Rad!
+	 * Class is a modification of 'Class' 
+	 * originally by the immortal John Resig
 	 * 
 	 * http://bit.ly/4U5H
 	 *	
@@ -237,11 +242,11 @@ _debug( this.queue.length, 'definitions remain.' );
 		
 		// Instantiate a base class (but only create the instance,
 		// don't run the _config constructor)
-		_.definition.initializing = true;
+		_.interpreter.initializing = true;
 		var newPrototype = new this();
 		newPrototype._className = className;
 		newPrototype.toString = function () { return '['+this._className+']'; } 
-		_.definition.initializing = false;
+		_.interpreter.initializing = false;
 		
 		// The dummy class constructor
 		function ClassObject() {
@@ -249,7 +254,7 @@ _debug( this.queue.length, 'definitions remain.' );
 		  this._ = _.util.deepCopy( this._ );
 		  this.__ = _.util.deepCopy( this.__ );
 		  
-			if ( !_.definition.initializing ){
+			if ( !_.interpreter.initializing ){
 				if ( this._className.indexOf( 'Event' ) < 0 && [ 'Dictionary' ].indexOf( this._className ) < 0 ) {
 					//_debug( 'new', this._className );
 				};
@@ -388,21 +393,27 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 		return ClassObject;
 	};
 			
-			
-	function Code ( applicationClassPath ) {
-//_debug( 'starting Code with application', applicationClassPath );
-		var applicationClassName = applicationClassPath.split( '.' ).pop();
-		_.application = ( function( applicationClassName ) {
-			return function () {
-//_debug( 'starting', applicationClassName )
-			 	_.application = new global[ applicationClassName ]();
-			}// return function
-		} )( applicationClassName );//closure
-		_import(  applicationClassPath );
-	}
-	Code._ = _;
-	global.Code = Code;
-//_debug('Code ready.')
+	var Code = {
+		//Code.r (classPath) - run the named script using dynamic import
+		r : function ( applicationClassPath ) {
+			this._
+			var applicationClassName = applicationClassPath.split( '.' ).pop();
+			_import = _.loader._import;//--------------------------------------------------------------- loader._import
+			_import( applicationClassPath );
+		},
+		x : function ( applicationClassPath ){
+			applicationClassPath = applicationClassPath || this._.applicationClassPath ;
+			var applicationClassName = applicationClassPath.split( '.' ).pop();
+			this._.application = ( function( applicationClassName ) {
+				return function () {
+					_.application = new global[ applicationClassName ]();//no namespace
+				}// return function
+			} )( applicationClassName );//closure
+		}
+	}	
+		Code._ = _;
+		global.Code = Code;
+_debug('Code ready.')
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -410,26 +421,25 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-	//	DEEP COPY props http://oranlooney.com/deep-copy-javascript/
-	/* This section is part of OWL JavaScript Utilities.
+//		DEEP COPY props http://oranlooney.com/deep-copy-javascript/
+//	 This section is part of OWL JavaScript Utilities.
+//
+//	OWL JavaScript Utilities is free software: you can redistribute it and/or 
+//	modify it under the terms of the GNU Lesser General Public License
+//	as published by the Free Software Foundation, either version 3 of
+//	the License, or (at your option) any later version.
+//	
+//	OWL JavaScript Utilities is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU Lesser General Public License for more details.
+//	
+//	To receive a copy of the GNU Lesser General Public License, see: <http://www.gnu.org/licenses/>.	
 
-	OWL JavaScript Utilities is free software: you can redistribute it and/or 
-	modify it under the terms of the GNU Lesser General Public License
-	as published by the Free Software Foundation, either version 3 of
-	the License, or (at your option) any later version.
-	
-	OWL JavaScript Utilities is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
-	
-	To receive a copy of the GNU Lesser General Public License, see: 
-	<http://www.gnu.org/licenses/>.
-	*/
-		// the re-usable constructor function used by clone().
+//	 the re-usable constructor function used by clone().
 	function Clone() {};
 
-	// clone objects, skip other types.
+//	 clone objects, skip other types.
 	function clone(target) {
 		if ( typeof target == 'object' ) {
 			Clone.prototype = target;
@@ -440,26 +450,26 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 	}
 
 
-	// Shallow Copy 
+//	 Shallow Copy 
 	function copy(target) {
 		if (typeof target !== 'object' ) {
 			return target;  // non-object have value sematics, so target is already a copy.
 		} else {
 			var value = target.valueOf();
 			if (target != value) { 
-				// the object is a standard object wrapper for a native type, say String.
-				// we can make a copy by instantiating a new object around the value.
+//				 the object is a standard object wrapper for a native type, say String.
+//				 we can make a copy by instantiating a new object around the value.
 				return new target.constructor(value);
 			} else {
-				// ok, we have a normal object. If possible, we'll clone the original's prototype 
-				// (not the original) to get an empty object with the same prototype chain as
-				// the original.  If just copy the instance properties.  Otherwise, we have to 
-				// copy the whole thing, property-by-property.
+//				 ok, we have a normal object. If possible, we'll clone the original's prototype 
+//				 (not the original) to get an empty object with the same prototype chain as
+//				 the original.  If just copy the instance properties.  Otherwise, we have to 
+//				 copy the whole thing, property-by-property.
 				if ( target instanceof target.constructor && target.constructor !== Object ) { 
 					var c = clone(target.constructor.prototype);
 				
-					// give the copy all the instance properties of target.  It has the same
-					// prototype as target, so inherited properties are already there.
+//					 give the copy all the instance properties of target.  It has the same
+//					 prototype as target, so inherited properties are already there.
 					for ( var property in target) { 
 						if (target.hasOwnProperty(property)) {
 							c[property] = target[property];
@@ -475,7 +485,7 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 		}
 	}
 
-	// Deep Copy
+//	 Deep Copy
 	var deepCopiers = [];
 
 	function DeepCopier(config) {
@@ -484,25 +494,25 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 	DeepCopier.prototype = {
 		constructor: DeepCopier,
 
-		// determines if this DeepCopier can handle the given object.
+//		 determines if this DeepCopier can handle the given object.
 		canCopy: function(source) { return false; },
 
-		// starts the deep copying process by creating the copy object.  You
-		// can initialize any properties you want, but you can't call recursively
-		// into the DeeopCopyAlgorithm.
+//		 starts the deep copying process by creating the copy object.  You
+//		 can initialize any properties you want, but you can't call recursively
+//		 into the DeeopCopyAlgorithm.
 		create: function(source) { },
 
-		// Completes the deep copy of the source object by populating any properties
-		// that need to be recursively deep copied.  You can do this by using the
-		// provided deepCopyAlgorithm instance's deepCopy() method.  This will handle
-		// cyclic references for objects already deepCopied, including the source object
-		// itself.  The "result" passed in is the object returned from create().
+//		 Completes the deep copy of the source object by populating any properties
+//		 that need to be recursively deep copied.  You can do this by using the
+//		 provided deepCopyAlgorithm instance's deepCopy() method.  This will handle
+//		 cyclic references for objects already deepCopied, including the source object
+//		 itself.  The "result" passed in is the object returned from create().
 		populate: function(deepCopyAlgorithm, source, result) {}
 	};
 
 	function DeepCopyAlgorithm() {
-		// copiedObjects keeps track of objects already copied by this
-		// deepCopy operation, so we can correctly handle cyclic references.
+//		 copiedObjects keeps track of objects already copied by this
+//		 deepCopy operation, so we can correctly handle cyclic references.
 		this.copiedObjects = [];
 		thisPass = this;
 		this.recursiveDeepCopy = function(source) {
@@ -515,14 +525,14 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 
 		maxDepth: 256,
 			
-		// add an object to the cache.  No attempt is made to filter duplicates;
-		// we always check getCachedResult() before calling it.
+//		 add an object to the cache.  No attempt is made to filter duplicates;
+//		 we always check getCachedResult() before calling it.
 		cacheResult: function(source, result) {
 			this.copiedObjects.push([source, result]);
 		},
 
-		// Returns the cached copy of a given object, or undefined if it's an
-		// object we haven't seen before.
+//		 Returns the cached copy of a given object, or undefined if it's an
+//		 object we haven't seen before.
 		getCachedResult: function(source) {
 			var copiedObjects = this.copiedObjects;
 			var length = copiedObjects.length;
@@ -534,26 +544,26 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 			return undefined;
 		},
 		
-		// deepCopy handles the simple cases itself: non-objects and object's we've seen before.
-		// For complex cases, it first identifies an appropriate DeepCopier, then calls
-		// applyDeepCopier() to delegate the details of copying the object to that DeepCopier.
+//		 deepCopy handles the simple cases itself: non-objects and object's we've seen before.
+//		 For complex cases, it first identifies an appropriate DeepCopier, then calls
+//		 applyDeepCopier() to delegate the details of copying the object to that DeepCopier.
 		deepCopy: function(source) {
-			// null is a special case: it's the only value of type 'object' without properties.
+//			 null is a special case: it's the only value of type 'object' without properties.
 			if ( source === null ) return null;
 
-			// All non-objects use value semantics and don't need explict copying.
+//			 All non-objects use value semantics and don't need explict copying.
 			if ( typeof source !== 'object' ) return source;
 
 			var cachedResult = this.getCachedResult(source);
 
-			// we've already seen this object during this deep copy operation
-			// so can immediately return the result.  This preserves the cyclic
-			// reference structure and protects us from infinite recursion.
+//			 we've already seen this object during this deep copy operation
+//			 so can immediately return the result.  This preserves the cyclic
+//			 reference structure and protects us from infinite recursion.
 			if ( cachedResult ) return cachedResult;
 
-			// objects may need special handling depending on their class.  There is
-			// a class of handlers call "DeepCopiers"  that know how to copy certain
-			// objects.  There is also a final, generic deep copier that can handle any object.
+//			 objects may need special handling depending on their class.  There is
+//			 a class of handlers call "DeepCopiers"  that know how to copy certain
+//			 objects.  There is also a final, generic deep copier that can handle any object.
 			for ( var i=0; i<deepCopiers.length; i++ ) {
 				var deepCopier = deepCopiers[i];
 				if ( deepCopier.canCopy(source) ) {
@@ -564,29 +574,29 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 			throw new Error("no DeepCopier is able to copy " + source);
 		},
 
-		// once we've identified which DeepCopier to use, we need to call it in a very
-		// particular order: create, cache, populate.  This is the key to detecting cycles.
-		// We also keep track of recursion depth when calling the potentially recursive
-		// populate(): this is a fail-fast to prevent an infinite loop from consuming all
-		// available memory and crashing or slowing down the browser.
+//		 once we've identified which DeepCopier to use, we need to call it in a very
+//		 particular order: create, cache, populate.  This is the key to detecting cycles.
+//		 We also keep track of recursion depth when calling the potentially recursive
+//		 populate(): this is a fail-fast to prevent an infinite loop from consuming all
+//		 available memory and crashing or slowing down the browser.
 		applyDeepCopier: function(deepCopier, source) {
-			// Start by creating a stub object that represents the copy.
+//			 Start by creating a stub object that represents the copy.
 			var result = deepCopier.create(source);
 
-			// we now know the deep copy of source should always be result, so if we encounter
-			// source again during this deep copy we can immediately use result instead of
-			// descending into it recursively.  
+//			 we now know the deep copy of source should always be result, so if we encounter
+//			 source again during this deep copy we can immediately use result instead of
+//			 descending into it recursively.  
 			this.cacheResult(source, result);
 
-			// only DeepCopier::populate() can recursively deep copy.  So, to keep track
-			// of recursion depth, we increment this shared counter before calling it,
-			// and decrement it afterwards.
+//			 only DeepCopier::populate() can recursively deep copy.  So, to keep track
+//			 of recursion depth, we increment this shared counter before calling it,
+//			 and decrement it afterwards.
 			this.depth++;
 			if ( this.depth > this.maxDepth ) {
 				throw new Error("Exceeded max recursion depth in deep copy.");
 			}
 
-			// It's now safe to let the deepCopier recursively deep copy its properties.
+//			 It's now safe to let the deepCopier recursively deep copy its properties.
 			deepCopier.populate(this.recursiveDeepCopy, source, result);
 
 			this.depth--;
@@ -595,23 +605,23 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 		}
 	};
 
-	// entry point for deep copy.
-	//   source is the object to be deep copied.
-	//   maxDepth is an optional recursion limit. Defaults to 256.
+//	 entry point for deep copy.
+//	   source is the object to be deep copied.
+//	   maxDepth is an optional recursion limit. Defaults to 256.
 	function deepCopy(source, maxDepth) {
 		var deepCopyAlgorithm = new DeepCopyAlgorithm();
 		if ( maxDepth ) deepCopyAlgorithm.maxDepth = maxDepth;
 		return deepCopyAlgorithm.deepCopy(source);
 	}
 
-	// publicly expose the DeepCopier class.
+//	 publicly expose the DeepCopier class.
 	deepCopy.DeepCopier = DeepCopier;
 
-	// publicly expose the list of deepCopiers.
+//	 publicly expose the list of deepCopiers.
 	deepCopy.deepCopiers = deepCopiers;
 
-	// make deepCopy() extensible by allowing others to 
-	// register their own custom DeepCopiers.
+//	 make deepCopy() extensible by allowing others to 
+//	 register their own custom DeepCopiers.
 	deepCopy.register = function(deepCopier) {
 		if ( !(deepCopier instanceof DeepCopier) ) {
 			deepCopier = new DeepCopier(deepCopier);
@@ -619,9 +629,9 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 		deepCopiers.unshift(deepCopier);
 	}
 
-	// Generic Object copier
-	// the ultimate fallback DeepCopier, which tries to handle the generic case.  This
-	// should work for base Objects and many user-defined classes.
+//	 Generic Object copier
+//	 the ultimate fallback DeepCopier, which tries to handle the generic case.  This
+//	 should work for base Objects and many user-defined classes.
 	deepCopy.register({
 		canCopy: function(source) { return true; },
 
@@ -643,7 +653,7 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 		}
 	});
 
-	// Array copier
+//	 Array copier
 	deepCopy.register({
 		canCopy: function(source) {
 			return ( source instanceof Array );
@@ -661,7 +671,7 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 		}
 	});
 
-	// Date copier
+//	 Date copier
 	deepCopy.register({
 		canCopy: function(source) {
 			return ( source instanceof Date );
@@ -672,11 +682,11 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 		}
 	});
 
-	// HTML DOM Node
+//	 HTML DOM Node
 
-	// utility function to detect Nodes.  In particular, we're looking
-	// for the cloneNode method.  The global document is also defined to
-	// be a Node, but is a special case in many ways.
+//	 utility function to detect Nodes.  In particular, we're looking
+//	 for the cloneNode method.  The global document is also defined to
+//	 be a Node, but is a special case in many ways.
 	function isNode(source) {
 		if ( global.Node ) {
 			return source instanceof Node;
@@ -693,24 +703,24 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 		}
 	}
 
-	// Node copier
+//	 Node copier
 	deepCopy.register({
 		canCopy: function(source) { return isNode(source); },
 
 		create: function(source) {
-			// there can only be one (document).
+//			 there can only be one (document).
 			if (typeof document == 'object' && source === document ) return document;
 
-			// start with a shallow copy.  We'll handle the deep copy of
-			// its children ourselves.
+//			 start with a shallow copy.  We'll handle the deep copy of
+//			 its children ourselves.
 			return source.cloneNode(false);
 		},
 
 		populate: function(deepCopy, source, result) {
-			// we're not copying the global document, so don't have to populate it either.
+//			 we're not copying the global document, so don't have to populate it either.
 			if ( typeof document == 'object' && source === document ) return document;
 
-			// if this Node has children, deep copy them one-by-one.
+//			 if this Node has children, deep copy them one-by-one.
 			if ( source.childNodes && source.childNodes.length ) {
 				for ( var i=0; i<source.childNodes.length; i++ ) {
 					var childCopy = deepCopy(source.childNodes[i]);
@@ -719,8 +729,8 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 			}
 		}
 	});
-
-	deepCopy.register( {//Fase Dictionary
+// Code.js : Fase Dictionary
+	deepCopy.register( {
 		canCopy: function(source) { return source._className == 'Dictionary'; },
 		create: function(source) {
 			return new Dictionary();

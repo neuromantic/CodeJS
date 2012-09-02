@@ -12,7 +12,7 @@ _package( '',
 	
 	_class( 'Test', {
 		Test:function(){
-			var server = new Server( {host:'127.0.0.1', port:'8080'} );
+			var server = new Server( {host:'127.0.0.1', port:'2207'} );
 			var files = new Static( {root:'/'}  );
 			var logger = new Logger();
 			server.connect( logger );

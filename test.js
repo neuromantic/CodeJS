@@ -1,2 +1,2 @@
 require( './src/Code.js' );
-Code('Test');
+Code.r('Test');
