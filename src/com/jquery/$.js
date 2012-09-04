@@ -13,8 +13,12 @@
  *
  * Date: Thu May 12 15:04:36 2011 -0400
  */
-(function( window, undefined ) {
+_package( 'com.jquery', _class('$',{}) );
+( function(  ) {
  
+	if(typeof window === 'undefined'){
+		return;
+	}
 // Use the correct document accordingly with window argument (sandbox)
 var document = window.document,
 	navigator = window.navigator,
@@ -8932,4 +8936,4 @@ jQuery.each([ "Height", "Width" ], function( i, name ) {
 });
 
 window.jQuery = window.$ = jQuery;
-})(window);
+})();

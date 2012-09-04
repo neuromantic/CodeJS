@@ -4,9 +4,9 @@
  * 
  * Class / Object Descripion Engine for Javascript
  * 
- * https://github.com/neuromantic/CodeJS\
+ * https://github.com/neuromantic/CodeJS
  *
- * Copyright 2011, Neuromantic Industries & For Sure, Rad!
+ * Copyright 2012, Neuromantic Industries
  * Licensed under the MIT license.
  *
  */
@@ -16,6 +16,7 @@
 	global = ( typeof window == 'object') ? window : ( typeof global == 'object') ? global : { dev: null }; 
 	console = console || {};
 	console.log = console.log || function () {};
+	console.log( 'Starting Code.js. global = ' + global );
 	if ( typeof require == 'function' ) {
 		fs = require( 'fs' );
 	}
@@ -42,7 +43,7 @@
 			queue : [],
 			_import : function( classPath, immediately ) {//--------------------------------------------------------------- loader._import (load)
 				if( _.loader.queue.indexOf( classPath ) < 0 ) {
-_debug( 'importing', classPath );
+					_debug( '-------------------------------------------------------------- IMPORTING', classPath );
 					_.loader.load( classPath );// push path into loading queue
 				}// if
 			},// _import
@@ -57,9 +58,7 @@ _debug( 'creating stub class for', className );
 				return global[ className ];
 			},// _class
 			load : function( classPath, first ) {
-				_import = this._import;//load
-				_class = this._class;//stub
-_debug( 'loading', classPath );
+_debug( '-------------------------------------------------------------- LOADING', classPath );
 				var scriptPath = 'src/' + classPath.replace( /\./g, '/' ) + '.js';
 				try{
 					this.queue.push( classPath);
@@ -70,10 +69,10 @@ _debug( 'file:', scriptPath );
 							var response = fs.readFileSync(  scriptPath, 'ascii' );
 						}catch(error){
 _debug( 'file system error');
-							throw(error);
+							throw new Error(error);
 						}
 					} else {//client // ( typeof XMLHttpRequest == "function" )
-_debug( 'from server' );
+_debug( 'from host' );
 						var scriptURL = scriptPath;
 						var request = new XMLHttpRequest();
 						request.open( 'GET', scriptURL, false );
@@ -83,6 +82,7 @@ _debug( 'from server' );
 						} else if ( request.status == 0 ) {
 							// eval( responseText );
 						} else {// else if
+_debug( 'XMLHttpRequest error');
 						    throw new Error( request.status );
 						};// else
 					}  
@@ -92,6 +92,8 @@ _debug( 'error loading', classPath, 'Error Status:', error.message);
 				}
 _debug( 'loaded', classPath, '. processing imports' );
 				try{
+					global._import = this._import;//load
+					global._class = this._class;//stub
 					eval( response );
 				}catch( error ){
 _debug( 'error completing imports for '+  classPath + '. Error Text:' + error.message );
@@ -105,6 +107,7 @@ _debug( 'error completing imports for '+  classPath + '. Error Text:' + error.me
 //_debug( '<<< finished loading tasks for', classPath)
 				if( this.queue.length == _.compiler.queue.length ){
 					_.compiler.compileClasses();
+					this.queue = [];
 				}// if
 			}//, load
 		},// loader
@@ -120,13 +123,12 @@ _debug( 'error completing imports for '+  classPath + '. Error Text:' + error.me
 			},// _import
 			compileClasses : function () {
 _debug( 'compiling classes' );
-				_import = this._import;
-				_class = this._class;
 				var className;
 				while ( className = this.queue[ 0 ] ) {
 					this.compile( className );
 				}// while
-				 _.interpreter.defineClasses()
+				 _.interpreter.defineClasses();
+				 this._queue = [];
 			},// compileClasses
 			compile : function ( className ) {
 				var index = this.queue.indexOf( className );
@@ -134,6 +136,8 @@ _debug( 'compiling classes' );
 					this.queue.splice( index, 1 );
 					var classObject = global [ className ];
 _debug( 'adding class', className );
+					global._import = this._import;
+					global._class = this._class;
 					eval( classObject._script );
 					this.buffer = this.buffer.concat( classObject._script  );
 _debug( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
@@ -142,12 +146,14 @@ _debug( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
 		},// compiler
 		interpreter : {
 			initializing : false,
-			application: '',
+			applicationName: '',
 			_import : function( classPath, immediately ) {//--------------------------------------------------------------- interpreter._import (null)
 			},// _import
 			_class : function( className, properties ) {//--------------------------------------------------------------- interpreter._class define
 _debug( '_class', className );
-				if(! global[ className ]._constructor ) { // if class is stub
+				if( global[ className ] &&  global[ className ]._constructor ) {// if class is stub
+					return;
+				}else{
 					var newClass = Class._plus( className, properties );// create the class from Class object
 					newClass._extends = function( parentClassName, properties ) {
 _debug( '_extends', parentClassName );
@@ -156,16 +162,18 @@ _debug( '_extends', parentClassName );
 					}// _extends
 					global[ className ] = newClass;
 				} //if
-				_.interpreter.application = className;
+				_.interpreter.applicationName = className;
 				return global[ className ]
 			 },// _class
 			defineClasses : function () {
 _debug( 'defining classes' );
-				_import = this._import; // null
-				_class = this._class; // define / extend class
+				global._import = this._import; // null
+				global._class = this._class; // define / extend class
 				eval( _.compiler.buffer );
+				_.compiler.buffer = '';
 _debug ('instantiate', this.application );
-				new global[ this.application ]();
+				new global[ this.applicationName ]();
+				this.applicationName = '';
 			}//defineClasses
 		}// interpreter
 	};// _
@@ -396,23 +404,43 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 	var Code = {
 		//Code.r (classPath) - run the named script using dynamic import
 		r : function ( applicationClassPath ) {
+_debug('Code.r(',applicationClassPath,')');
 			this._
 			var applicationClassName = applicationClassPath.split( '.' ).pop();
-			_import = _.loader._import;//--------------------------------------------------------------- loader._import
+			global._import = _.loader._import;
 			_import( applicationClassPath );
 		},
 		x : function ( applicationClassPath ){
+_debug('Code.x(',applicationClassPath,')');
 			applicationClassPath = applicationClassPath || this._.applicationClassPath ;
 			var applicationClassName = applicationClassPath.split( '.' ).pop();
-			this._.application = ( function( applicationClassName ) {
-				return function () {
-					_.application = new global[ applicationClassName ]();//no namespace
-				}// return function
-			} )( applicationClassName );//closure
+			new global[ applicationClassName ]();//no namespace
+		},
+		c : function ( applicationClassPath ) {
+_debug('Code.c(',applicationClassPath,')');
+			var interpreter = _.interpreter;
+			_.interpreter = {
+				defineClasses : function () {
+_debug( 'bypassing interpreter.');
+				}
+			}
+			global._import = _.loader._import;
+			_import( applicationClassPath );
+			if(fs){
+				var fs = require('fs');
+				if(! fs.existsSync("bin/") ){ 
+			    	fs.mkdirSync('bin/');
+				}
+				fs.writeFileSync('bin/'+applicationClassPath, _.compiler.buffer);
+			}
+			_.interpreter = interpreter;
+			return _.compiler.buffer
 		}
 	}	
 		Code._ = _;
-		global.Code = Code;
+		global.Code = Code;	
+		global._import = _.interpreter._import;
+		global._class = _.interpreter._class;
 _debug('Code ready.')
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -742,6 +770,5 @@ _debug('Code ready.')
 			};
 		}
 	});
-
 return Code;
 })();

@@ -1,6 +1,6 @@
 /*!
  *
- * Component.js
+ * Emitter.js
  * com.grabnetworks.arete.component.Emitter
  *
  */

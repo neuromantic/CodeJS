@@ -149,7 +149,6 @@ _package( 'com.neuromantic.www',
 			};
 		},
 		_layout : function ( animated , callback ) {
-			callback ? callback = _.util.scope( callback, this ) : 0;
 			this._super._layout();
 			this._.bg.x( 10 );
 			this._.bg.y( 10 );
@@ -211,7 +210,7 @@ _package( 'com.neuromantic.www',
 			var _this = this;
 			_this._layout(false);
 			Tween.to( _this._.graphic , 0.5, { alpha : 1, delay : 0.1, onComplete : function () { 
-			window.scrollTo(0,1);
+//			window.scrollTo(0,1);
 				_this.addChild( _this._.form );
 				_this._.form.addChild( _this._.header );
 				_this._layout( true, function() {
