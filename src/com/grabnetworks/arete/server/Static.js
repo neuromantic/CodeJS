@@ -36,8 +36,13 @@ _package( 'com.grabnetworks.arete.server',
 				if( root.indexOf('/') === 0 ){
 					root = root.substring(1);
 				}
+				
 				if ( root === '' || path.indexOf( this._.root ) === 0 ){//in root
-					var file = path.substring( path.lastIndexOf( '/' ) + 1 )
+					var file = path.substring( path.lastIndexOf( '/' ) + 1 );
+					if (file == ''){
+						file = 'index.html';
+						path+=file;
+					}
 					var ext = file.substring( file.lastIndexOf( '.' ) + 1 );
 					var type = this._.types[ ext ];
 					if( type ) {
