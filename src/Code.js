@@ -12,13 +12,12 @@
  */
 
 ( function ( ) {
-	var fs;
 	global = ( typeof window == 'object') ? window : ( typeof global == 'object') ? global : { dev: null }; 
 	console = console || {};
 	console.log = console.log || function () {};
 	console.log( 'Starting Code.js. global = ' + global );
 	if ( typeof require == 'function' ) {
-		fs = require( 'fs' );
+		global.fs = require( 'fs' );
 	}
 	var _ = {
 		debugging : true,
@@ -418,23 +417,42 @@ _debug('Code.x(',applicationClassPath,')');
 		},
 		c : function ( applicationClassPath ) {
 _debug('Code.c(',applicationClassPath,')');
-			var interpreter = _.interpreter;
-			_.interpreter = {
-				defineClasses : function () {
-_debug( 'bypassing interpreter.');
-				}
-			}
-			global._import = _.loader._import;
-			_import( applicationClassPath );
+			var buffer;
+			var bin = 'bin/'+applicationClassPath;
 			if(fs){
-				var fs = require('fs');
-				if(! fs.existsSync("bin/") ){ 
-			    	fs.mkdirSync('bin/');
+				var path = require('path');
+				if(! path.existsSync( 'bin/' ) ){
+					fs.mkdirSync( 'bin/' );
+				}else if( path.existsSync( bin ) ){
+					buffer = fs.readFileSync( bin ).toString();
 				}
-				fs.writeFileSync('bin/'+applicationClassPath, _.compiler.buffer);
 			}
-			_.interpreter = interpreter;
-			return _.compiler.buffer
+			if( ! buffer ){
+				var interpreter = _.interpreter;
+				_.interpreter = {
+					defineClasses : function () {
+_debug( 'bypassing interpreter.');
+					}
+				}
+				global._import = _.loader._import;
+				_import( applicationClassPath );
+				buffer = _.compiler.buffer;
+				_.compiler.buffer = '';
+				_.interpreter = interpreter;
+				var ast = require("uglify-js").parser;
+				var ugg = require("uglify-js").uglify;	
+				buffer = ast.parse( buffer ); // parse code and get the initial AST
+				buffer = ugg.ast_mangle( buffer ); // get a new AST with mangled names
+				buffer = ugg.ast_squeeze( buffer ); // get an AST with compression optimizations
+				buffer = ugg.gen_code( buffer ); // compressed code here	
+				if(fs){
+					var path = require('path');
+					if( path.existsSync( 'bin/' ) ){
+						fs.writeFileSync( bin, buffer )
+					}
+					}
+			}
+			return buffer
 		}
 	}	
 		Code._ = _;
