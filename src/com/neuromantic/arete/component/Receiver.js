@@ -1,10 +1,10 @@
 /*!
  *
  * Receiver.js
- * com.grabnetworks.arete.component.Receiver
+ * com.neuromantic.arete.component.Receiver
  *
  */
-_package( 'com.grabnetworks.arete.component',
+_package( 'com.neuromantic.arete.component',
 	_class( 'Receiver', {
 		private_message : {},
 		input : function ( message ) {

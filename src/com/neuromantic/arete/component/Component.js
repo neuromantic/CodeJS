@@ -1,12 +1,12 @@
 /*!
  *
  * Component.js
- * com.grabnetworks.arete.component.Component
+ * com.neuromantic.arete.component.Component
  *
  */
-_package( 'com.grabnetworks.arete.component',
+_package( 'com.neuromantic.arete.component',
 	
- 	_import( 'com.grabnetworks.arete.component.Emitter' ),
+ 	_import( 'com.neuromantic.arete.component.Emitter' ),
  	
 	_class( 'Component' )._extends( 'Emitter', {
 		connect : function( intake ) {

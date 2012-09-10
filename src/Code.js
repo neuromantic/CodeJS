@@ -17,7 +17,10 @@
 	console.log = console.log || function () {};
 	console.log( 'Starting Code.js. global = ' + global );
 	if ( typeof require == 'function' ) {
-		global.fs = require( 'fs' );
+		fs = require( 'fs' );
+		path = require('path');
+		ast = require('uglify-js').parser;
+		ugg = require('uglify-js').uglify;
 	}
 	var _ = {
 		debugging : true,
@@ -42,7 +45,6 @@
 			queue : [],
 			_import : function( classPath, immediately ) {//--------------------------------------------------------------- loader._import (load)
 				if( _.loader.queue.indexOf( classPath ) < 0 ) {
-					_debug( '-------------------------------------------------------------- IMPORTING', classPath );
 					_.loader.load( classPath );// push path into loading queue
 				}// if
 			},// _import
@@ -57,49 +59,72 @@ _debug( 'creating stub class for', className );
 				return global[ className ];
 			},// _class
 			load : function( classPath, first ) {
-_debug( '-------------------------------------------------------------- LOADING', classPath );
+				var code;
+				var binPath = 'bin/' + classPath;
 				var scriptPath = 'src/' + classPath.replace( /\./g, '/' ) + '.js';
 				try{
 					this.queue.push( classPath);
-					if( fs ){//server
-_debug( 'from local file system' );
+					if( fs && path && ast && ugg ){//server
 						try{
-_debug( 'file:', scriptPath );
-							var response = fs.readFileSync(  scriptPath, 'ascii' );
-						}catch(error){
+_debug( 'looking for bytecode in', binPath );
+							code = fs.readFileSync( binPath );
+						}catch( e ){
+_debug( 'no bytecode available.');
+						}
+						try{
+_debug( 'loading source code from', scriptPath );
+							code = fs.readFileSync( scriptPath, 'ascii' );
+							try{
+_debug( 'generating bytecode for', classPath );	
+								code = ast.parse( code ); // parse code and get the initial AST
+//								code = ugg.ast_mangle( code ); // get a new AST with mangled names
+								code = ugg.ast_squeeze( code ); // get an AST with compression optimizations
+								code = ugg.gen_code( code ); // compressed code here	
+								if(! path.existsSync( 'bin/' ) ){
+									fs.mkdirSync( 'bin/');
+								}
+_debug( 'writing bytecode to', binPath );
+								fs.writeFileSync( binPath, code );
+							}catch (error ){
+								throw new Error( error );
+_debug( 'error creating bytecode' );
+							}
+						}catch( error ){
 _debug( 'file system error');
-							throw new Error(error);
+							throw new Error( error );
 						}
 					} else {//client // ( typeof XMLHttpRequest == "function" )
-_debug( 'from host' );
+_debug( 'streaming source code from', scriptURL );
 						var scriptURL = scriptPath;
 						var request = new XMLHttpRequest();
 						request.open( 'GET', scriptURL, false );
 						request.send( null );
 						if ( request.status == 200 ) {
-							var response = request.responseText
-						} else if ( request.status == 0 ) {
-							// eval( responseText );
+							code = request.responseText;
 						} else {// else if
 _debug( 'XMLHttpRequest error');
 						    throw new Error( request.status );
 						};// else
 					}  
 				}catch( error ){
-_debug( 'error loading', classPath, 'Error Status:', error.message);
+_debug( 'error loading', classPath, ':', error.message ) ;
 					throw error;
 				}
 _debug( 'loaded', classPath, '. processing imports' );
 				try{
 					global._import = this._import;//load
 					global._class = this._class;//stub
-					eval( response );
+_debug( 'loaded', classPath, 'bytecode:\n',code );
+					if(code.indexOf('_import') > -1 || code.indexOf('_class') > -1){
+						eval( code );
+					}
 				}catch( error ){
 _debug( 'error completing imports for '+  classPath + '. Error Text:' + error.message );
 					throw error;
 				}
 				var className = classPath.split( '.' ).pop();
-				global[ className ]._script = response;//store script
+				global[ className ] = global[ className ] || {}
+				global[ className ]._code = code;//store script
 				_.compiler.queue.push(className );// add script to compilation queue
 //_debug( 'L[ ' + this.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
 //_debug( 'D[ ' + _.definition.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
@@ -137,8 +162,10 @@ _debug( 'compiling classes' );
 _debug( 'adding class', className );
 					global._import = this._import;
 					global._class = this._class;
-					eval( classObject._script );
-					this.buffer = this.buffer.concat( classObject._script  );
+					if( classObject._code.indexOf ('_class') > -1 || classObject._code.indexOf('_import') > -1 ){
+						eval( classObject._code );
+					}
+					this.buffer = this.buffer.concat( classObject._code + ';' );
 _debug( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
 				}// if
 			}//compile
@@ -170,7 +197,7 @@ _debug( 'defining classes' );
 				global._class = this._class; // define / extend class
 				eval( _.compiler.buffer );
 				_.compiler.buffer = '';
-_debug ('instantiate', this.application );
+_debug ('instantiate', this.applicationName );
 				new global[ this.applicationName ]();
 				this.applicationName = '';
 			}//defineClasses
@@ -209,7 +236,7 @@ _debug ('instantiate', this.application );
 	 * http://bit.ly/4U5H
 	 *	
 	 */	
-	  // var fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
+	   var fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
 	  // The base Class implementation -- 
 	  // provides _get and _set shortcuts to eliminate abiguous assignment ( is it a  property or a getSetter ? )
 	  // provides .add() to replace += 
@@ -240,7 +267,8 @@ _debug ('instantiate', this.application );
 				}else{
 					( typeof this[ propertyName ] == 'function' ) ? this[ propertyName ]( this[ propertyName ]() + value ) : this[ propertyName ] += value;
 				};
-			}
+			},
+			toString : function () { return '['+this._className+']'; } 
 		};
 		
 	  // Create a new Class that inherits from this class
@@ -249,19 +277,18 @@ _debug ('instantiate', this.application );
 		
 		// Instantiate a base class (but only create the instance,
 		// don't run the _config constructor)
-		_.interpreter.initializing = true;
-		var newPrototype = new this();
+//		_.interpreter.initializing = true;
+		var newPrototype = _.util.deepCopy(_super);
 		newPrototype._className = className;
-		newPrototype.toString = function () { return '['+this._className+']'; } 
-		_.interpreter.initializing = false;
+//		_.interpreter.initializing = false;
 		
-		// The dummy class constructor
+		// The dummy class constructor (scoping)
 		function ClassObject() {
 		  // All construction is actually done in the _config method (declared using the new Class name as string (className ) )
 		  this._ = _.util.deepCopy( this._ );
 		  this.__ = _.util.deepCopy( this.__ );
 		  
-			if ( !_.interpreter.initializing ){
+//			if ( !_.interpreter.initializing ){
 				if ( this._className.indexOf( 'Event' ) < 0 && [ 'Dictionary' ].indexOf( this._className ) < 0 ) {
 					//_debug( 'new', this._className );
 				};
@@ -281,7 +308,7 @@ _debug ('instantiate', this.application );
 			  	if( this._config ) {
 			 		this._config.apply( this, arguments );
 			  	};
-			}
+//			}
 		}
 		
 		newPrototype._ = _super._ ? _.util.deepCopy( _super._ ) : {}; // private space
@@ -332,9 +359,9 @@ _debug ('instantiate', this.application );
 			
 		  // Check if we're overwriting an existing function
 			var property;
-			if ( typeof addition == 'function'  ){//&& fnTest.test(addition)
-		      	propertyType = 'function'
-		      	property = ( typeof _super[propertyName] == 'function' ) ? 
+			if ( typeof addition == 'function'  ) {
+		      	propertyType = 'function';
+		      	property = ( typeof _super[propertyName] == 'function' && fnTest.test(addition) ) ? 
 		        ( function( propertyName, fn ){
 		          return function() {
 		            var tmp = this._super;
@@ -343,7 +370,11 @@ _debug ('instantiate', this.application );
 		            if( propertyName === '_config' ) {
 		            	this._super = _super._config;
 		            }else{
-		            	this._super = _super;
+		            	var sup = _.util.deepCopy(_super);
+		            	for( var property in sup ){
+		            		sup[property] = _.util.scope(sup[property], this, property);
+		            	}
+		            	this._super = sup;
 		            }
 		            
 		            // The _config method only need to be bound temporarily, so we
@@ -400,66 +431,43 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 		return ClassObject;
 	};
 			
-	var Code = {
-		//Code.r (classPath) - run the named script using dynamic import
-		r : function ( applicationClassPath ) {
+	var Code = function(){
+		return Code.c('Code');
+	};
+//Code.r (classPath) - run the named script using dynamic import
+	Code.r = function ( applicationClassPath ) {
 _debug('Code.r(',applicationClassPath,')');
-			this._
-			var applicationClassName = applicationClassPath.split( '.' ).pop();
-			global._import = _.loader._import;
-			_import( applicationClassPath );
-		},
-		x : function ( applicationClassPath ){
-_debug('Code.x(',applicationClassPath,')');
-			applicationClassPath = applicationClassPath || this._.applicationClassPath ;
-			var applicationClassName = applicationClassPath.split( '.' ).pop();
-			new global[ applicationClassName ]();//no namespace
-		},
-		c : function ( applicationClassPath ) {
-_debug('Code.c(',applicationClassPath,')');
-			var buffer;
-			var bin = 'bin/'+applicationClassPath;
-			if(fs){
-				var path = require('path');
-				if(! path.existsSync( 'bin/' ) ){
-					fs.mkdirSync( 'bin/' );
-				}else if( path.existsSync( bin ) ){
-					buffer = fs.readFileSync( bin ).toString();
-				}
-			}
-			if( ! buffer ){
-				var interpreter = _.interpreter;
-				_.interpreter = {
-					defineClasses : function () {
-_debug( 'bypassing interpreter.');
-					}
-				}
+		var applicationClassName = applicationClassPath.split( '.' ).pop();
 				global._import = _.loader._import;
 				_import( applicationClassPath );
-				buffer = _.compiler.buffer;
-				_.compiler.buffer = '';
-				_.interpreter = interpreter;
-				var ast = require("uglify-js").parser;
-				var ugg = require("uglify-js").uglify;	
-				buffer = ast.parse( buffer ); // parse code and get the initial AST
-				buffer = ugg.ast_mangle( buffer ); // get a new AST with mangled names
-				buffer = ugg.ast_squeeze( buffer ); // get an AST with compression optimizations
-				buffer = ugg.gen_code( buffer ); // compressed code here	
-				if(fs){
-					var path = require('path');
-					if( path.existsSync( 'bin/' ) ){
-						fs.writeFileSync( bin, buffer )
-					}
-					}
+			},
+	Code.x = function ( applicationClassPath, parameters ){
+_debug('Code.x(',applicationClassPath,')');
+		applicationClassPath = applicationClassPath || this._.applicationClassPath ;
+		var applicationClassName = applicationClassPath.split( '.' ).pop();
+		new global[ applicationClassName ](parameters);//no namespace
+	};
+	Code.c = function ( applicationClassPath ) {
+_debug('Code.c(',applicationClassPath,')');
+		var buffer;
+		var interpreter = _.interpreter;
+		_.interpreter = {
+			defineClasses : function () {
+_debug( 'bypassing interpreter.');
 			}
-			return buffer
 		}
-	}	
-		Code._ = _;
-		global.Code = Code;	
-		global._import = _.interpreter._import;
-		global._class = _.interpreter._class;
-_debug('Code ready.')
+		global._import = _.loader._import;
+		_import( applicationClassPath );
+		buffer = _.compiler.buffer;
+		_.compiler.buffer = '';
+		_.interpreter = interpreter;	
+		return buffer
+	};
+	Code._ = _;
+	global.Code = Code;	
+	global._import = _.interpreter._import;
+	global._class = _.interpreter._class;
+	_debug('Code ready.')
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////

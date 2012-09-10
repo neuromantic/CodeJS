@@ -1,11 +1,11 @@
 /*!
  *
  * Logger.js
- * com.grabnetworks.arete.Server
+ * com.neuromantic.arete.Server
  *
  */
-_package( 'com.grabnetworks.arete',
- 	_import( 'com.grabnetworks.arete.component.Component' ),
+_package( 'com.neuromantic.arete',
+ 	_import( 'com.neuromantic.arete.component.Component' ),
 	_class( 'Server' )._extends( 'Component', {
 		private_http: null,
 		Server: function( config ) {

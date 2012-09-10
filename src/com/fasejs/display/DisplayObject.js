@@ -14,7 +14,6 @@
  	_import( 'com.fasejs.events.EventDispatcher' ),
  	_import( 'com.fasejs.events.MouseEvent' ),
  	_import( 'com.fasejs.display.Stage' ),
- 	_import( 'com.jquery.$'),
  	
 	_class( 'DisplayObject' )._extends( 'EventDispatcher', {
 		
@@ -228,34 +227,28 @@
 				return this._.rotation;
 		},
 		set_rotation : function ( value ) {
-			$( this._.element ).css( {
-			    'transform': 'rotate('+value+'deg)',
-			    '-moz-transform': 'rotate('+value+'deg)',
-			    '-o-transform': 'rotate('+value+'deg)',
-			    '-webkit-transform': 'rotate('+value+'deg)',
-			});
+			this._.element.style.transform = this._.element.style.MozTransform = this._.element.style.OTransform =  this._.element.style.WebkitTransform = 'rotate('+value+'deg)';
 			this._.rotation = value;
-			//TODO: remove jQuery dependency, implement cross-browser rotation
-			function degreesToRadians(num) {
-				return (num) * Math.PI / 180;
-			}
-			function createIEMatrixString(M) {
-				return 'M11=' + M.e(1, 1) + ', M12=' + M.e(1,2) + ', M21=' + M.e(2,1) + ', M22=' + M.e(2,2);
-			}
-			function rotateElement(e, deg) {
-				deg_str = deg + "";
-				rotate_transform = "rotate(" + deg + "deg)";
-				matrix_str = createIEMatrixString(Matrix.Rotation(degreesToRadians(deg)));
-				filter_str = "progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', " + matrix_str + ")";
-			
-				e.style["rotation"] = deg_str + "deg"; // CSS3
-				e.style.MozTransform = rotate_transform; // Moz
-				e.style.OTransform = rotate_transform; // Opera
-				e.style.WebkitTransform = rotate_transform; // Webkit/Safari/Chrome
-				e.style.filter = filter_str; // IE 6/7
-				e.style.MsFilter = filter_str; // IE 8
-				e.style["zoom"] = "1"; // ??? Probably IEs
-			}
+//			function degreesToRadians(num) {
+//				return (num) * Math.PI / 180;
+//			}
+//			function createIEMatrixString(M) {
+//				return 'M11=' + M.e(1, 1) + ', M12=' + M.e(1,2) + ', M21=' + M.e(2,1) + ', M22=' + M.e(2,2);
+//			}
+//			function rotateElement(e, deg) {
+//				deg_str = deg + "";
+//				rotate_transform = "rotate(" + deg + "deg)";
+//				matrix_str = createIEMatrixString(Matrix.Rotation(degreesToRadians(deg)));
+//				filter_str = "progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', " + matrix_str + ")";
+//			
+//				e.style["rotation"] = deg_str + "deg"; // CSS3
+//				e.style.MozTransform = rotate_transform; // Moz
+//				e.style.OTransform = rotate_transform; // Opera
+//				e.style.WebkitTransform = rotate_transform; // Webkit/Safari/Chrome
+//				e.style.filter = filter_str; // IE 6/7
+//				e.style.MsFilter = filter_str; // IE 8
+//				e.style["zoom"] = "1"; // ??? Probably IEs
+//			}
 			
 		},
 		get_height : function( ) {

@@ -1,12 +1,12 @@
 /*!
  *
  * Emitter.js
- * com.grabnetworks.arete.component.Emitter
+ * com.neuromantic.arete.component.Emitter
  *
  */
-_package( 'com.grabnetworks.arete',
+_package( 'com.neuromantic.arete',
  	
-	_import( 'com.grabnetworks.arete.component.Transmitter' ),
+	_import( 'com.neuromantic.arete.component.Transmitter' ),
 
 	_class( 'Emitter' )._extends( 'Transmitter', {
 		emit : function( message ) {

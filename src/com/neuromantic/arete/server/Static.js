@@ -1,11 +1,11 @@
 /*!
  *
  * Static.js
- * com.grabnetworks.arete.server.Static
+ * com.neuromantic.arete.server.Static
  *
  */
-_package( 'com.grabnetworks.arete.server',
- 	_import( 'com.grabnetworks.arete.component.Component' ),
+_package( 'com.neuromantic.arete.server',
+ 	_import( 'com.neuromantic.arete.component.Component' ),
 	_class( 'Static' )._extends( 'Component', {
 		private_root: '/',
 		private_types: { 
@@ -54,16 +54,16 @@ _package( 'com.grabnetworks.arete.server',
 						               buffer = buffer.toString();
 						        }
 								message.http.res.statusCode = 200;
-						        message.http.res.write( buffer );
+						        message.http.res.end( buffer );
 					    	}
 				        } catch ( error ) {
 							message.http.res.statusCode = 404;
-					        message.http.res.write( error.message );
+					        message.http.res.end( error.message );
 				        }
 					}
 				}
 			}			
-			this.output( message );
+			this._super.process( message );
 		}//,
 	})
 );

@@ -1,12 +1,12 @@
 /*!
  *
  * Transmitter.js
- * com.grabnetworks.arete.component.Transmitter
+ * com.neuromantic.arete.component.Transmitter
  *
  */
-_package( 'com.grabnetworks.arete',
+_package( 'com.neuromantic.arete',
 	
- 	_import( 'com.grabnetworks.arete.component.Processor' ),
+ 	_import( 'com.neuromantic.arete.component.Processor' ),
  	
 	_class( 'Transmitter' )._extends( 'Processor', {
 		private_connections : [],
@@ -17,7 +17,6 @@ _package( 'com.grabnetworks.arete',
 				var receiver = this._.connections[ i ];
 				receiver.input(message);
 			}
-			this._.message = {};
 		}
 	} )
 );

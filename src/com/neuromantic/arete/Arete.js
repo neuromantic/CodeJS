@@ -4,12 +4,12 @@
  * Test
  *
  */
-_package( 'com.grabnetworks.arete',
+_package( 'com.neuromantic.arete',
 	
-	_import('com.grabnetworks.arete.server.Server'),
-	_import('com.grabnetworks.arete.server.Static'),
-	_import('com.grabnetworks.arete.server.Logger'),
-	_import('com.grabnetworks.arete.server.App'),
+	_import('com.neuromantic.arete.server.Server'),
+	_import('com.neuromantic.arete.server.Static'),
+	_import('com.neuromantic.arete.server.Logger'),
+	_import('com.neuromantic.arete.server.App'),
 	
 	_class( 'Arete', {
 		Arete : function(){
@@ -20,7 +20,6 @@ _package( 'com.grabnetworks.arete',
 			server.connect( logger );
 			logger.connect( app );
 			app.connect( files );
-			files.connect( server );
 			console.log( 'Arete running.' );
 		}
 	})
