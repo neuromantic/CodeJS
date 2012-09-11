@@ -8,10 +8,12 @@ _package( 'com.neuromantic.arete',
  	_import( 'com.neuromantic.arete.component.Component' ),
 	_class( 'Sockets' )._extends( 'Component', {
 		private_http: null,
-		Server: function( config ) {
+		Sockets: function( config ) {
+			
 			if( typeof require === 'function' ){
-				require('socket.io').sockets.on('connection', this._.onConnect );
-				this._.listen( config );
+				var io = require('socket.io')
+				io.sockets.on('connection', this._.onConnect );
+				io.listen( config );
 			}
 		},
 		private_accept : function( eventName ) {
