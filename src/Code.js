@@ -21,6 +21,7 @@
 		path = require('path');
 		ast = require('uglify-js').parser;
 		ugg = require('uglify-js').uglify;
+		http = require( 'http' );
 	}
 	var _ = {
 		debugging : true,
@@ -59,9 +60,13 @@ _debug( 'creating stub class for', className );
 				return global[ className ];
 			},// _class
 			load : function( classPath, first ) {
-				var code;
-				var binPath = 'bin/' + classPath;
-				var scriptPath = 'src/' + classPath.replace( /\./g, '/' ) + '.js';
+				var code, scriptPath;
+				if( classPath.indexOf( '//' ) !== 0 ){// TODO: http classPaths
+					scriptPath = classPath;
+				}else{
+					var binPath = 'bin/' + classPath;
+					scriptPath = 'src/' + classPath.replace( /\./g, '/' ) + '.js';
+				}
 				try{
 					this.queue.push( classPath);
 					if( fs && path && ast && ugg ){//server
@@ -77,7 +82,9 @@ _debug( 'loading source code from', scriptPath );
 							try{
 _debug( 'generating bytecode for', classPath );	
 								code = ast.parse( code ); // parse code and get the initial AST
-//								code = ugg.ast_mangle( code ); // get a new AST with mangled names
+								if(classPath == 'Code'){
+									code = ugg.ast_mangle( code ); // get a new AST with mangled names
+								}
 								code = ugg.ast_squeeze( code ); // get an AST with compression optimizations
 								code = ugg.gen_code( code ); // compressed code here	
 								if(! path.existsSync( 'bin/' ) ){

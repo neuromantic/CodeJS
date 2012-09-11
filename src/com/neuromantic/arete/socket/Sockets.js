@@ -1,16 +1,17 @@
 /*!
  *
- * Socket.js
- * com.neuromantic.arete.Socket
+ * Sockets.js
+ * com.neuromantic.arete.socket.Sockets
  *
  */
 _package( 'com.neuromantic.arete',
  	_import( 'com.neuromantic.arete.component.Component' ),
-	_class( 'Socket' )._extends( 'Component', {
+	_class( 'Sockets' )._extends( 'Component', {
 		private_http: null,
 		Server: function( config ) {
 			if( typeof require === 'function' ){
 				require('socket.io').sockets.on('connection', this._.onConnect );
+				this._.listen( config );
 			}
 		},
 		private_accept : function( eventName ) {
@@ -26,16 +27,13 @@ _package( 'com.neuromantic.arete',
 		},
 		private_getRepeater : function ( event, socket ){
 			var emit = this.emit;
-			return function( data ){ var m = {}; m[event] = {socket:socket, data:data}; emit( m )}
+			return function( data ){ var m = {}; m[event] = {socket:socket, data:data}; emit( m ); }
 		},
 		private_listen : function ( location ){
 			if(location.host && location.port ){
 				this._.http.listen(  location.port, location.host )
 				console.log( 'server listening at', location.host, 'on port', location.port )
 			}
-		},
-		private_handleRequest: function( req, res ) {
-			this.emit( { http: { req: req, res: res } } );
 		},
 		process : function ( message ){
 			if ( message.http ) {
