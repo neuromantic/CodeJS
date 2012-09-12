@@ -9,9 +9,15 @@ _package( 'com.neuromantic.arete.server',
 	_class( 'Logger' )._extends( 'Component', {
 		Logger : function( ) {
 		},
+		private_log : function ( ) {
+			_debug.apply( arguments );
+		},
 		process : function ( message ) {
 			if( message.http ) {
-				console.log( message.http.req.url );
+				this._.log( 'HTTP REQUEST:', message.http.req.url );
+			}
+			if(message.log){
+				this._.log( 'LOG', message.log );
 			}
 			this._super.process( message );
 			
