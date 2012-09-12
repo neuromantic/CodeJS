@@ -61,12 +61,9 @@ _debug( 'creating stub class for', className );
 			},// _class
 			load : function( classPath, first ) {
 				var code, scriptPath;
-				if( classPath.indexOf( '//' ) !== 0 ){// TODO: http classPaths
-					scriptPath = classPath;
-				}else{
-					var binPath = 'bin/' + classPath;
-					scriptPath = 'src/' + classPath.replace( /\./g, '/' ) + '.js';
-				}
+//TODO: http classPaths
+				var binPath = 'bin/' + classPath;
+				scriptPath = 'src/' + classPath.replace( /\./g, '/' ) + '.js';
 				try{
 					this.queue.push( classPath);
 					if( fs && path && ast && ugg ){//server

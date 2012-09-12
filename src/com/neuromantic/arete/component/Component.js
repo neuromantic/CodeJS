@@ -9,11 +9,11 @@ _package( 'com.neuromantic.arete.component',
  	_import( 'com.neuromantic.arete.component.Emitter' ),
  	
 	_class( 'Component' )._extends( 'Emitter', {
-		connect : function( intake ) {
-			this._.connections.push( intake );
+		connect : function( receiver ) {
+			this._.connections.push( receiver );
 		},
-		disconnect : function ( intake ){
-			this._.connections.splice( this._.connections.indexOf( input ), 1 );
+		disconnect : function ( receiver ){
+			this._.connections.splice( this._.connections.indexOf( receiver ), 1 );
 		}
 	} )
 );

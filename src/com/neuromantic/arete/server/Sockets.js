@@ -1,19 +1,19 @@
 /*!
  *
  * Sockets.js
- * com.neuromantic.arete.socket.Sockets
+ * com.neuromantic.arete.server.Sockets
  *
  */
-_package( 'com.neuromantic.arete',
+_package( 'com.neuromantic.arete.server',
  	_import( 'com.neuromantic.arete.component.Component' ),
 	_class( 'Sockets' )._extends( 'Component', {
-		private_http: null,
+		private_io: null,
+	
 		Sockets: function( config ) {
-			
 			if( typeof require === 'function' ){
-				var io = require('socket.io')
-				io.sockets.on('connection', this._.onConnect );
-				io.listen( config );
+				this._.io = require('socket.io');
+				this._.io.sockets.on('connection', this._.onConnect );
+				this._.io.listen(config.http)
 			}
 		},
 		private_accept : function( eventName ) {
