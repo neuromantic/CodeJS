@@ -277,11 +277,9 @@ _debug ('instantiate', this.applicationName );
 		
 	  // Create a new Class that inherits from this class
 	Class._plus = function(className, additions) {
-_debug( className, '._extends(', this._className, ')' );
 		// Instantiate a base class (but only create the instance,
 		// don't run the _config constructor)
 		_.interpreter.initializing = true;
-_debug( 'initializing' );
 		var newPrototype = new this();
 		_.interpreter.initializing = false;
 		newPrototype._className = className;
@@ -333,7 +331,6 @@ _debug( 'initializing' );
 				attachTarget = newPrototype;
 			};
 
-_debug( propertyKeyword, name);
 			var property;
 			if ( typeof addition == 'function'  ) {
 		      	propertyType = 'function';
@@ -409,7 +406,6 @@ _debug( 'new', this._className );
 			this._ = _.util.deepCopy( this._ );
 			this.__ = _.util.deepCopy( this.__ );
 			if ( !_.interpreter.initializing ){
-_debug( 'not initializing' );
 				if ( this._className.indexOf( 'Event' ) < 0 && [ 'Dictionary' ].indexOf( this._className ) < 0 ) {
 
 				};

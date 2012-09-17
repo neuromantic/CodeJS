@@ -1,5 +1,4 @@
 require( './src/Code.js' );
-_debug('|||||||||||||||||||||||ARETE SERVER|||||||||||||||||||||||||||');
 var path = require('path');
 var fs = require('fs');
 if( path.existsSync( 'bin/' ) ){
@@ -14,3 +13,4 @@ _debug('deleting', file);
 	fs.rmdirSync('bin')
 }
 Code.r('com.neuromantic.arete.Arete');
+_debug('\n ----------------------------------------------------------------- \n|       AA       RRRRRRRR    EEEEEEEEE  TTTTTTTTTTTT  EEEEEEEEEE  |\n|      AAAA      RR      RR  EE              TT       EE          |\n|     AA  AA     RR      RR  EE              TT       EE          |\n|    AAAAAAAA    RRRRRRRR    EEEEEE          TT       EEEEEE      |\n|   AA      AA   RR    RR    EE              TT       EE          |\n|  AA        AA  RR     RR   EE              TT       EE          |\n| AA          AA RR      RR  EEEEEEEEE       TT       EEEEEEEEEE  |\n ----------------------------------------------------------------- \nis running, motherfuckers.');
