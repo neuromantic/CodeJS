@@ -23,7 +23,7 @@ _debug( 'Site constructed.')
 		},
 		private_measure : function () {},
 		_addEvents : function () {
-			this._super._addEvents();
+			this._super()._addEvents();
 		}//,
 	})
 )

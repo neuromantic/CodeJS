@@ -9,7 +9,7 @@ _package( 'net.kolektiv.proto',
 		private_height : null,
 		height : function ( value ) {
 			if( value === undefined ) {			
-				return this._.height || this._super.height.call( this );
+				return this._.height || this._super().height.call( this );
 			}
 			this._.height = value;
 			this._layout();
@@ -17,7 +17,7 @@ _package( 'net.kolektiv.proto',
 		private_width : null,
 		width : function ( value ) {
 			if( value === undefined ) {	
-				return this._.width || this._super.width.call( this );
+				return this._.width || this._super().width.call( this );
 			}
 			this._.width = value
 			this._layout();

@@ -297,7 +297,7 @@
 			this.visible( this._.alpha > 0 );
 		},
 		toString : function () {
-			return ( this._.name ) || this._super.toString();
+			return ( this._.name ) || this._super().toString();
 		}
 	})
 );

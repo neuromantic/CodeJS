@@ -13,50 +13,50 @@ _package( 'com.neuromantic.arete.server',
 			var url = require( 'url' );
 			var fs = require( 'fs');
 			var path = require( 'path');
-			var route = url.parse( message.http.req.url, true )
-			if( message.http ) {
+			if( message.request ) {
+				var route = url.parse( message.request.req.url, true )
 				var loc = route.path;
 				if( loc.indexOf('/') === 0 ){
 					loc = loc.substring(1);
 				}//if
 				var classPath;
-				if ( loc.indexOf( 'Apps' ) === 0 ){
+				if ( loc.indexOf( 'app' ) === 0 ){
 					classPath = loc.split('/')[1].split('.js?')[0];
 					console.log('Apps')
-					message.http.res.setHeader("Content-Type", 'text/javascript' );
+					message.request.res.setHeader("Content-Type", 'text/javascript' );
 _debug( 'compiling', classPath);
 					try{
 _debug( 'getting Code from file system');
 						var code = Code();
 					}catch (error){
 	_debug( 'src/Code.js could not be read:\n'+ error.message);
-						message.http.res.statusCode = 500;
-				        message.http.res.write( '{ "error" : "src/Code.js could not be read:\n'+ error.message+'}' );
+						message.request.res.statusCode = 500;
+						message.request.res.write( '{ "error" : "src/Code.js could not be read:\n'+ error.message+'}' );
 				    }
-					var Apps;
+					var app;
 					var bin = 'bin/'+classPath;
 					try{
 _debug( 'compiling', classPath , 'from source files' );
-							Apps =  Code.c( classPath );
+							app =  Code.c( classPath );
 			        } catch ( error ) {//try
 _debug( classPath + ' could not be compiled:\n'+ error.message);
-						message.http.res.statusCode = 500;
-						message.http.res.write( '{ "error" : "'+classPath + ' could not be compiled:\n'+ error.message+"}" );
+			        	message.request.res.statusCode = 500;
+			        	message.request.res.write( '{ "error" : "'+classPath + ' could not be compiled:\n'+ error.message+"}" );
 					}
 _debug( 'creating exec statement');
 					var exec = 'Code.x("' + classPath + '",'+JSON.stringify(route.query)+');';
-			        if( Apps && code && exec ) {
-						message.http.res.statusCode = 200;
+			        if( app && code && exec ) {
+			        	message.request.res.statusCode = 200;
 _debug( 'adding code:', code.length, 'bytes');
-						message.http.res.write( code );
-_debug( 'adding Apps:', Apps.length, 'bytes');
-						message.http.res.write( Apps );		
+						message.request.res.write( code );
+_debug( 'adding app:', app.length, 'bytes');
+						message.request.res.write( app );		
 _debug( 'adding exec:', exec );
-						message.http.res.end( exec );
+						message.request.res.end( exec );
 			        }//if
 				}// if
-			}// if message.http
-			this._super.process( message );
+			}// if message.request
+			this._super().process( message );
 		}//,process
 	})//class
 )//package

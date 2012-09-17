@@ -13,14 +13,8 @@ _package( 'com.neuromantic.arete.server',
 			_debug.apply( arguments );
 		},
 		process : function ( message ) {
-			if( message.http ) {
-				this._.log( 'HTTP REQUEST:', message.http.req.url );
-			}
-			if(message.log){
-				this._.log( 'LOG', message.log );
-			}
-			this._super.process( message );
-			
+//			this._.log( JSON.stringify( message ) );
+			this._super().process( message );
 		}//,
 	})
 )

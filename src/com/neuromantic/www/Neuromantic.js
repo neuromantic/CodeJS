@@ -30,11 +30,11 @@ _package( 'com.neuromantic.www',
 		private_footer : null,
 
 		_setup : function () {
-			this._super._setup();
+			this._super()._setup();
 			Tween.defaultEasing = Easing.easeOutCubic;
 		},
 		_build : function () {
-			this._super._build();
+			this._super()._build();
 			this._.bg = new Sprite();
 			this._.bg.name( 'bg' );
 			this.addChild( this._.bg );
@@ -76,7 +76,7 @@ _package( 'com.neuromantic.www',
 		},
 		
 		_addEvents : function () {
-			this._super._addEvents();
+			this._super()._addEvents();
 			this.stage().addEventListener( Event.RESIZE, this._.onStageResize );
 			var inputs = [this._.email, this._.sender, this._.message, this._.submit ];
 			for ( var index in inputs ) {
@@ -140,7 +140,7 @@ _package( 'com.neuromantic.www',
 			return variables;
 		},
 		_init : function () {
-			this._super._init();
+			this._super()._init();
 			var components = [ this._.header, this._.subhead, this._.email, this._.message, this._.submit, this._.graphic, this._.sender, this._.feedback ];
 			for( var index in components ) {
 				index = Number( index );
@@ -149,7 +149,7 @@ _package( 'com.neuromantic.www',
 			};
 		},
 		_layout : function ( animated , callback ) {
-			this._super._layout();
+			this._super()._layout();
 			this._.bg.x( 10 );
 			this._.bg.y( 10 );
 			this._.form.width( 280 );
@@ -206,7 +206,7 @@ _package( 'com.neuromantic.www',
 		},
 		
 		_start : function () {
-			this._super._start();
+			this._super()._start();
 			var _this = this;
 			_this._layout(false);
 			Tween.to( _this._.graphic , 0.5, { alpha : 1, delay : 0.1, onComplete : function () { 

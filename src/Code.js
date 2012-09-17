@@ -240,7 +240,7 @@ _debug ('instantiate', this.applicationName );
 	 * http://bit.ly/4U5H
 	 *	
 	 */	
-	   var fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
+//	   var fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
 	  // The base Class implementation -- 
 	  // provides _get and _set shortcuts to eliminate abiguous assignment ( is it a  property or a getSetter ? )
 	  // provides .add() to replace += 
@@ -277,46 +277,18 @@ _debug ('instantiate', this.applicationName );
 		
 	  // Create a new Class that inherits from this class
 	Class._plus = function(className, additions) {
-		var _super = this.prototype;
-		
+_debug( className, '._extends(', this._className, ')' );
 		// Instantiate a base class (but only create the instance,
 		// don't run the _config constructor)
-//		_.interpreter.initializing = true;
-		var newPrototype = _.util.deepCopy(_super);
+		_.interpreter.initializing = true;
+_debug( 'initializing' );
+		var newPrototype = new this();
+		_.interpreter.initializing = false;
 		newPrototype._className = className;
-//		_.interpreter.initializing = false;
-		
-		// The dummy class constructor (scoping)
-		function ClassObject() {
-		  // All construction is actually done in the _config method (declared using the new Class name as string (className ) )
-		  this._ = _.util.deepCopy( this._ );
-		  this.__ = _.util.deepCopy( this.__ );
-		  
-//			if ( !_.interpreter.initializing ){
-				if ( this._className.indexOf( 'Event' ) < 0 && [ 'Dictionary' ].indexOf( this._className ) < 0 ) {
-					//_debug( 'new', this._className );
-				};
-				for ( var propertyName in this ){
-					var property = this[ propertyName ];
-					if ( _.util.isMethod( property ) && [ 'toString', '_get','_set', '_add' ].indexOf( propertyName) < 0 ){
-						this[ propertyName ] = _.util.scope( property, this, propertyName );
-					};//if
-				};//for
-				
-				for ( var propertyName in this._ ){
-					var property = this._[ propertyName ];
-					if ( _.util.isMethod( property ) ){
-						this._[ propertyName ] = _.util.scope( property, this );
-					}//if
-				}//for
-			  	if( this._config ) {
-			 		this._config.apply( this, arguments );
-			  	};
-//			}
-		}
-		
-		newPrototype._ = _super._ ? _.util.deepCopy( _super._ ) : {}; // private space
-		newPrototype.__ = _super.__ ? _.util.deepCopy( _super.__ ) : { getters : {}, setters: {}, getSetterNames:[] }; // getters/setters space
+		var superPrototype =  this.prototype;
+
+		newPrototype._ = superPrototype._ ? _.util.deepCopy( superPrototype._ ) : {}; // private space
+		newPrototype.__ = superPrototype.__ ? _.util.deepCopy( superPrototype.__ ) : { getters : {}, setters: {}, getSetterNames:[] }; // getters/setters space
 		
 		// TODO: getter/setters proper
 
@@ -360,43 +332,51 @@ _debug ('instantiate', this.applicationName );
 				propertyKeyword = 'public';
 				attachTarget = newPrototype;
 			};
-			
-		  // Check if we're overwriting an existing function
+
+_debug( propertyKeyword, name);
 			var property;
 			if ( typeof addition == 'function'  ) {
 		      	propertyType = 'function';
-		      	property = ( typeof _super[propertyName] == 'function' && fnTest.test(addition) ) ? 
+		      	property = ( typeof newPrototype[propertyName] == 'function' ) ? 
 		        ( function( propertyName, fn ){
-		          return function() {
-		            var tmp = this._super;
-		            
-		            // Allow this._super() to call superconstructor, and allow this._super.*() to call the super method
-		            if( propertyName === '_config' ) {
-		            	this._super = _super._config;
-		            }else{
-		            	var sup = _.util.deepCopy(_super);
-		            	for( var property in sup ){
-		            		sup[property] = _.util.scope(sup[property], this, property);
-		            	}
-		            	this._super = sup;
-		            }
-		            
-		            // The _config method only need to be bound temporarily, so we
-		            // remove it when we're done executing
-		            var ret = fn.apply( this, arguments );        
-		            this._super = tmp;
-		            
-		            return ret;
-		          };
+		        	var _super = superPrototype;
+			        return function() {
+			            var tmp = this._super;
+			            // Allow this._super() to call superconstructor, and allow this._super().*() to call the super method
+				        this._super = function(){
+			            	if( propertyName === '_config' ) {
+								var _config = _super._config || function(){};
+								_super = _super._superPrototype;
+		            			return _config.apply( this, arguments)
+				            }else{
+				            	var names = [];
+				            	var sup = {};
+				            	for( var memberName in _super ){
+				            		var member = _super[ memberName ]
+				            		if( typeof member === 'function' ){
+				            			sup[ memberName ] = _.util.scope( member, this, memberName );
+					            		names.push(memberName)
+				            		}
+				            	}
+				            	_super = _super._super;
+				            	return sup
+				            }
+			            }
+			            // The _config method only need to be bound temporarily, so we
+			            // remove it when we're done executing
+			            var ret = fn.apply( this, arguments );        
+			            this._super = tmp;
+			            _super = superPrototype;
+			            return ret;
+				    };
 		        })( propertyName, addition ) : addition;
 			}else{
 				propertyType = 'var';
 				propertyDefault = addition;
 		    	property = _.util.deepCopy( addition );
 		    }
-		    
 			attachTarget[ propertyName ] = property;
-_debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
+_debug('\t', propertyKeyword, propertyType, propertyName, '=', propertyDefault );
 		}
 		
 		// Create getter / setter properties
@@ -411,18 +391,50 @@ _debug('\t', propertyKeyword, propertyType, propertyName, propertyDefault );
 				return function ( value ) {
 					if( value === undefined ) {
 						if( getter ) {
-	//_debug( 'getting', getSetterName, 'of', this, ':', getter());
+//_debug( 'getting', getSetterName, 'of', this, ':', getter());
 							return getter.call( this );
 						}else return;
 					}
 					if( setter ){
-	// _debug( 'setting', getSetterName, 'of', this, 'to', value);
+// _debug( 'setting', getSetterName, 'of', this, 'to', value);
 						setter.call( this, value );
 					}
 				}
 			})( getter, setter, getSetterName );
 		};
+		// The dummy class constructor (scoping)
+		function ClassObject() {
+		  // All construction is actually done in the _config method (declared using the new Class name as string ( _className ) )
+_debug( 'new', this._className );
+			this._ = _.util.deepCopy( this._ );
+			this.__ = _.util.deepCopy( this.__ );
+			if ( !_.interpreter.initializing ){
+_debug( 'not initializing' );
+				if ( this._className.indexOf( 'Event' ) < 0 && [ 'Dictionary' ].indexOf( this._className ) < 0 ) {
 
+				};
+				for ( var propertyName in this ){
+					var property = this[ propertyName ];
+					if ( _.util.isMethod( property ) && [ 'toString', '_get', '_set', '_add' ].indexOf( propertyName) < 0 ){
+//_debug( 'scoping public', propertyName )
+						this[ propertyName ] = _.util.scope( property, this, propertyName );
+					};//if
+				};//for
+				
+				for ( propertyName in this._ ){
+					var property = this._[ propertyName ];
+					if ( _.util.isMethod( property ) ){
+//_debug( 'scoping private', propertyName )
+						this._[ propertyName ] = _.util.scope( property, this );
+					}//if
+				}//for
+			  	if( this._config ) {
+			 		this._config.apply( this, arguments );
+			  	};//if
+			}//if
+		}
+		//inheritance chain
+		newPrototype._superPrototype =  superPrototype;
 		// Populate our constructed prototype object
 		ClassObject.prototype = newPrototype;
 		

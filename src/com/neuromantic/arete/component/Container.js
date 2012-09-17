@@ -14,7 +14,6 @@ _package( 'com.neuromantic.arete.component',
 			this._.container.appendChild(widget.element);
 		},
 		Container : function () {
-			this._super();
 			this._.container = this.element.appendChild( document.createElementByTagName('div') );
 			this.style = this.element.style;
 			this.addClass( this._className );

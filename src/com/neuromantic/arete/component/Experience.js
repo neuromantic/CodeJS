@@ -10,8 +10,8 @@ _package( 'com.neuromantic.arete.component',
  	
 	_class( 'Experience' )._extends( 'Container', {
 		private_config : {},
-		connect : function ( widget ){
-			this._super.connect( widget );
+		connect : function ( component ){
+			this._super().connect( component );
 			this.emit( {config : this._.config} );
 		},
 		Experience : function ( config ) {

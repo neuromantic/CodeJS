@@ -50,10 +50,10 @@
 			};
 		},
 		get_stage : function () {
-			return this._super.stage();
+			return this._super().stage();
 		},
 		set_stage : function( value ) {
-			this._super.stage( value );
+			this._super().stage( value );
 			for ( index in this._.children ) {
 				if( this._.children[ index ] ) {
 					this._.children[ index ].stage( this.stage() );
@@ -68,9 +68,9 @@
 		},
 		y : function (value ){
 			if( value === undefined ) {
-				return this._super.y();
+				return this._super().y();
 			};
-			this._super.y(value);
+			this._super().y(value);
 			for ( index in this._.children ) {
 				var child = this._.children[ index ];
 				child.y( child.y() );
@@ -78,19 +78,19 @@
 		},
 		x : function (value ){
 			if( value === undefined ) {
-				return this._super.x();
+				return this._super().x();
 			};
-			this._super.x(value);
+			this._super().x(value);
 			for ( index in this._.children ) {
 				var child = this._.children[ index ];
 				child.x( child._.x );
 			};
 		},
 		get_visible : function( value ) {
-				return this._super.visible();
+				return this._super().visible();
 		},
 		set_visible : function( value ) {
-			this._super.visible( value );
+			this._super().visible( value );
 			_trace(this, 'visible', this._.children)
 			for( index in this._.children ) {
 				this._.children[ index ].visible( this.visible() );
