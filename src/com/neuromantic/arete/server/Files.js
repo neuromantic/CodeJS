@@ -18,11 +18,9 @@ _package( 'com.neuromantic.arete.server',
 			png: 'image/png',
 			ico: 'image/vnd.microsoft.icon'
 		},
-		Files: function( config ) {
-		},
-		process : function ( message ){
-			if( message.config && message.config.files ){
-				var config = message.config.files;
+		config: function ( config ){
+			if( config.files ){
+				var config = config.files;
 				if ( config.root ){
 					this._.root = config.root;
 				}
@@ -30,43 +28,38 @@ _package( 'com.neuromantic.arete.server',
 					this._.types = config.types;
 				}
 			}
+		},
+		process : function ( message ){
 			if( message.request ) {
 				var request = message.request;
 				var path = require( 'url' ).parse( request.req.url ).path;
-				if( path.indexOf('/') === 0 ){
-					path = path.substring(1);
-				}
 				var root = this._.root
 				if( root.indexOf('/') === 0 ){
 					root = root.substring(1);
 				}
-				
-				if ( root === '' || path.indexOf( this._.root ) === 0 ){//in root
-					var file = path.substring( path.lastIndexOf( '/' ) + 1 );
-					if (file == ''){
-						file = 'index.html';
-						path+=file;
-					}
-					var ext = file.substring( file.lastIndexOf( '.' ) + 1 );
-					var type = this._.types[ ext ];
-					if( type ) {
-						request.res.setHeader("Content-Type", type );
-						try{
-							var filePath = 'files/' + path;
-_debug('>>>', filePath);
-				       		var buffer = fs.readFileSync( filePath );
-					        if( buffer ) {
-						        if( type.indexOf ( 'text' ) >= 0 ){
-						               buffer = buffer.toString();
-						        }
-								request.res.statusCode = 200;
-								request.res.end( buffer );
-					    	}
-				        } catch ( error ) {
-				        	request.res.statusCode = 404;
-				        	request.res.end( error.message );
-				        }
-					}
+				var file = path.substring( path.lastIndexOf( '/' ) + 1 );
+				if (file == ''){
+					file = 'index.html';
+					path+=file;
+				}
+				var ext = file.substring( file.lastIndexOf( '.' ) + 1 );
+				var type = this._.types[ ext ];
+				if( type ) {
+					request.res.setHeader("Content-Type", type );
+					try{
+						var filePath = root + path;
+			       		var buffer = fs.readFileSync( filePath );
+				        if( buffer ) {
+					        if( type.indexOf ( 'text' ) >= 0 ){
+					               buffer = buffer.toString();
+					        }
+							request.res.statusCode = 200;
+							request.res.end( buffer );
+				    	}
+			        } catch ( error ) {
+			        	request.res.statusCode = 404;
+			        	request.res.end( error.message );
+			        }
 				}
 			}			
 			this._super().process( message );

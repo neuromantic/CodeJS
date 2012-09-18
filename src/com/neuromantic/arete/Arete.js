@@ -14,22 +14,18 @@ _package( 'com.neuromantic.arete',
 	_import( 'com.neuromantic.arete.component.App' ),
 	
 	_class( 'Arete' )._extends( 'App', {
-		Arete : function(){
-_debug(this,'constructor');
-			this._super( { 
-				server: { host: '127.0.0.1', port: 2207 }, 
-				files: 	{ root: '/' } 
-			} );
+		Arete : function( settings ){
+			this._super( settings );
 			var server = new Server();
 			var sockets = new Sockets();
-			var logger = new Logger();
 			var apps = new Apps();
 			var files = new Files();
-			server.connect( logger );
-			logger.connect( apps );
+			var logger = new Logger();
+			server.connect( apps );
 			apps.connect( files );
+			files.connect( logger);
 			this.connect( server )
-			console.log( 'Arete running.' );
+			this.emit( { log: 'Arete running.' } );
 		}
 	})
 );

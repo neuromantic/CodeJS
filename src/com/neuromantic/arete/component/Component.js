@@ -10,6 +10,7 @@ _package( 'com.neuromantic.arete.component',
  	
 	_class( 'Component' )._extends( 'Emitter', {
 		connect : function( receiver ) {
+//_debug( this, 'connect(', receiver, ')' );
 			this._.connections.push( receiver );
 		},
 		disconnect : function ( receiver ){

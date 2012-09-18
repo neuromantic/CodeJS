@@ -10,6 +10,7 @@ _package( 'com.neuromantic.arete.component',
 	
 	_class( 'Processor' )._extends( 'Receiver', {
 		process : function( message ){
+//_debug(this, 'process(',  message.origin , ')');
 			this.output( message );
 		},
 		output : function ( message ) {

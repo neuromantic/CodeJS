@@ -25,6 +25,7 @@
 	}
 	var _ = {
 		debugging : true,
+		application : {},
 		util : {
 			deepCopy : deepCopy,
 			scope : function ( fn, scope, functionName ) {
@@ -72,30 +73,30 @@ _debug( 'looking for bytecode in', binPath );
 							code = fs.readFileSync( binPath );
 						}catch( e ){
 _debug( 'no bytecode available.');
-						}
-						try{
-_debug( 'loading source code from', scriptPath );
-							code = fs.readFileSync( scriptPath, 'ascii' );
 							try{
+_debug( 'loading source code from', scriptPath );
+								code = fs.readFileSync( scriptPath, 'ascii' );
+								try{
 _debug( 'generating bytecode for', classPath );	
-								code = ast.parse( code ); // parse code and get the initial AST
-								if(classPath == 'Code'){
-									code = ugg.ast_mangle( code ); // get a new AST with mangled names
-								}
-								code = ugg.ast_squeeze( code ); // get an AST with compression optimizations
-								code = ugg.gen_code( code ); // compressed code here	
-								if(! path.existsSync( 'bin/' ) ){
-									fs.mkdirSync( 'bin/');
-								}
-_debug( 'writing bytecode to', binPath );
-								fs.writeFileSync( binPath, code );
-							}catch (error ){
-								throw new Error( error );
+									code = ast.parse( code ); // parse code and get the initial AST
+									if(classPath == 'Code'){
+										code = ugg.ast_mangle( code ); // get a new AST with mangled names
+									}
+									code = ugg.ast_squeeze( code ); // get an AST with compression optimizations
+									code = ugg.gen_code( code ); // compressed code here	
+									if(! path.existsSync( 'bin/' ) ){
+										fs.mkdirSync( 'bin/');
+									}
+_debug( 'writing bytecode to', binPath, code );
+									fs.writeFileSync( binPath, code );
+								}catch (error ){
+									throw new Error( error );
 _debug( 'error creating bytecode' );
-							}
-						}catch( error ){
+								}
+							}catch( error ){
 _debug( 'file system error');
-							throw new Error( error );
+								throw new Error( error );
+							}
 						}
 					} else {//client // ( typeof XMLHttpRequest == "function" )
 _debug( 'streaming source code from', scriptURL );
@@ -118,7 +119,7 @@ _debug( 'loaded', classPath, '. processing imports' );
 				try{
 					global._import = this._import;//load
 					global._class = this._class;//stub
-_debug( 'loaded', classPath, 'bytecode:\n',code );
+					code = code.toString();
 					if(code.indexOf('_import') > -1 || code.indexOf('_class') > -1){
 						eval( code );
 					}
@@ -128,11 +129,8 @@ _debug( 'error completing imports for '+  classPath + '. Error Text:' + error.me
 				}
 				var className = classPath.split( '.' ).pop();
 				global[ className ] = global[ className ] || {}
-				global[ className ]._code = code;//store script
+				global[ className ]._script = code;//store script
 				_.compiler.queue.push(className );// add script to compilation queue
-//_debug( 'L[ ' + this.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
-//_debug( 'D[ ' + _.definition.queue.map( function( o ){ return o.split( '.' ).pop() } ).sort().join(' ') );
-//_debug( '<<< finished loading tasks for', classPath)
 				if( this.queue.length == _.compiler.queue.length ){
 					_.compiler.compileClasses();
 					this.queue = [];
@@ -142,11 +140,11 @@ _debug( 'error completing imports for '+  classPath + '. Error Text:' + error.me
 		compiler : {
 			buffer :'',
 			queue : [],
-			_import : function( classPath, immediately ) {//--------------------------------------------------------------- interpreter._import (compile)
+			_import : function( classPath, immediately ) {
 				var className = classPath.split( '.' ).pop();
 				_.compiler.compile( className );
 			},// _import
-			_class : function( className ) {//--------------------------------------------------------------- interpreter._class (null)
+			_class : function( className ) {
 				return {_extends:function (){}}
 			},// _import
 			compileClasses : function () {
@@ -166,17 +164,16 @@ _debug( 'compiling classes' );
 _debug( 'adding class', className );
 					global._import = this._import;
 					global._class = this._class;
-					if( classObject._code.indexOf ('_class') > -1 || classObject._code.indexOf('_import') > -1 ){
-						eval( classObject._code );
+					if( classObject._script.indexOf ('_class') > -1 || classObject._script.indexOf('_import') > -1 ){
+						eval( classObject._script );
 					}
-					this.buffer = this.buffer.concat( classObject._code + ';' );
+					this.buffer = this.buffer.concat( classObject._script + ';' );
 _debug( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
 				}// if
 			}//compile
 		},// compiler
 		interpreter : {
 			initializing : false,
-			applicationName: '',
 			_import : function( classPath, immediately ) {//--------------------------------------------------------------- interpreter._import (null)
 			},// _import
 			_class : function( className, properties ) {//--------------------------------------------------------------- interpreter._class define
@@ -201,15 +198,10 @@ _debug( 'defining classes' );
 				global._class = this._class; // define / extend class
 				eval( _.compiler.buffer );
 				_.compiler.buffer = '';
-_debug ('instantiate', this.applicationName );
-				new global[ this.applicationName ]();
-				this.applicationName = '';
+				Code.x();
 			}//defineClasses
 		}// interpreter
 	};// _
-//	_null = function () {// null binding reserved for future use
-//		return null;
-//	};// _null
 	
 	_trace = function () {
 		var output = "";
@@ -278,7 +270,7 @@ _debug ('instantiate', this.applicationName );
 	  // Create a new Class that inherits from this class
 	Class._plus = function(className, additions) {
 		// Instantiate a base class (but only create the instance,
-		// don't run the _config constructor)
+		// don't run the __init__ constructor)
 		_.interpreter.initializing = true;
 		var newPrototype = new this();
 		_.interpreter.initializing = false;
@@ -325,7 +317,7 @@ _debug ('instantiate', this.applicationName );
 			} else if ( name === className ){
 				propertyKeyword = 'constructor';
 				attachTarget = newPrototype;
-				propertyName = '_config'
+				propertyName = '__init__'
 			} else {
 				propertyKeyword = 'public';
 				attachTarget = newPrototype;
@@ -341,10 +333,10 @@ _debug ('instantiate', this.applicationName );
 			            var tmp = this._super;
 			            // Allow this._super() to call superconstructor, and allow this._super().*() to call the super method
 				        this._super = function(){
-			            	if( propertyName === '_config' ) {
-								var _config = _super._config || function(){};
+			            	if( propertyName === '__init__' ) {
+								var __init__ = _super.__init__ || function(){};
 								_super = _super._superPrototype;
-		            			return _config.apply( this, arguments)
+		            			return __init__.apply( this, arguments)
 				            }else{
 				            	var names = [];
 				            	var sup = {};
@@ -359,7 +351,7 @@ _debug ('instantiate', this.applicationName );
 				            	return sup
 				            }
 			            }
-			            // The _config method only need to be bound temporarily, so we
+			            // The __init__ method only need to be bound temporarily, so we
 			            // remove it when we're done executing
 			            var ret = fn.apply( this, arguments );        
 			            this._super = tmp;
@@ -401,11 +393,11 @@ _debug('\t', propertyKeyword, propertyType, propertyName, '=', propertyDefault )
 		};
 		// The dummy class constructor (scoping)
 		function ClassObject() {
-		  // All construction is actually done in the _config method (declared using the new Class name as string ( _className ) )
-_debug( 'new', this._className );
+		  // All construction is actually done in the __init__ method (declared using the new Class name as string ( _className ) )
 			this._ = _.util.deepCopy( this._ );
 			this.__ = _.util.deepCopy( this.__ );
 			if ( !_.interpreter.initializing ){
+_debug( 'new', this._className );
 				if ( this._className.indexOf( 'Event' ) < 0 && [ 'Dictionary' ].indexOf( this._className ) < 0 ) {
 
 				};
@@ -424,8 +416,8 @@ _debug( 'new', this._className );
 						this._[ propertyName ] = _.util.scope( property, this );
 					}//if
 				}//for
-			  	if( this._config ) {
-			 		this._config.apply( this, arguments );
+			  	if( this.__init__ ) {
+			 		this.__init__.apply( this, arguments );
 			  	};//if
 			}//if
 		}
@@ -446,18 +438,21 @@ _debug( 'new', this._className );
 	var Code = function(){
 		return Code.c('Code');
 	};
-//Code.r (classPath) - run the named script using dynamic import
-	Code.r = function ( applicationClassPath ) {
-_debug('Code.r(',applicationClassPath,')');
-		var applicationClassName = applicationClassPath.split( '.' ).pop();
-				global._import = _.loader._import;
-				_import( applicationClassPath );
-			},
+	Code.r = function ( applicationClassPath, parameters ) {
+_debug('Code.r(',applicationClassPath,',', JSON.stringify(parameters), ')');
+	_.application.parameters = parameters;
+	_.application.classPath = applicationClassPath;
+		global._import = _.loader._import;
+		_import( applicationClassPath );
+				
+	};
 	Code.x = function ( applicationClassPath, parameters ){
-_debug('Code.x(',applicationClassPath,')');
-		applicationClassPath = applicationClassPath || this._.applicationClassPath ;
+_debug('Code.x(',applicationClassPath,',', parameters, ')');
+		parameters = parameters || this._.application.parameters;
+		applicationClassPath = applicationClassPath || this._.application.classPath;
 		var applicationClassName = applicationClassPath.split( '.' ).pop();
 		new global[ applicationClassName ](parameters);//no namespace
+		_.application = {};
 	};
 	Code.c = function ( applicationClassPath ) {
 _debug('Code.c(',applicationClassPath,')');
@@ -487,8 +482,8 @@ _debug( 'bypassing interpreter.');
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-//		DEEP COPY props http://oranlooney.com/deep-copy-javascript/
-//	 This section is part of OWL JavaScript Utilities.
+//	 DEEP COPY props http://oranlooney.com/deep-copy-javascript/
+//	   This section is part of OWL JavaScript Utilities.
 //
 //	OWL JavaScript Utilities is free software: you can redistribute it and/or 
 //	modify it under the terms of the GNU Lesser General Public License

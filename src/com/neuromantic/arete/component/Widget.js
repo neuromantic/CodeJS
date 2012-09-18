@@ -23,7 +23,7 @@ _package( 'com.neuromantic.arete.component',
 			this.element.className = classes.join( ' ' );
 		},
 		Widget : function () {
-			this.element = document.getElementByTagName( 'div' );
+			this.element = document.createElement( 'div' );
 			this.style = this.element.style;
 			this.addClass(this._className);
 		}//,

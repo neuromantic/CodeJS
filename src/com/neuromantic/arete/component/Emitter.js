@@ -10,6 +10,7 @@ _package( 'com.neuromantic.arete',
 
 	_class( 'Emitter' )._extends( 'Transmitter', {
 		emit : function( message ) {
+//_debug(this, 'emit' );
 			message.origin = this;
 			message.route = [];
 			this.output( message );
