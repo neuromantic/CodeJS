@@ -14,7 +14,7 @@ _package( 'com.neuromantic.arete.component.experiences',
 		Test : function( settings ){
 			this._super( settings );
 			var content = new Content();
-			var filmstrip = new FilmStrip();
+			var filmstrip = new Filmstrip();
 			this.adopt( filmstrip );
 			content.connect( filmstrip );
 			this.connect( content );

@@ -9,12 +9,18 @@ _package( 'com.neuromantic.arete.component',
  	_import( 'com.neuromantic.arete.component.Component' ),
  	
 	_class( 'Widget' )._extends( 'Component', {
+		Widget: function ( config ){
+			config = config || {element: 'div'};
+			config.element = config.element || 'div';
+			this._super( config );
+		},
 		element : null,
 		style :null,
 		addClass : function ( className ) {
-			var classes = this.element.className.split( ' ' );
-			classes.push( className );
-			this.element.className = classes.join( ' ' );
+			var elementClass = this.element.className;
+			if( elementClass.indexOf( className ) === -1 ){
+				this.element.className +=  elementClass.length ? ' ' : '' +className ;
+			}
 		},
 		removeClass : function ( className ) {
 			var classes = this.element.className.split( ' ' );
@@ -22,10 +28,10 @@ _package( 'com.neuromantic.arete.component',
 			index < 0 ? 0 : classes.splice( index, 1 );
 			this.element.className = classes.join( ' ' );
 		},
-		Widget : function () {
-			this.element = document.createElement( 'div' );
+		config : function( config ){
+			this.element = document.createElement( config.element );
 			this.style = this.element.style;
 			this.addClass(this._className);
-		}//,
+		}
 	} )
 );

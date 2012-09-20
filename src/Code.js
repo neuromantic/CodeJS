@@ -15,7 +15,6 @@
 	global = ( typeof window == 'object') ? window : ( typeof global == 'object') ? global : { dev: null }; 
 	console = console || {};
 	console.log = console.log || function () {};
-	console.log( 'Starting Code.js. global = ' + global );
 	if ( typeof require == 'function' ) {
 		fs = require( 'fs' );
 		path = require('path');
@@ -77,13 +76,15 @@ _debug( 'no bytecode available.');
 _debug( 'loading source code from', scriptPath );
 								code = fs.readFileSync( scriptPath, 'ascii' );
 								try{
-_debug( 'generating bytecode for', classPath );	
-									code = ast.parse( code ); // parse code and get the initial AST
-									if(classPath == 'Code'){
-										code = ugg.ast_mangle( code ); // get a new AST with mangled names
+_debug( 'generating bytecode for', classPath );
+									if(!_.debugging){
+										code = ast.parse( code ); // parse code and get the initial AST
+										if(classPath == 'Code'){
+											code = ugg.ast_mangle( code ); // get a new AST with mangled names
+										}
+										code = ugg.ast_squeeze( code ); // get an AST with compression optimizations
+										code = ugg.gen_code( code ); // compressed code here
 									}
-									code = ugg.ast_squeeze( code ); // get an AST with compression optimizations
-									code = ugg.gen_code( code ); // compressed code here	
 									if(! path.existsSync( 'bin/' ) ){
 										fs.mkdirSync( 'bin/');
 									}
@@ -326,8 +327,7 @@ _debug( 'defining classes' );
 			var property;
 			if ( typeof addition == 'function'  ) {
 		      	propertyType = 'function';
-		      	property = ( typeof newPrototype[propertyName] == 'function' ) ? 
-		        ( function( propertyName, fn ){
+		      	property = ( function( propertyName, fn ){
 		        	var _super = superPrototype;
 			        return function() {
 			            var tmp = this._super;
@@ -358,7 +358,7 @@ _debug( 'defining classes' );
 			            _super = superPrototype;
 			            return ret;
 				    };
-		        })( propertyName, addition ) : addition;
+		        })( propertyName, addition );
 			}else{
 				propertyType = 'var';
 				propertyDefault = addition;

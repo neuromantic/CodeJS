@@ -12,13 +12,14 @@ _package( 'com.neuromantic.arete.component',
 		private_container: null,
 		adopt : function ( widget ) {
 			widget.parent = this;
-			this._.container.appendChild(widget.element);
+			this._.container.appendChild( widget.element );
 		},
 		Container : function () {
-			this._super();
+			this._super({element: 'div'});
 			this._.container = this.element.appendChild( document.createElement('div') );
 			this.style = this.element.style;
 			this.addClass( this._className );
+			this._.container.className = 'container';
 		}//,
 	} )
 );

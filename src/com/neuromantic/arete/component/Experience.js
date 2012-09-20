@@ -17,7 +17,7 @@ _package( 'com.neuromantic.arete.component',
 			this._super();
 			var scripts = document.getElementsByTagName( 'script' );
 			var parent = scripts[ scripts.length - 1 ].parentNode;
-			parent.appendChild( this._.element );
+			parent.appendChild( this.element );
 			this._.settings = settings;
 		}//,
 	} )

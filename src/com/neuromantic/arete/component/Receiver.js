@@ -8,6 +8,7 @@ _package( 'com.neuromantic.arete.component',
 	_class( 'Receiver', {
 		private_message : {},
 		Receiver: function ( config ){
+_debug( this, 'config = ', JSON.stringify( config ) );
 			if(config){
 				this.config( config );
 			}
