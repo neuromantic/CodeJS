@@ -16,6 +16,21 @@ _package( 'com.neuromantic.arete.component',
 		},
 		element : null,
 		style :null,
+		on: function ( eventName, handler ){
+			switch (eventName){
+				case 'click':
+					this.element.onclick = handler;
+			}
+		},
+		add : function ( elementType ) {
+			var element = document.createElement( elementType );
+			this.element.appendChild( element );
+			return element;
+		},
+		render : function ( config ){
+			this._.build( config );
+			this._.addEvents( config );
+		},
 		addClass : function ( className ) {
 			var elementClass = this.element.className;
 			if( elementClass.indexOf( className ) === -1 ){
@@ -29,9 +44,11 @@ _package( 'com.neuromantic.arete.component',
 			this.element.className = classes.join( ' ' );
 		},
 		config : function( config ){
-			this.element = document.createElement( config.element );
-			this.style = this.element.style;
-			this.addClass(this._className);
+			if( config.element ){
+				this.element = document.createElement( config.element );
+				this.style = this.element.style;
+				this.addClass(this._className);
+			}
 		}
 	} )
 );

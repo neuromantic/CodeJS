@@ -44,7 +44,7 @@ _debug( classPath + ' could not be compiled:\n'+ error.message);
 			        	message.request.res.write( '{ "error" : "'+classPath + ' could not be compiled:\n'+ error.message+"}" );
 					}
 _debug( 'creating exec statement');
-					var exec = 'Code.x("' + classPath + '",'+JSON.stringify(route.query)+');';
+					var exec = 'Code.x("' + classPath + '",'+ JSON.stringify(route.query)+');';
 			        if( app && code && exec ) {
 			        	message.request.res.statusCode = 200;
 _debug( 'adding code:', code.length, 'bytes');
@@ -52,6 +52,7 @@ _debug( 'adding code:', code.length, 'bytes');
 _debug( 'adding app:', app.length, 'bytes');
 						message.request.res.write( app );		
 _debug( 'adding exec:', exec );
+
 						message.request.res.end( exec );
 			        }//if
 				}// if

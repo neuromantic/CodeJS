@@ -26,6 +26,22 @@
 		debugging : true,
 		application : {},
 		util : {
+			stringify: function ( obj, done ){
+				var s = '{ ';
+				for (var key in obj ){
+					var val = obj[key];
+					var type = typeof val;
+					val = ( type === 'string' ) ? '"' + val +'"' : val;
+					val = ( type === 'object' && !done ) ? _.util.stringify( val, true ) : type;
+					if ( type === 'function' ) {
+						val = type;
+					}
+					s+= ' ' + key + ' : ' + val + ',' ;
+				}
+				s = s.slice(0,-1);
+				s+=' }';
+				return s
+			},
 			deepCopy : deepCopy,
 			scope : function ( fn, scope, functionName ) {
 				return function () {
@@ -168,7 +184,7 @@ _debug( 'adding class', className );
 					if( classObject._script.indexOf ('_class') > -1 || classObject._script.indexOf('_import') > -1 ){
 						eval( classObject._script );
 					}
-					this.buffer = this.buffer.concat( classObject._script + ';' );
+					this.buffer = this.buffer.concat( classObject._script );
 _debug( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
 				}// if
 			}//compile
@@ -439,7 +455,7 @@ _debug( 'new', this._className );
 		return Code.c('Code');
 	};
 	Code.r = function ( applicationClassPath, parameters ) {
-_debug('Code.r(',applicationClassPath,',', JSON.stringify(parameters), ')');
+_debug('Code.r(',applicationClassPath,',', _.util.stringify(parameters), ')');
 	_.application.parameters = parameters;
 	_.application.classPath = applicationClassPath;
 		global._import = _.loader._import;
@@ -447,7 +463,7 @@ _debug('Code.r(',applicationClassPath,',', JSON.stringify(parameters), ')');
 				
 	};
 	Code.x = function ( applicationClassPath, parameters ){
-_debug('Code.x(',applicationClassPath,',', parameters, ')');
+_debug('Code.x(',applicationClassPath,',', _.util.stringify(parameters), ')');
 		parameters = parameters || this._.application.parameters;
 		applicationClassPath = applicationClassPath || this._.application.classPath;
 		var applicationClassName = applicationClassPath.split( '.' ).pop();

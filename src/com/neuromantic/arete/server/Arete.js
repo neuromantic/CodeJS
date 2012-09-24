@@ -1,12 +1,12 @@
 /*!
  *
  * Arete.js
- * com.neuromantic.arete.Arete
+ * com.neuromantic.arete.server.Arete
  *
  */
-_package( 'com.neuromantic.arete',
+_package( 'com.neuromantic.arete.server',
 	
-	_import( 'com.neuromantic.arete.server.Server' ),
+	_import( 'com.neuromantic.arete.server.HTTP' ),
 	_import( 'com.neuromantic.arete.server.Files' ),
 	_import( 'com.neuromantic.arete.server.Logger' ),
 	_import( 'com.neuromantic.arete.server.Apps' ),
@@ -16,15 +16,15 @@ _package( 'com.neuromantic.arete',
 	_class( 'Arete' )._extends( 'App', {
 		Arete : function( settings ){
 			this._super( settings );
-			var server = new Server();
+			var http = new HTTP();
 			var sockets = new Sockets();
 			var apps = new Apps();
 			var files = new Files();
 			var logger = new Logger();
-			server.connect( apps );
+			http.connect( apps );
 			apps.connect( files );
 			files.connect( logger);
-			this.connect( server )
+			this.connect( http )
 			this.emit( { log: 'Arete running.' } );
 		}
 	})
