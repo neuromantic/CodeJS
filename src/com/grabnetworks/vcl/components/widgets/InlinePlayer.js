@@ -30,7 +30,7 @@ _package( 'com.grabnetworks.vcl.components.widgets',
 		process : function ( message ) {
 			if(message.video){
 _debug( 'attempting to play', message.video.title );
-				return this._.player.loadNewVideo( message.video.guid)
+				return this._.player.loadNewVideo( message.video.guid )
 			}
 			this._super().process( message );
 		}
