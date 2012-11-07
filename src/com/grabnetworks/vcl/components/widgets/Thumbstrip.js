@@ -15,7 +15,8 @@ _package( 'com.grabnetworks.vcl.components.widgets',
 		},
 		private_videos: [],
 		private_thumbs: [],
-		private_render : function ( videos ){
+		private_build : function ( config ){
+_debug( this, '.build(', Code._.util.stringify( config ), ')' );
 			this.style.listStyleType = 'none';
 			this.style.margin = 0;
 			this.style.padding = 0;
@@ -26,17 +27,12 @@ _package( 'com.grabnetworks.vcl.components.widgets',
 				this.adopt( thumb );
 				thumb.input( { video: video } );
 				thumb.connect( this );
-				thumbs.push( thumb );
+				this._.thumbs.push( thumb );
 			}
-			this.emit( { video: videos[ 0 ].video } );
 		},
 		process : function ( message ) {
-			if(message.videos){
-				this._.render( message.videos );
-			}
-			if(message.videos){
+			if ( message.videos ) {
 				this._.videos = message.videos;
-				this._.render();
 			}
 			this._super().process( message );
 		}

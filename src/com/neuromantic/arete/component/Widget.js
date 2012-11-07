@@ -9,10 +9,10 @@ _package( 'com.neuromantic.arete.component',
  	_import( 'com.neuromantic.arete.component.Component' ),
  	
 	_class( 'Widget' )._extends( 'Component', {
-		Widget: function ( config ){
-			config = config || {element: 'div'};
-			config.element = config.element || 'div';
-			this._super( config );
+		Widget: function ( settings ){
+			settings = settings || {element: 'div'};
+			settings.element = settings.element || 'div';
+			this._super( settings );
 		},
 		element : null,
 		style :null,
@@ -27,9 +27,20 @@ _package( 'com.neuromantic.arete.component',
 			this.element.appendChild( element );
 			return element;
 		},
+		input : function ( message ){
+			if(message.render){
+_debug (this, 'received render', Code._.util.stringify( message.render ))
+				this.render( message.render );
+			}
+			this._super().input(message);
+		},
 		render : function ( config ){
 			this._.build( config );
 			this._.addEvents( config );
+		},
+		private_build : function( config ){
+		},
+		private_addEvents : function( config ){
 		},
 		addClass : function ( className ) {
 			var elementClass = this.element.className;
@@ -42,13 +53,6 @@ _package( 'com.neuromantic.arete.component',
 			var index = classes.indexOf( className );
 			index < 0 ? 0 : classes.splice( index, 1 );
 			this.element.className = classes.join( ' ' );
-		},
-		config : function( config ){
-			if( config.element ){
-				this.element = document.createElement( config.element );
-				this.style = this.element.style;
-				this.addClass(this._className);
-			}
 		}
 	} )
 );

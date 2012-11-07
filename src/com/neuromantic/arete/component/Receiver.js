@@ -7,19 +7,10 @@
 _package( 'com.neuromantic.arete.component',
 	_class( 'Receiver', {
 		private_message : {},
-		Receiver: function ( config ){
-_debug( this, 'config = ', Code._.util.stringify( config ) );
-			if(config){
-				this.config( config );
-			}
-		},
-		config : function( config ){
+		Receiver: function (){
 		},
 		input : function ( message ) {
 			this._.message = message;
-			if(message.config){
-				this.config( message.config )
-			}
 			this.process ( message );
 		},
 		process : function ( message ) {

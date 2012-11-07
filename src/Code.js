@@ -32,10 +32,7 @@
 					var val = obj[key];
 					var type = typeof val;
 					val = ( type === 'string' ) ? '"' + val +'"' : val;
-					val = ( type === 'object' && !done ) ? _.util.stringify( val, true ) : type;
-					if ( type === 'function' ) {
-						val = type;
-					}
+					val = ( type === 'object' || type === 'function' ) ? type : val;
 					s+= ' ' + key + ' : ' + val + ',' ;
 				}
 				s = s.slice(0,-1);
@@ -92,14 +89,14 @@ _debug( 'no bytecode available.');
 _debug( 'loading source code from', scriptPath );
 								code = fs.readFileSync( scriptPath, 'ascii' );
 								try{
-_debug( 'generating bytecode for', classPath );
-									if(!_.debugging){
+_debug( 'generating bytecode for', classPath );	
+									if( ! _.debugging ){
 										code = ast.parse( code ); // parse code and get the initial AST
 										if(classPath == 'Code'){
 											code = ugg.ast_mangle( code ); // get a new AST with mangled names
 										}
 										code = ugg.ast_squeeze( code ); // get an AST with compression optimizations
-										code = ugg.gen_code( code ); // compressed code here
+										code = ugg.gen_code( code ); // compressed code here	
 									}
 									if(! path.existsSync( 'bin/' ) ){
 										fs.mkdirSync( 'bin/');
@@ -343,8 +340,7 @@ _debug( 'defining classes' );
 			var property;
 			if ( typeof addition == 'function'  ) {
 		      	propertyType = 'function';
-		      	property = ( function( propertyName, fn ){
-		        	var _super = superPrototype;
+		      	property = ( function( propertyName, fn, _super ){
 			        return function() {
 			            var tmp = this._super;
 			            // Allow this._super() to call superconstructor, and allow this._super().*() to call the super method
@@ -363,7 +359,7 @@ _debug( 'defining classes' );
 					            		names.push(memberName)
 				            		}
 				            	}
-				            	_super = _super._super;
+				            	_super = _super._superPrototype;
 				            	return sup
 				            }
 			            }
@@ -374,7 +370,7 @@ _debug( 'defining classes' );
 			            _super = superPrototype;
 			            return ret;
 				    };
-		        })( propertyName, addition );
+		        })( propertyName, addition, superPrototype );
 			}else{
 				propertyType = 'var';
 				propertyDefault = addition;

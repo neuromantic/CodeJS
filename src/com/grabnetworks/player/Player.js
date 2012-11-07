@@ -1,6 +1,6 @@
 /*!
  *
- * PlayerEvent.js
+ * Player.js
  * com.grabnetworks.player.Player
  *
  */
@@ -19,11 +19,15 @@ _package( 'com.grabnetworks.player',
           private_eventListeners: {},
           private_defer: function( functionName, argument) {
           	var _this = this;
-            var deferredCall = function (){ _this._.swf[functionName](argument) };
-            try {
-              deferredCall();
-            } catch (e) {
-              this._.deferredCall = deferredCall;
+          	if( this._.swf){
+	            var deferredCall = function (){ _this._.swf[functionName](argument) };
+	            try {
+	              deferredCall();
+	            } catch (e) {
+	              this._.deferredCall = deferredCall;
+	            }
+            }else{
+            	this._.deferredCall = { functionName: functionName, argument: argument };
             }
           },
           private_eventRouter: function(eventObject) {
@@ -52,6 +56,12 @@ _package( 'com.grabnetworks.player',
 				if (this.onReady) {
 					this.onReady();
 				}//if
+				if(this._.deferredCall){
+					var functionName = this._.deferredCall.functionName;
+					var argument = this._.deferredCall.argument
+					this._.deferredCall = null;
+					this[ functionName ]( argument);
+				}
           },
           
         Player : function ( settings ){
@@ -178,4 +188,4 @@ _package( 'com.grabnetworks.player',
           return this._.swf.videoInfo();
         }
 	})
-)
+);

@@ -17,8 +17,6 @@ _package( 'com.neuromantic.arete.component.experiences',
 			var content = new Content();
 			var thumbstrip = new Thumbstrip();
 			var player = new InlinePlayer();
-			player.style.height = '360px';
-			player.style.width = '640px';
 			this.adopt( player );
 			this.adopt( thumbstrip );
 			content.connect( thumbstrip );

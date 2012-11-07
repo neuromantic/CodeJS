@@ -27,6 +27,7 @@ _package( 'com.neuromantic.arete.server',
 			if ( message.request ) {
 				return message.request.res.end();
 			}else if ( message.location ){
+_debug( message.path.join('>'));
 				return this._.listen( message.location );
 			}
 			this._super().process( message );

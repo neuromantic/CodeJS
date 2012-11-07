@@ -9,7 +9,24 @@ _package( 'com.neuromantic.arete.component',
  	_import( 'com.neuromantic.arete.component.Emitter' ),
  	
 	_class( 'Component' )._extends( 'Emitter', {
+		private_settings: {},
+		Component: function ( config ){
+_debug( this, 'config = ', Code._.util.stringify( config ) );
+			if( config ){
+				this.config( config );
+			}
+		},
+		config : function( config ){
+			this._.settings = config;
+		},
+		input : function ( message ) {
+			if(message.config){
+				this.config( message.config )
+			}
+			this.process( message );
+		},
 		connect : function( receiver ) {
+_debug( 'connect', this, 'to', receiver );
 			this._.connections.push( receiver );
 		},
 		disconnect : function ( receiver ){
