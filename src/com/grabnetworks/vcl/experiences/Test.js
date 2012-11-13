@@ -6,23 +6,17 @@
  */
 _package( 'com.neuromantic.arete.component.experiences',
 
-	_import( 'com.neuromantic.arete.component.Experience'),
+	_import( 'com.neuromantic.arete.component.widget.Experience'),
 	_import( 'com.grabnetworks.vcl.components.Content'),
 	_import( 'com.grabnetworks.vcl.components.widgets.Thumbstrip'),
 	_import( 'com.grabnetworks.vcl.components.widgets.InlinePlayer' ),
 	
 	_class( 'Test' )._extends( 'Experience', {
-		Test : function( config ){
-			this._super( config );
-			var content = new Content();
-			var thumbstrip = new Thumbstrip();
+		Test : function( settings ){
+			this._super( settings );
 			var player = new InlinePlayer();
-			this.adopt( player );
-			this.adopt( thumbstrip );
-			content.connect( thumbstrip );
-			thumbstrip.connect( player );
 			player.connect( this );
-			this.connect( content );
+			this.connect( player );
 		}
 	})
 );

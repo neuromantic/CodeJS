@@ -29,7 +29,7 @@ _debug( 'compiling', classPath);
 _debug( 'getting Code from file system');
 						var code = Code();
 					}catch (error){
-	_debug( 'src/Code.js could not be read:\n'+ error.message);
+_debug( 'src/Code.js could not be read:\n'+ error.message);
 						message.request.res.statusCode = 500;
 						message.request.res.write( '{ "error" : "src/Code.js could not be read:\n'+ error.message+'}' );
 				    }
@@ -44,7 +44,17 @@ _debug( classPath + ' could not be compiled:\n'+ error.message);
 			        	message.request.res.write( '{ "error" : "'+classPath + ' could not be compiled:\n'+ error.message+"}" );
 					}
 _debug( 'creating exec statement');
-					var exec = 'var scripts = document.getElementsByTagName( "script" );var settings = '+JSON.stringify(route.query)+';settings.parent = scripts[ scripts.length - 1 ].parentNode; Code.x("' + classPath + '",settings);';
+					var exec = 	'var scripts = document.getElementsByTagName( "script" );\n'+
+								'var script = scripts[ scripts.length - 1 ];\n'+
+								'var query = script.src.split("?")[1];\n'+
+								'var settings = {};\n'+
+								'var list = query.split( "&");\n'+
+								'for (var i in list){\n'+
+									'var pair = list[i].split("=");\n'+
+									'settings[pair[0]] = pair[1];\n'+
+								' };\n'+
+								'settings.parent = script.parentNode;\n'+
+								'Code.x("' + classPath + '",settings);';
 			        if( app && code && exec ) {
 			        	message.request.res.statusCode = 200;
 _debug( 'adding code:', code.length, 'bytes');

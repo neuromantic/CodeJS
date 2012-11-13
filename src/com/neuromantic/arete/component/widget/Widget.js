@@ -1,17 +1,17 @@
 /*!
  *
  * Widget.js
- * com.neuromantic.arete.component.Widget
+ * com.neuromantic.arete.component.widget.Widget
  *
  */
-_package( 'com.neuromantic.arete.component',
+_package( 'com.neuromantic.arete.component.widget',
 	
  	_import( 'com.neuromantic.arete.component.Component' ),
  	
 	_class( 'Widget' )._extends( 'Component', {
 		Widget: function ( settings ){
-			settings = settings || {element: 'div'};
-			settings.element = settings.element || 'div';
+			settings = settings || {tag: 'div'};
+			settings.tag = settings.tag || 'div';
 			this._super( settings );
 		},
 		element : null,
@@ -27,9 +27,20 @@ _package( 'com.neuromantic.arete.component',
 			this.element.appendChild( element );
 			return element;
 		},
+		config : function ( settings ){
+			if( settings.tag ) {
+				this.element = document.createElement( settings.tag );
+				this.element.className = this._className;
+			}
+			if(settings.parent){
+				settings.parent.appendChild( this.element );
+				delete settings.parent;
+			}
+			this._super().config( settings );
+		},
 		input : function ( message ){
 			if(message.render){
-_debug (this, 'received render', Code._.util.stringify( message.render ))
+_debug (this, 'received render', message.render.id );
 				this.render( message.render );
 			}
 			this._super().input(message);

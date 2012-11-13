@@ -10,10 +10,12 @@ _package( 'com.neuromantic.arete.component',
 		Receiver: function (){
 		},
 		input : function ( message ) {
+_debug(this, '.input(', message, ')' );
 			this._.message = message;
 			this.process ( message );
 		},
 		process : function ( message ) {
+_debug(this, '.process(', message, ')' );
 		}//,
 	})
 )

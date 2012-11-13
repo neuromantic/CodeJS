@@ -7,7 +7,7 @@
 _package( 'com.grabnetworks.vcl.components.widgets',
 	
 	_import( 'com.grabnetworks.vcl.components.widgets.Thumbnail' ),
- 	_import( 'com.neuromantic.arete.component.Container' ),
+ 	_import( 'com.neuromantic.arete.component.widget.Container' ),
  	
 	_class( 'Thumbstrip' )._extends( 'Container', {
 		Thumbstrip : function (){
@@ -17,9 +17,9 @@ _package( 'com.grabnetworks.vcl.components.widgets',
 		private_thumbs: [],
 		private_build : function ( config ){
 _debug( this, '.build(', Code._.util.stringify( config ), ')' );
-			this.style.listStyleType = 'none';
-			this.style.margin = 0;
-			this.style.padding = 0;
+			this.element.style.listStyleType = 'none';
+			this.element.style.margin = 0;
+			this.element.style.padding = 0;
 			var videos = this._.videos;
 			for( var n = 0; n < videos.length; n++ ){
 				var video = videos[n].video;

@@ -6,7 +6,7 @@
  */
 _package( 'com.grabnetworks.vcl.components.widgets',
 
- 	_import( 'com.neuromantic.arete.component.Widget' ),
+ 	_import( 'com.neuromantic.arete.component.widget.Widget' ),
  	
 	_class( 'Thumbnail' )._extends( 'Widget', {
 		private_video: null,

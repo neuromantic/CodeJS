@@ -30,6 +30,7 @@ _package( 'com.grabnetworks.player',
             	this._.deferredCall = { functionName: functionName, argument: argument };
             }
           },
+          private_div : null,
           private_eventRouter: function(eventObject) {
             switch (eventObject.event) {
             case PlayerEvent.PLAYER_READY:
@@ -48,23 +49,28 @@ _package( 'com.grabnetworks.player',
           },
           private_playerID : '',
           private_setSWF : function ( swf ){
-        	  var swfElement = document.getElementById(this._.playerID);
-				this._.swf = swfElement;
-				this._.swf.style.visibility = 'block';
-				this._.swf.style.display = 'visible' ;
-				this.style = this._.swf.style;
-				if (this.onReady) {
-					this.onReady();
-				}//if
-				if(this._.deferredCall){
-					var functionName = this._.deferredCall.functionName;
-					var argument = this._.deferredCall.argument
-					this._.deferredCall = null;
-					this[ functionName ]( argument);
-				}
+        	  var objects = this._.parent.getElementsByTagName( 'object' );
+	    	  for (var i= 0; i < objects.length; i++ ){
+	    		 var swfElement = objects[i]
+	    		 if( swfElement.id == this._.playerID ){
+	    			 break;
+	    		 }
+	    	  }
+			this._.swf = swfElement;
+			this._.swf.style.visibility = 'block';
+			this._.swf.style.display = 'visible' ;
+			this.style = this._.swf.style;
+			if (this.onReady) {
+				this.onReady();
+			}//if
+			if(this._.deferredCall){
+				var functionName = this._.deferredCall.functionName;
+				var argument = this._.deferredCall.argument
+				this._.deferredCall = null;
+				this[ functionName ]( argument);
+			}
           },
-          
-        Player : function ( settings ){
+          Player : function ( settings ){
 			if (settings.variant == '') {
 				delete settings.variant;
 			}//if
@@ -84,15 +90,15 @@ _package( 'com.grabnetworks.player',
 			flashvars.namespace = namespace;
 			flashvars.eventhandler = eventhandler;
 			this._.playerID = 'GrabPlayer' + settings.id;
-			var divID = 'grabDiv'+settings.id
 			var div = document.createElement( 'div');
-			div.id = divID;
-			settings.parent.appendChild(div);
+			div.id = 'grabDiv'+settings.id
+			this._.parent = settings.parent
+			this._.parent.appendChild(div);
 			div.style.display = 'none';
 			div.style.visibility = 'hidden';
 			var attributes = { id: this._.playerID, name: this._.playerID };//attributes
 			var baseURL = Player.local ? '' : 'http://player.grabnetworks.com/v5' + env + '/';
-			swfobject.embedSWF(baseURL + 'Player.swf', divID, width, height, '9.0.0', false, flashvars, params, attributes, this._.setSWF);
+			swfobject.embedSWF(baseURL + 'Player.swf', div.id, width, height, '9.0.0', false, flashvars, params, attributes, this._.setSWF);
 			Player._ = Player._ || { players:[] };
 			Player._.players[id] = this;
 		},//Player

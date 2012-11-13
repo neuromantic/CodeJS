@@ -13,8 +13,10 @@ _package( 'com.neuromantic.arete.component',
 			if( message.origin !== this ){
 				this.output( message );
 			}
+			this._super().process( message );
 		},
 		output : function ( message ) {
+_debug(this, '.output' );
 		}
 	})
 )

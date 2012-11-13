@@ -11,19 +11,19 @@ _package( 'com.neuromantic.arete.component',
 	_class( 'Component' )._extends( 'Emitter', {
 		private_settings: {},
 		Component: function ( config ){
-_debug( this, 'config = ', Code._.util.stringify( config ) );
 			if( config ){
 				this.config( config );
 			}
 		},
 		config : function( config ){
+_debug( this, '.config(', config, ')' );
 			this._.settings = config;
 		},
 		input : function ( message ) {
 			if(message.config){
 				this.config( message.config )
 			}
-			this.process( message );
+			this._super().input( message );
 		},
 		connect : function( receiver ) {
 _debug( 'connect', this, 'to', receiver );

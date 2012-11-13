@@ -27,17 +27,50 @@
 		application : {},
 		util : {
 			stringify: function ( obj, done ){
-				var s = '{ ';
-				for (var key in obj ){
-					var val = obj[key];
-					var type = typeof val;
-					val = ( type === 'string' ) ? '"' + val +'"' : val;
-					val = ( type === 'object' || type === 'function' ) ? type : val;
-					s+= ' ' + key + ' : ' + val + ',' ;
+				if ( typeof obj === 'undefined' ){
+					return '{undefined}';
 				}
-				s = s.slice(0,-1);
-				s+=' }';
-				return s
+				if ( obj === null){
+					return '{null}';
+				}
+				
+				if ( obj.tagName){
+					return '<' + obj.tagName + '/>';
+				}
+				if (obj._className){
+					return obj.toString();
+				}
+				switch( typeof obj){
+					case 'object':
+						var s = '{ ';
+						for (var key in obj ){
+							var val = obj[key];
+							var type = typeof val;
+							if(done){
+								val = ( type === 'array' || type === 'object' || type === 'function' ) ? type : val;
+							}else{
+								val = type === 'string' ?  '"' + obj +'"' : _.util.stringify(val, true);
+							}
+							s+= ' ' + key + ' : ' + val + ',' ;
+						}
+						s = s.slice(0,-1);
+						s+=' }';
+						return s
+					case 'function':
+						return '[function]';
+					case 'array':
+						var s = '[ ';
+						for (var i = 0; i < obj.length; i++ ){
+							var val = obj[i];
+							val = _.util.stringify(val, true);
+							s+= ' ' + key + ' : ' + val + ',' ;
+						}
+						s = s.slice(0,-1);
+						s+=' ]';
+						return s
+					default:
+						return obj;
+				}
 			},
 			deepCopy : deepCopy,
 			scope : function ( fn, scope, functionName ) {
@@ -63,7 +96,7 @@
 				}// if
 			},// _import
 			_class : function ( className ) {//--------------------------------------------------------------- loader._class (stub)
-_debug( 'creating stub class for', className );
+//_debug( 'creating stub class for', className );
 				var stub = { 
 					_extends : function( superName ) {
 						this._super = superName;//set super name for definition tree
@@ -81,15 +114,15 @@ _debug( 'creating stub class for', className );
 					this.queue.push( classPath);
 					if( fs && path && ast && ugg ){//server
 						try{
-_debug( 'looking for bytecode in', binPath );
+//_debug( 'looking for bytecode in', binPath );
 							code = fs.readFileSync( binPath );
 						}catch( e ){
-_debug( 'no bytecode available.');
+//_debug( 'no bytecode available.');
 							try{
-_debug( 'loading source code from', scriptPath );
+//_debug( 'loading source code from', scriptPath );
 								code = fs.readFileSync( scriptPath, 'ascii' );
 								try{
-_debug( 'generating bytecode for', classPath );	
+//_debug( 'generating bytecode for', classPath );	
 									if( ! _.debugging ){
 										code = ast.parse( code ); // parse code and get the initial AST
 										if(classPath == 'Code'){
@@ -101,7 +134,7 @@ _debug( 'generating bytecode for', classPath );
 									if(! path.existsSync( 'bin/' ) ){
 										fs.mkdirSync( 'bin/');
 									}
-_debug( 'writing bytecode to', binPath, code );
+//_debug( 'writing bytecode to', binPath, code );
 									fs.writeFileSync( binPath, code );
 								}catch (error ){
 									throw new Error( error );
@@ -113,7 +146,7 @@ _debug( 'file system error');
 							}
 						}
 					} else {//client // ( typeof XMLHttpRequest == "function" )
-_debug( 'streaming source code from', scriptURL );
+//_debug( 'streaming source code from', scriptURL );
 						var scriptURL = scriptPath;
 						var request = new XMLHttpRequest();
 						request.open( 'GET', scriptURL, false );
@@ -129,7 +162,7 @@ _debug( 'XMLHttpRequest error');
 _debug( 'error loading', classPath, ':', error.message ) ;
 					throw error;
 				}
-_debug( 'loaded', classPath, '. processing imports' );
+//_debug( 'loaded', classPath, '. processing imports' );
 				try{
 					global._import = this._import;//load
 					global._class = this._class;//stub
@@ -162,7 +195,7 @@ _debug( 'error completing imports for '+  classPath + '. Error Text:' + error.me
 				return {_extends:function (){}}
 			},// _import
 			compileClasses : function () {
-_debug( 'compiling classes' );
+//_debug( 'compiling classes' );
 				var className;
 				while ( className = this.queue[ 0 ] ) {
 					this.compile( className );
@@ -175,14 +208,14 @@ _debug( 'compiling classes' );
 				if ( index >= 0 ) {
 					this.queue.splice( index, 1 );
 					var classObject = global [ className ];
-_debug( 'adding class', className );
+//_debug( 'adding class', className );
 					global._import = this._import;
 					global._class = this._class;
 					if( classObject._script.indexOf ('_class') > -1 || classObject._script.indexOf('_import') > -1 ){
 						eval( classObject._script );
 					}
 					this.buffer = this.buffer.concat( classObject._script );
-_debug( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
+//_debug( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
 				}// if
 			}//compile
 		},// compiler
@@ -191,13 +224,13 @@ _debug( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
 			_import : function( classPath, immediately ) {//--------------------------------------------------------------- interpreter._import (null)
 			},// _import
 			_class : function( className, properties ) {//--------------------------------------------------------------- interpreter._class define
-_debug( '_class', className );
+//_debug( '_class', className );
 				if( global[ className ] &&  global[ className ]._constructor ) {// if class is stub
 					return;
 				}else{
 					var newClass = Class._plus( className, properties );// create the class from Class object
 					newClass._extends = function( parentClassName, properties ) {
-_debug( '_extends', parentClassName );
+//_debug( '_extends', parentClassName );
 							global[ className ] = global[ parentClassName ]._plus( className, properties );
 						 	global[ className ]._className = className;
 					}// _extends
@@ -207,7 +240,7 @@ _debug( '_extends', parentClassName );
 				return global[ className ]
 			 },// _class
 			defineClasses : function () {
-_debug( 'defining classes' );
+//_debug( 'defining classes' );
 				global._import = this._import; // null
 				global._class = this._class; // define / extend class
 				eval( _.compiler.buffer );
@@ -221,8 +254,8 @@ _debug( 'defining classes' );
 		var output = "";
 		var args = arguments;
 		for( index in args ) {
-			var token = args[ index ];
-			output += token + (' ');
+			var token = _.util.stringify(args[ index ]);
+			output += token + ( ' ' );
 		};// for
 		console.log( output );
 	};// _trace
@@ -468,18 +501,38 @@ _debug('Code.x(',applicationClassPath,',', _.util.stringify(parameters), ')');
 	};
 	Code.c = function ( applicationClassPath ) {
 _debug('Code.c(',applicationClassPath,')');
+		var libPath = 'lib/'+applicationClassPath+'.js';
 		var buffer;
-		var interpreter = _.interpreter;
-		_.interpreter = {
-			defineClasses : function () {
-_debug( 'bypassing interpreter.');
+		if( fs ) {
+			try{
+				buffer = fs.readFileSync( libPath, 'ascii' );
+			}catch( e ){
+				_debug( 'no library at', libPath);
 			}
 		}
-		global._import = _.loader._import;
-		_import( applicationClassPath );
-		buffer = _.compiler.buffer;
-		_.compiler.buffer = '';
-		_.interpreter = interpreter;	
+		if( ! buffer ){
+			var interpreter = _.interpreter;
+			_.interpreter = {
+				defineClasses : function () {
+	_debug( 'bypassing interpreter.');
+				}
+			}
+			global._import = _.loader._import;
+			_import( applicationClassPath );
+			buffer = _.compiler.buffer;
+			if( fs && path ){
+				_debug (' fs & path');
+				if(! path.existsSync( 'lib/' ) ){
+					_debug( 'creating lib folder')
+					fs.mkdirSync( 'lib/');
+				}
+				
+					_debug( 'saving lib file to', libPath)
+				fs.writeFileSync( libPath,  buffer)
+			}
+			_.compiler.buffer = '';
+			_.interpreter = interpreter;	
+		}
 		return buffer
 	};
 	Code._ = _;
