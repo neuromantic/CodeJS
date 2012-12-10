@@ -21,6 +21,6 @@ _package( 'com.neuromantic.arete.component.widget',
 				return this.emit( { render: message.config } );
 			}
 			this._super().process( message );
-		}
-	} )
+		}//,
+	} ) 
 );

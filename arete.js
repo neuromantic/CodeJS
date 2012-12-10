@@ -16,7 +16,7 @@ function clearDir ( dir ) {
 	    var files = fs.readdirSync( dirPath );
 console.log('clearing', dir);
 		while( files.length ){
-		var file = dirPath + files[0]
+			var file = dirPath + files[0]
 	    	fs.unlinkSync( file );
 	    	files = fs.readdirSync( dirPath );
 	    }

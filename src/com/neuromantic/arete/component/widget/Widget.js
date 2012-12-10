@@ -10,7 +10,7 @@ _package( 'com.neuromantic.arete.component.widget',
  	
 	_class( 'Widget' )._extends( 'Component', {
 		Widget: function ( settings ){
-			settings = settings || {tag: 'div'};
+			settings = settings || { tag: 'div' };
 			settings.tag = settings.tag || 'div';
 			this._super( settings );
 		},
@@ -30,6 +30,7 @@ _package( 'com.neuromantic.arete.component.widget',
 		config : function ( settings ){
 			if( settings.tag ) {
 				this.element = document.createElement( settings.tag );
+				this.element.id = this._className + Math.random().toString().slice(2,12);
 				this.element.className = this._className;
 			}
 			if(settings.parent){
@@ -40,7 +41,6 @@ _package( 'com.neuromantic.arete.component.widget',
 		},
 		input : function ( message ){
 			if(message.render){
-_debug (this, 'received render', message.render.id );
 				this.render( message.render );
 			}
 			this._super().input(message);

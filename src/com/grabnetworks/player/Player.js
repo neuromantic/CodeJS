@@ -49,14 +49,14 @@ _package( 'com.grabnetworks.player',
           },
           private_playerID : '',
           private_setSWF : function ( swf ){
-        	  var objects = this._.parent.getElementsByTagName( 'object' );
-	    	  for (var i= 0; i < objects.length; i++ ){
-	    		 var swfElement = objects[i]
-	    		 if( swfElement.id == this._.playerID ){
-	    			 break;
-	    		 }
-	    	  }
-			this._.swf = swfElement;
+//        	  var objects = this._.parent.getElementsByTagName( 'object' );
+//	    	  for (var i= 0; i < objects.length; i++ ){
+//	    		 var swfElement = objects[i]
+//	    		 if( swfElement.id == this._.playerID ){
+//	    			 break;
+//	    		 }
+//	    	  }
+			this._.swf = swf.ref;//swfElement;
 			this._.swf.style.visibility = 'block';
 			this._.swf.style.display = 'visible' ;
 			this.style = this._.swf.style;
@@ -90,10 +90,14 @@ _package( 'com.grabnetworks.player',
 			flashvars.namespace = namespace;
 			flashvars.eventhandler = eventhandler;
 			this._.playerID = 'GrabPlayer' + settings.id;
-			var div = document.createElement( 'div');
-			div.id = 'grabDiv'+settings.id
+		    var divID = 'grabDiv' + id
 			this._.parent = settings.parent
-			this._.parent.appendChild(div);
+			var div = document.getElementById(divID);
+		      if( !div ){
+		      	div = document.createElement( 'div');
+		      	div.id = divID;
+		      	settings.parent.appendChild( div );
+		      }
 			div.style.display = 'none';
 			div.style.visibility = 'hidden';
 			var attributes = { id: this._.playerID, name: this._.playerID };//attributes

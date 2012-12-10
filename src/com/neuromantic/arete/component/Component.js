@@ -16,7 +16,6 @@ _package( 'com.neuromantic.arete.component',
 			}
 		},
 		config : function( config ){
-_debug( this, '.config(', config, ')' );
 			this._.settings = config;
 		},
 		input : function ( message ) {
@@ -26,7 +25,6 @@ _debug( this, '.config(', config, ')' );
 			this._super().input( message );
 		},
 		connect : function( receiver ) {
-_debug( 'connect', this, 'to', receiver );
 			this._.connections.push( receiver );
 		},
 		disconnect : function ( receiver ){

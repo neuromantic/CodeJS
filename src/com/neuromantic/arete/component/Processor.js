@@ -16,7 +16,6 @@ _package( 'com.neuromantic.arete.component',
 			this._super().process( message );
 		},
 		output : function ( message ) {
-_debug(this, '.output' );
 		}
 	})
 )

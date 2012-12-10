@@ -15,6 +15,7 @@ _package( 'com.neuromantic.arete.component.experiences',
 		Test : function( settings ){
 			this._super( settings );
 			var player = new InlinePlayer();
+			this.adopt( player );
 			player.connect( this );
 			this.connect( player );
 		}
