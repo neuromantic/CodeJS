@@ -6,8 +6,14 @@
  * 
  * https://github.com/neuromantic/CodeJS
  *
- * Copyright 2012, Neuromantic Industries
+ * Copyright 2012, Neuromantic Industries http://www.neuromantic.com
  * Licensed under the MIT license.
+
+ * The original concept for this project and early versions of the code (as FaseJS) was co-created by
+ * Ross Sclafani, http://ross.sclafani.net and Edward Hotckiss, http://www.edwardhotchkiss.com/
+ * (Hotchkiss is also attributed in some parts of this code as `For Sure, Rad!`)
+ * 
+ * Many thanks to the original authors, and the Open Source Software community.
  *
  */
 
@@ -277,6 +283,7 @@ _debug( 'error completing imports for '+  classPath + '. Error Text:' + error.me
 	 * originally by the immortal John Resig
 	 * 
 	 * http://bit.ly/4U5H
+	 * 
 	 *	
 	 */	
 //	   var fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
