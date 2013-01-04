@@ -4,7 +4,7 @@
 
  **Class / Object Development for Javascript**
  
-  * CodeJS is a dialect of javascript that permits classical inheritance via any number of imported class files. Modeled after ECMAScript 4, Mozart enables powerful language features such as scoped local variables, accessor functions, static properties, simulated private properties, type checking and packages. 
+  * CodeJS is a dialect of javascript that permits classical inheritance via any number of imported class files. Modeled after ECMAScript 4, CodeJS enables powerful language features such as scoped local functions, accessor functions, static properties, simulated private properties, and packages. 
   * The project aims to be truly cross-browser under the hood, so users will only need to think about their creative goals.
   * Code.js is at the core of Fase.js, a collection of classes familiar to Flash developers for creating and manipulating a DisplayList and handling Events within the DOM.
   
@@ -17,7 +17,8 @@
   * Create classes AS3-style, then import them at runtime to extend and use them in other classes.
   * Utilize a pseudo-private namespace for non-public properties to keep your code cleaner.
   * Create getter and setter properties (called like methods) in your class definitions.
-  * Code Javascript like you're writing pure-code AS3 projects, and get Flash-like apps and sites in Web standards. 
+  * Code Javascript like you're writing pure-code AS3 projects, and get Flash-like apps and sites in Web standards.
+  * UNDER DEVELOPMENT: Use these same language features server side with Node.js, including precompiled and minified builds (with the runtime included.)
 
 ## Want to Contribute?
   
