@@ -11,10 +11,8 @@ _package( 'com.neuromantic.arete.server',
 		},
 		process : function ( message ) {
 			var url = require( 'url' );
-			var fs = require( 'fs');
-			var path = require( 'path');
 			if( message.request ) {
-				var route = url.parse( message.request.req.url, true )
+				var route = url.parse( message.request.req.url, true );
 				var loc = route.path;
 				if( loc.indexOf('/') === 0 ){
 					loc = loc.substring(1);
@@ -22,19 +20,19 @@ _package( 'com.neuromantic.arete.server',
 				var classPath;
 				if ( loc.indexOf( 'app' ) === 0 ){
 					classPath = loc.split('/')[1].split('.js?')[0];
-					console.log('Apps')
+					console.log('Apps');
 					message.request.res.setHeader("Content-Type", 'text/javascript' );
 _debug( 'compiling', classPath);
+                    var code;
 					try{
 _debug( 'getting Code from file system');
-						var code = Code();
+						code = Code();
 					}catch (error){
 _debug( 'src/Code.js could not be read:\n'+ error.message);
 						message.request.res.statusCode = 500;
 						message.request.res.write( '{ "error" : "src/Code.js could not be read:\n'+ error.message+'}' );
 				    }
 					var app;
-					var bin = 'bin/'+classPath;
 					try{
 _debug( 'compiling', classPath , 'from source files' );
 							app =  Code.c( classPath );
@@ -70,5 +68,5 @@ _debug( 'adding exec:', exec );
 			this._super().process( message );
 		}//,process
 	})//class
-)//package
+);//package
 	

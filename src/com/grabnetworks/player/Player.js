@@ -5,8 +5,10 @@
  *
  */
 _package( 'com.grabnetworks.player',
-	_import('swfobject'),
-	_import( 'com.grabnetworks.player.PlayerEvent' ),
+    _import('swfobject'),
+    _import( 'com.grabnetworks.player.PlayerEvent' ),
+    _import( 'com.neuromantic.utils.BrowserUtil'),
+    _import( 'com.neuromantic.utils.URIUtil'),
 	_class( 'Player', {
 		static_local: false,
         private_swf: null,
@@ -20,18 +22,18 @@ _package( 'com.grabnetworks.player',
           private_defer: function( functionName, argument) {
           	var _this = this;
           	if( this._.swf){
-	            var deferredCall = function (){ _this._.swf[functionName](argument) };
-	            try {
-	              deferredCall();
-	            } catch (e) {
-	              this._.deferredCall = deferredCall;
-	            }
+                var deferredCall = function (){ _this._.swf[functionName](argument) };
+                try {
+                    deferredCall();
+                } catch (e) {
+                    this._.deferredCall = deferredCall;
+                }
             }else{
-            	this._.deferredCall = { functionName: functionName, argument: argument };
+                this._.deferredCall = { functionName: functionName, argument: argument };
             }
-          },
-          private_div : null,
-          private_eventRouter: function(eventObject) {
+        },
+        private_div : null,
+        private_eventRouter: function(eventObject) {
             switch (eventObject.event) {
             case PlayerEvent.PLAYER_READY:
               if (this._.deferredCall) {
