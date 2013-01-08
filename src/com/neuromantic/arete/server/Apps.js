@@ -25,7 +25,7 @@ _package( 'com.neuromantic.arete.server',
 _debug( 'compiling', classPath);
                     var code;
 					try{
-_debug( 'getting Code from file system');
+_debug( 'getting Code.js from file system');
 						code = Code();
 					}catch (error){
 _debug( 'src/Code.js could not be read:\n'+ error.message);
@@ -38,8 +38,8 @@ _debug( 'compiling', classPath , 'from source files' );
 							app =  Code.c( classPath );
 			        } catch ( error ) {//try
 _debug( classPath + ' could not be compiled:\n'+ error.message);
-			        	message.request.res.statusCode = 500;
-			        	message.request.res.write( '{ "error" : "'+classPath + ' could not be compiled:\n'+ error.message+"}" );
+                        message.request.res.statusCode = 500;
+                        message.request.res.write( '{ "error" : "'+classPath + ' could not be compiled:\n'+ error.message+"}" );
 					}
 _debug( 'creating exec statement');
 					var exec = 	'var scripts = document.getElementsByTagName( "script" );\n'+
@@ -53,16 +53,19 @@ _debug( 'creating exec statement');
 								' };\n'+
 								'settings.parent = script.parentNode;\n'+
 								'Code.x("' + classPath + '",settings);';
+_debug( 'Code.js:', code.length, 'bytes');
+_debug( 'App:', app.length, 'bytes');
+_debug( 'exec statement:', exec );
 			        if( app && code && exec ) {
 			        	message.request.res.statusCode = 200;
-_debug( 'adding code:', code.length, 'bytes');
 						message.request.res.write( code );
-_debug( 'adding app:', app.length, 'bytes');
-						message.request.res.write( app );		
-_debug( 'adding exec:', exec );
-
+						message.request.res.write( app );
 						message.request.res.end( exec );
-			        }//if
+			        }else{//if
+_debug( 'incomplete app, not sending.', code.length, typeof app, typeof exec);
+                        message.request.res.statusCode = 404;
+                        message.request.res.end( 'App ' + classPath + ' not found.' );
+                    }//else
 				}// if
 			}// if message.request
 			this._super().process( message );

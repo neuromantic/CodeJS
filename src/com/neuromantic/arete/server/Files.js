@@ -18,9 +18,12 @@ _package( 'com.neuromantic.arete.server',
 			png: 'image/png',
 			ico: 'image/vnd.microsoft.icon'
 		},
+        Files : function ( settings ) {
+            this._super( {files: settings });
+        },
 		config: function ( config ){
 			if( config.files ){
-				var config = config.files;
+				config = config.files;
 				if ( config.root ){
 					this._.root = config.root;
 				}
@@ -33,33 +36,35 @@ _package( 'com.neuromantic.arete.server',
 			if( message.request ) {
 				var request = message.request;
 				var path = require( 'url' ).parse( request.req.url ).path;
-				var root = this._.root
+				var root = this._.root;
 				if( root.indexOf('/') === 0 ){
 					root = root.substring(1);
 				}
 				var file = path.substring( path.lastIndexOf( '/' ) + 1 );
-				if (file == ''){
+				if (file === ''){
 					file = 'index.html';
 					path+=file;
 				}
 				var ext = file.substring( file.lastIndexOf( '.' ) + 1 );
 				var type = this._.types[ ext ];
 				if( type ) {
-					request.res.setHeader("Content-Type", type );
 					try{
 						var filePath = root + path;
-			       		var buffer = fs.readFileSync( filePath );
-				        if( buffer ) {
-					        if( type.indexOf ( 'text' ) >= 0 ){
-					               buffer = buffer.toString();
-					        }
+                        var fs = require('fs');
+                        var buffer = fs.readFileSync( filePath );
+                        if( buffer ) {
+                            if( type.indexOf ( 'text' ) >= 0 ){
+                                buffer = buffer.toString();
+                            }
+                            request.res.setHeader("Content-Type", type );
 							request.res.statusCode = 200;
 							request.res.end( buffer );
-				    	}
-			        } catch ( error ) {
-			        	request.res.statusCode = 404;
-			        	request.res.end( error.message );
-			        }
+                        }
+                    } catch ( error ) {
+                        _debug( 'error :'. error );
+                        //request.res.statusCode = 404;
+                        //request.res.end( error.message );
+                    }
 				}
 			}			
 			this._super().process( message );

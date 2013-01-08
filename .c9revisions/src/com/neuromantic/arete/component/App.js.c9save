@@ -3,3 +3,4 @@
 {"ts":1357257242313,"patch":[[{"diffs":[[0,"   this."],[1,"_."],[0,"script ="]],"start1":380,"start2":380,"length1":16,"length2":18}]],"length":610,"saved":false}
 {"ts":1357257258711,"patch":[[{"diffs":[[0,"ll,\n"],[-1,"\t\t},\n"],[0,"\t\tco"]],"start1":466,"start2":466,"length1":13,"length2":8}]],"length":605,"saved":false}
 {"ts":1357257495373,"patch":[[{"diffs":[[0,"\t}//,\n\t}"],[-1," "],[0,")\n);"]],"start1":592,"start2":592,"length1":13,"length2":12}]],"length":604,"saved":false}
+{"contributors":[],"silentsave":false,"ts":1357318029946,"patch":[[{"diffs":[[0,"s ;\n"],[-1,"            var scripts = document.getElementsByTagName( 'script' );\n            this._.script = scripts[ scripts.length-1 ];\n"],[0,"    "]],"start1":298,"start2":298,"length1":134,"length2":8}]],"length":478,"saved":false}

@@ -1,4 +1,4 @@
-console.log( '\n========================================\n')
+console.log( '\n========================================\n');
 require( './src/Code.js' );
 // Code._.debugging = true;
 var path = require('path');
@@ -6,8 +6,9 @@ var fs = require('fs');
 clearDir('bin');
 clearDir('lib');
 Code.r('com.neuromantic.arete.server.Arete', { 
-	http: { host: process.env.IP, port: process.env.PORT }, 
-    files: { root: 'files' } 
+	http: { host: process.env.IP, port: process.env.PORT },
+    files: {root:'files'},
+    src: {root: 'src'}
 });
 console.log( '\nA R E T E | S E R V E R\n');
 function clearDir ( dir ) {
@@ -23,4 +24,5 @@ console.log('clearing', dir);
 console.log('deleting', dir);
 		fs.rmdirSync( dir );
 	}
+
 }

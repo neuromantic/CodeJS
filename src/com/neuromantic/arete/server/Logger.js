@@ -1,12 +1,15 @@
 /*!
  *
  * Logger.js
- * com.neuromantic.arete.Logger
+ * com.neuromantic.arete.server.Logger
  *
  */
 _package( 'com.neuromantic.arete.server',
  	_import( 'com.neuromantic.arete.component.Component' ),
 	_class( 'Logger' )._extends( 'Component', {
+        Logger : function (settings){
+            this._super( settings );
+        },
 		process : function ( message ) {
 			if( message.log ){
 				_debug( 'LOG:', message.log  );
@@ -17,5 +20,4 @@ _package( 'com.neuromantic.arete.server',
 			this._super().process( message );
 		}//,
 	})
-)
-		
+);		

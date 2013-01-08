@@ -12,8 +12,6 @@ _package( 'com.neuromantic.arete.component',
 		private_settings : {},
 		App : function ( settings ) {
 			this._.settings = settings ;
-            var scripts = document.getElementsByTagName( 'script' );
-            this._.script = scripts[ scripts.length-1 ];
         },
         private_script : null,
 		connect : function ( component ){

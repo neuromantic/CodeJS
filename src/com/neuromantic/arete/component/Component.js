@@ -20,7 +20,7 @@ _package( 'com.neuromantic.arete.component',
 		},
 		input : function ( message ) {
 			if(message.config){
-				this.config( message.config )
+				this.config( message.config );
 			}
 			this._super().input( message );
 		},
