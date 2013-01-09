@@ -1,6 +1,6 @@
-console.log( '\n========================================\n');
+console.log( '\n========================================\n' );
 require( './src/Code.js' );
-// Code._.debugging = true;
+Code._.debugging = DebugLevels.INFO;
 var path = require('path');
 var fs = require('fs');
 clearDir('bin');
@@ -10,18 +10,18 @@ Code.r('com.neuromantic.arete.server.Arete', {
     files: {root:'files'},
     src: {root: 'src'}
 });
-console.log( '\nA R E T E | S E R V E R\n');
+_info( '\nA R E T E | S E R V E R\n');
 function clearDir ( dir ) {
 	var dirPath = dir + '/';
 	if( path.existsSync( dir ) ){
         var files = fs.readdirSync( dirPath );
-console.log('clearing', dir);
+_verbose('clearing', dir);
 		while( files.length ){
 			var file = dirPath + files[0];
             fs.unlinkSync( file );
             files = fs.readdirSync( dirPath );
         }
-console.log('deleting', dir);
+_verbose('deleting', dir);
 		fs.rmdirSync( dir );
 	}
 

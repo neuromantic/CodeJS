@@ -14,10 +14,12 @@ _package( 'com.neuromantic.arete.component.experiences',
 	_class( 'Test' )._extends( 'Experience', {
 		Test : function( settings ){
 			this._super( settings );
-			var player = new InlinePlayer();
-			this.adopt( player );
-			player.connect( this );
-			this.connect( player );
+			var player = new InlinePlayer(settings);
+            var thumbs = new Thumbstrip;
+    		this.adopt( player );
+    		this.adopt( thumbs );
+            thumbs.connect(player);
+			this.connect( thumbs );
 		}
 	})
 );

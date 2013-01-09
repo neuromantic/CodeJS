@@ -56,6 +56,7 @@ _package( 'com.grabnetworks.player',
           },
           private_playerID : '',
           private_onSWFObject : function ( swf ){
+_debug( 'SWF', swf);
             if(swf.ref){
                 this._.swf = swf.ref;
                 this._.swf.style.visibility = this._.div.style.display || 'block';
@@ -184,6 +185,7 @@ _debug( 'Player._.onOptionsLoaded');
             }
         },
         Player : function ( settings ){
+            Code._.debugging = DebugLevels.DEBUG;
             if (settings.variant === '') {
 				delete settings.variant;
 			}//if
@@ -202,12 +204,12 @@ _debug( 'Player._.onOptionsLoaded');
 			flashvars.namespace = namespace;
 			flashvars.eventhandler = eventhandler;
 			this._.playerID = 'GrabPlayer' + settings.id;
-            var divID = 'grabDiv' + id;
+            this._.divID = 'grabDiv' + id;
 			this._.parent = settings.parent;
-			var div = document.getElementById(divID );
+			var div = document.getElementById( this._.divID );
             if( !div ){
                 div = document.createElement( 'div' );
-                div.id = divID;
+                div.id =  this._.divID;
                 this._.parent.appendChild( div );
             }else{
                 this._.parent = div.parentNode;   

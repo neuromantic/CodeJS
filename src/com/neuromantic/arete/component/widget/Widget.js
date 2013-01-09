@@ -38,6 +38,7 @@ _package( 'com.neuromantic.arete.component.widget',
 				delete settings.parent;
 			}
 			this._super().config( settings );
+            this.render( settings );
 		},
 		input : function ( message ){
 			if(message.render){
