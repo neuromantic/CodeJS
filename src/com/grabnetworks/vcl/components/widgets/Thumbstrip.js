@@ -16,7 +16,6 @@ _package( 'com.grabnetworks.vcl.components.widgets',
 		private_videos: [],
 		private_thumbs: [],
 		private_build : function ( config ){
-_debug( this, '.build(', Code._.util.stringify( config ), ')' );
 			this.element.style.listStyleType = 'none';
 			this.element.style.margin = 0;
 			this.element.style.padding = 0;
@@ -33,6 +32,7 @@ _debug( this, '.build(', Code._.util.stringify( config ), ')' );
 		process : function ( message ) {
 			if ( message.videos ) {
 				this._.videos = message.videos;
+                this.render();
 			}
 			this._super().process( message );
 		}

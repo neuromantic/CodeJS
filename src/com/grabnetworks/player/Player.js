@@ -30,33 +30,41 @@ _package( 'com.grabnetworks.player',
         private_optionsLoader : null,
         private_contentLoader : null,
         private_contentServer: 'http://content.grabnetworks.com/',
-        private_defer: function( functionName, argument) {
-            var _this = this;
-            if( this._.swf){
-                var deferredCall = function (){ _this._.swf[functionName](argument) };
-                try {
-                    deferredCall();
-                } catch (e) {
-                    this._.deferredCall = deferredCall;
-                }
+        private_defer: function( fn, argument) {
+            var deferredCall;
+            if( typeof fn === 'function' ){
+                deferredCall = fn;
             }else{
-                this._.deferredCall = { functionName: functionName, argument: argument };
+                if( this._.swf){
+                    var _this = this;
+                    deferredCall = function (){ _this._.swf[fn](argument) };
+                }else{
+                    deferredCall = { name: fn, argument: argument };
+                }
+            }
+            try {
+                deferredCall();
+            } catch (e) {
+                this._.deferredCall = deferredCall;
             }
         },
         private_eventRouter: function(eventObject) {
-            switch (eventObject.event) {
-            case PlayerEvent.PLAYER_READY:
-                if (this._.deferredCall) {
-                    this._.deferredCall();
+            if ( eventObject.event == PlayerEvent.PLAYER_READY ) {
+                var fn = this._.deferredCall;
+                if (fn) {
+                    var name = fn.functionName;
+                    var arg = fn.argument;
+                    if( name ){
+                        fn = this._.swf[ name ];
+                    }
+                    typeof arg === 'undefined' ? fn() : fn( arg );
                     this._.deferredCall = null;
                 }
-                break;
             }
             this._.notify( new PlayerEvent( eventObject.event, eventObject.data ) );
           },
           private_playerID : '',
           private_onSWFObject : function ( swf ){
-_debug( 'SWF', swf);
             if(swf.ref){
                 this._.swf = swf.ref;
                 this._.swf.style.visibility = this._.div.style.display || 'block';
@@ -75,14 +83,13 @@ _debug( 'SWF', swf);
             this._.optionsLoader.load(this._.contentServer + '/' + 'options/' + id + '.json');
         },
         private_onOptionsLoaded : function( event ){
-_debug( 'Player._.onOptionsLoaded');
             var options = event.data;
 			this._.options = options.grabnetworks;
 			var guid = this._.settings.content || this._.options.content;
             this._.loadContent( guid );
         },
         private_loadContent : function( contentID ){
-			var type;
+		    var type;
 			var guid;
 			switch ( contentID.length ) {
 				case 40:
@@ -126,7 +133,7 @@ _debug( 'Player._.onOptionsLoaded');
                 this._.div.style.backgroundColor = '#a12a3d';
 				this._.div.style.color= '#FFFFFF';
                 this._.div.style.width = this._.settings.width + 'px';
-                this._.div.style.height =  this._settings.height + 'px';
+                this._.div.style.height =  this._.settings.height + 'px';
                 this._.div.style.fontSize = 150 + 'px';
                 this._.div.innerHTML= 'mobile?<br/>NOPE.';
             }
@@ -158,7 +165,8 @@ _debug( 'Player._.onOptionsLoaded');
         },
         private_stop : function () {
             if(this._.video){
-                this.pauseVideo();
+                this._.pause();
+                this._.video.src = null;
             } else {
                 this._.swf.stopVideo();
             }
@@ -194,9 +202,7 @@ _debug( 'Player._.onOptionsLoaded');
 			var env = settings.env || '';
 			delete settings.env;
 			var width = settings.width;
-			delete settings.width;
 			var height = settings.height;
-			delete settings.height;
 			var flashvars = settings;
 			var id = settings.id;
 			var namespace = 'Player.players[' + id + ']';
@@ -225,7 +231,8 @@ _debug( 'Player._.onOptionsLoaded');
             var swfDir = ( settings.local ) ?  settings.local + '/'  : 'http://player.' + this._.environment + '.com/v5' + env + '/';
             swfobject.embedSWF( swfDir + 'Player.swf', this._.divID, width, height, '9.0.0', false, flashvars, params, attributes, this._.onSWFObject);
 			Player.players[id] = this;
-		},//Player
+		},
+        style : {},
         hide : function () {
             this.style.display = 'none';
             this.style.visibility = 'hidden';
@@ -241,7 +248,7 @@ _debug( 'Player._.onOptionsLoaded');
             this._.defer( 'toggleDebug' );
         },
         stopVideo: function() {
-            this._.defer( this._.stop )
+            this._.defer( this._.stop );
         },
         showEmbed: function() {
           this._.defer( 'showEmbed' );

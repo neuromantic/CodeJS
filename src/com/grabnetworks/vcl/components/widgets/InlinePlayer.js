@@ -25,7 +25,6 @@ _package( 'com.grabnetworks.vcl.components.widgets',
 			this._super().config( config );
 		},
 		render: function ( config ){
-_debug( 'Test.render');
 			if(config.id){
 				var playerSettings = { id: config.id, parent: this.element, width: config.width || '100%', height: config.height || '100%', content : false };
 				this._.player = new Player( playerSettings );
@@ -34,10 +33,10 @@ _debug( 'Test.render');
 			}
 		},
 		process : function ( message ) {
-			if(message.video){
+			if(message.video ){
 				return this._.player.loadNewVideo( message.video.guid )
 			}
-			if( message.videos && this._.setting){
+			if( message.videos ){
 				return this._.player.loadNewVideo( message.videos[ 0 ].video.guid );
 			}
 			this._super().process( message );

@@ -1,25 +1,27 @@
 /*!
  *
  * Test.js
- * com.neuromantic.arete.component.experiences.Arete
+ * com.neuromantic.arete.component.experiences.Test
  *
  */
-_package( 'com.neuromantic.arete.component.experiences',
-
+_package( 'com.grabnetworks.vcl.experiences',
 	_import( 'com.neuromantic.arete.component.widget.Experience'),
-	_import( 'com.grabnetworks.vcl.components.Content'),
-	_import( 'com.grabnetworks.vcl.components.widgets.Thumbstrip'),
-	_import( 'com.grabnetworks.vcl.components.widgets.InlinePlayer' ),
-	
+    _import( 'com.grabnetworks.vcl.components.Options' ),
+    _import( 'com.grabnetworks.vcl.components.Content' ),
+    _import( 'com.grabnetworks.vcl.components.widgets.ModalPlayer' ),
+    _import( 'com.grabnetworks.vcl.components.widgets.Thumbstrip' ),
 	_class( 'Test' )._extends( 'Experience', {
 		Test : function( settings ){
 			this._super( settings );
-			var player = new InlinePlayer(settings);
-            var thumbs = new Thumbstrip;
-    		this.adopt( player );
-    		this.adopt( thumbs );
-            thumbs.connect(player);
-			this.connect( thumbs );
+            var options = new Options( settings );
+            var content = new Content( settings );
+			var modal = new ModalPlayer( settings );
+            var strip = new Thumbstrip( settings );
+            this.adopt( strip );
+            options.connect( content );
+            content.connect( strip );
+            strip.connect( modal );
+            modal.connect( this );
 		}
 	})
 );

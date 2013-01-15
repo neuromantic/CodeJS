@@ -20,15 +20,15 @@ _package( 'com.neuromantic.arete.server',
 				var classPath;
 				if ( loc.indexOf( 'app' ) === 0 ){
 					classPath = loc.split('/')[1].split('.js?')[0];
-					console.log('Apps');
 					message.request.res.setHeader("Content-Type", 'text/javascript' );
 _verbose( 'compiling', classPath );
                     var code;
 					try{
-_verbose( 'getting Code.js from file system' );
+_debug( 'getting Code.js from file system' );
 						code = Code();
+_debug( ':::', code.length, 'bytes');
 					}catch (error){
-_verbose( 'src/Code.js could not be read:\n'+ error.message);
+_error( 'src/Code.js could not be read:\n'+ error.message);
 						message.request.res.statusCode = 500;
 						message.request.res.write( '{ "error" : "src/Code.js could not be read:\n'+ error.message+'}' );
 				    }
@@ -55,16 +55,17 @@ _verbose( 'creating exec statement');
 								'settings.parent = script.parentNode;\n'+
 								'Code.x("' + classPath + '",settings);\n'+
                                 '})();';
-_verbose( 'Code.js:', code.length, 'bytes' );
-_verbose( 'App:', app.length, 'bytes' );
-_verbose( 'exec statement:', exec.bytes, 'bytes');
+_debug( 'Code.js:', code.length, 'bytes' );
+_debug( 'App:', app.length, 'bytes' );
+_debug( 'exec statement:', exec.length, 'bytes');
 			        if( app && code && exec ) {
+_debug( 'sending app to client');
 			        	message.request.res.statusCode = 200;
 						message.request.res.write( code );
 						message.request.res.write( app );
 						message.request.res.end( exec );
 			        }else{//if
-_verbose( 'incomplete app, not sending.', code.length, typeof app, typeof exec);
+_error( 'incomplete app, not sending.');
                         message.request.res.statusCode = 404;
                         message.request.res.end( 'App ' + classPath + ' not found.' );
                     }//else

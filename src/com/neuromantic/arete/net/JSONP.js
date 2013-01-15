@@ -23,12 +23,8 @@ _package( 'com.neuromantic.arete.net',
         },
         load: function ( url ){
             this._.uid = JSONP.receivers.length;
-_debug('JSONP UID:', this._.uid );
             JSONP.receivers.push(this._.onJSONP);
-_debug( JSONP.receivers.length );
             var callback = 'JSONP.receivers[' + this._.uid + ']';
-_debug( callback );
-_debug( eval( callback ) );
             this._.script = document.createElement('script');
             var token = ( url.indexOf('?') < 0 ) ? '?' : '&';
             this._.script.src = url + token + this._.padding + '=' + callback;

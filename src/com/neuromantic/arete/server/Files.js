@@ -61,9 +61,9 @@ _package( 'com.neuromantic.arete.server',
 							request.res.end( buffer );
                         }
                     } catch ( error ) {
-                        _debug( 'error :'. error );
-                        //request.res.statusCode = 404;
-                        //request.res.end( error.message );
+_error( error );
+                        request.res.statusCode = 404;
+                        request.res.end( error.message );
                     }
 				}
 			}			
