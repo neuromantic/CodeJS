@@ -1,7 +1,7 @@
 /*!
  *
  * Apps.js
- * com.neuromantic.arete.Apps
+ * com.neuromantic.arete.server.Apps
  *
  */
 _package( 'com.neuromantic.arete.server',
@@ -21,7 +21,7 @@ _package( 'com.neuromantic.arete.server',
 				if ( loc.indexOf( 'app' ) === 0 ){
 					classPath = loc.split('/')[1].split('.js?')[0];
 					message.request.res.setHeader("Content-Type", 'text/javascript' );
-_verbose( 'compiling', classPath );
+_debug( 'compiling', classPath );
                     var code;
 					try{
 _debug( 'getting Code.js from file system' );
@@ -37,7 +37,7 @@ _error( 'src/Code.js could not be read:\n'+ error.message);
 _verbose( 'compiling', classPath , 'from source files' );
 							app =  Code.c( classPath );
 			        } catch ( error ) {//try
-_verbose( classPath + ' could not be compiled:\n'+ error.message);
+_error( classPath + ' could not be compiled:\n'+ error.message);
                         message.request.res.statusCode = 500;
                         message.request.res.write( '{ "error" : "'+classPath + ' could not be compiled:\n'+ error.message+"}" );
 					}

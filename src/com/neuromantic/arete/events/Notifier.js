@@ -8,7 +8,7 @@
 	_class('Notifier', {
     	private_notify : function( event ) {
 			if( this._.handlers[ event.type ] ) {
-				event.target = this;
+				event.source = this;
 				for( var index in this._.handlers[ event.type ] ) {
 					this._.handlers[ event.type ][ index ]( event );
 				}

@@ -7,6 +7,8 @@
 _package( 'com.grabnetworks.player',
     _import('swfobject'),
     _import( 'com.grabnetworks.player.PlayerEvent' ),
+    _import( 'com.neuromantic.arete.dom.Div'),
+    _import( 'com.neuromantic.arete.dom.media.Video'),
     _import( 'com.neuromantic.arete.utils.BrowserUtil'),
     _import( 'com.neuromantic.arete.utils.URIUtil'),
     _import( 'com.neuromantic.arete.net.JSONP'),
@@ -67,8 +69,8 @@ _package( 'com.grabnetworks.player',
           private_onSWFObject : function ( swf ){
             if(swf.ref){
                 this._.swf = swf.ref;
-                this._.swf.style.visibility = this._.div.style.display || 'block';
-                this._.swf.style.display = this._.div.style.visibility || 'visible' ;
+                this._.swf.style.visibility = this._.div.style().display || 'block';
+                this._.swf.style.display = this._.div.style().visibility || 'visible';
                 this.style = this._.swf.style;
             }else if( this._.div ){
                 this._.contentServer = 'http://content.' + this._.environment + '.com';
@@ -113,33 +115,39 @@ _package( 'com.grabnetworks.player',
             content = ( content.videos ? content.videos[ 0 ] : content );// no playlists in HTML5 yet, grab first video.
             if( content.video.media.mobile ){
 				if(!this._.video){
-                    this._.video = document.createElement( 'video' );
-                    this._.video.height = this._.settings.height;
-                    this._.video.width = this._.settings.width;
-                    this._.video.controls = 'controls';
-                    this._.video.preload = 'auto';
-                    this._.video.id = this._.playerID;
-                    this._.video.style.visibility =  'block';
-                    this._.video.style.display = 'visible' ;
+                    this._.video = new Video( {
+                        height : this._.settings.height,
+                        width : this._.settings.width,
+                        controls : 'controls',
+                        preload : 'auto',
+                        id : this._.playerID,
+                        style : {
+                            visibility : 'block',
+                            display : 'visible'
+                        }
+                    });
 				}
-                this.style = this._.video.style;
-                this._.video.autoplay =  ( this._.settings.autoPlay || this._.options.player.behavior.autoPlay ) ? 'autoplay': null;
-                this._.div.appendChild( this._.video );
-                this._.video.src = content.video.media.mobile.url;
+                this.style = this._.video.style();
+                this._.video.tag({autoplay :  ( this._.settings.autoPlay || this._.options.player.behavior.autoPlay ) ? 'autoplay': null});
+                this._.video.load(content.video.media.mobile.url);
+                this._.parent.replace( this._.video, this._.div );
+                this._.div = null;
             }else{
-                this._.div.style.display = 'block';
-                this._.div.style.textAlign = 'center';
-                this._.div.style.verticalAlign = 'middle';
-                this._.div.style.backgroundColor = '#a12a3d';
-				this._.div.style.color= '#FFFFFF';
-                this._.div.style.width = this._.settings.width + 'px';
-                this._.div.style.height =  this._.settings.height + 'px';
-                this._.div.style.fontSize = 150 + 'px';
-                this._.div.innerHTML= 'mobile?<br/>NOPE.';
+                this._.div.style({
+                    display : 'block',
+                    textAlign : 'center',
+                    verticalAlign : 'middle',
+                    backgroundColor : '#a12a3d',
+                    color : '#FFFFFF',
+                    width : this._.settings.width + 'px',
+                    height :  this._.settings.height + 'px',
+                    fontSize : 150 + 'px'
+                });
+                this._.div.text( 'mobile?<br/>NOPE.' );
             }
             if (typeof this._.onReady === 'function') {
                 this._.onReady();
-				delete this._.onReady;
+				this._.onReady = null;
             }
         },
         private_load : function ( guid ) {
@@ -165,22 +173,21 @@ _package( 'com.grabnetworks.player',
         },
         private_stop : function () {
             if(this._.video){
-                this._.pause();
-                this._.video.src = null;
+                this._.video.stop();
             } else {
                 this._.swf.stopVideo();
             }
         }, 
         private_seek : function ( ms ){
             if(this._.video){
-                this._.video.currentTime = ms * 0.001;
+                this._.video.seek( ms );
             }else{
                 this._.swf.seekVideoToMS( ms );
             }
         },
         private_seekPercent : function ( pct ){
             if(this._.video){
-                this._.seek( ( pct * 0.01 ) * ( this.videoTotalTime() * 0.001 ) );
+                this._.seek( ( pct * 0.01 ) * ( this._.video.duration ) );
             }else{
                 this._.swf.seekVideoTo( pct );
             }
@@ -211,17 +218,16 @@ _package( 'com.grabnetworks.player',
 			flashvars.eventhandler = eventhandler;
 			this._.playerID = 'GrabPlayer' + settings.id;
             this._.divID = 'grabDiv' + id;
-			this._.parent = settings.parent;
-			var div = document.getElementById( this._.divID );
+			this._.parent = new Element(settings.parent);
+			var div = Element.byID( this._.divID );
             if( !div ){
-                div = document.createElement( 'div' );
-                div.id =  this._.divID;
-                this._.parent.appendChild( div );
+                div = new Div({
+                    id : this._.divID
+                });
+                this._.parent.append( div );
             }else{
-                this._.parent = div.parentNode;   
+                this._.parent = div.parent();   
             }
-//			div.style.display = 'none';
-//			div.style.visibility = 'hidden';
             this._.div = div;
             var attributes = { id: this._.playerID, name: this._.playerID };
 //            if ( !settings.local && scriptInfo.host.indexOf('grabqa') > -1 ){
@@ -300,7 +306,7 @@ _package( 'com.grabnetworks.player',
         },
         videoTotalTime: function() {
             if( this._.video){
-                return this._.video.seekable.end() * 1000;
+                return this._.video.duration();
             }
             return this._.swf.videoTotalTime();
         },

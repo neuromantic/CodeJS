@@ -1,0 +1,2 @@
+{"ts":1359315450432,"silentsave":true,"restoring":false,"patch":[[]],"length":0}
+{"contributors":[],"silentsave":false,"ts":1359316932818,"patch":[[{"diffs":[[1,"/*!\n *\n * ImageBox.js\n * com.grabnetworks.vcl.elements.ImageBox\n *\n */\n_package( 'com.grabnetworks.vcl.elements',\n    _import( 'com.neuromantic.arete.dom.media.Img' ),\n    _class( 'ImageBox')._extends( 'Img', {\n        "]],"start1":0,"start2":0,"length1":0,"length2":219}]],"length":219,"saved":false}

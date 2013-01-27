@@ -6,37 +6,60 @@
  */
 _package( 'com.neuromantic.arete.component.widget',
 	
- 	_import( 'com.neuromantic.arete.component.Component' ),
+     _import( 'com.neuromantic.arete.component.Component' ),
+     _import( 'com.neuromantic.arete.dom.Div' ),
  	
 	_class( 'Widget' )._extends( 'Component', {
+        private_width : null,
+        private_height : null,
 		Widget: function ( settings ){
-			settings = settings || { tag: 'div' };
-			settings.tag = settings.tag || 'div';
+            this.element = new Div();
+            this.element.style( { position: 'absolute' } );
 			this._super( settings );
 		},
 		element : null,
-		style :null,
-		on: function ( eventName, handler ){
+        get_style : function(){
+            return this._.tag.style;   
+		},
+        set_style : function( value ){
+            for ( var key in value){
+                this._.tag.style[key] = value[ key ];
+            }
+		},
+        set_width : function ( value ){
+            this._.width = value;
+            this._.layout();
+        },
+        get_width : function () {
+            return this._.width;
+        },
+        set_height : function ( value ){
+            this._.height = value;
+            this._.layout();
+        },
+        get_height : function () {
+            return this._.height;
+        },
+        on: function ( eventName, handler ){
 			switch (eventName){
 				case 'click':
 					this.element.onclick = handler;
 			}
 		},
-		add : function ( elementType ) {
-			var element = document.createElement( elementType );
-			this.element.appendChild( element );
-			return element;
+		add : function ( element ) {
+			this.element.append( element );
 		},
 		config : function ( settings ){
-			if( settings.tag ) {
-				this.element = document.createElement( settings.tag );
-				this.element.id = this._className + Math.random().toString().slice(2,12);
-				this.element.className = this._className;
-			}
 			if(settings.parent){
-				settings.parent.appendChild( this.element );
+				new Element(settings.parent).append( this.element );
 				delete settings.parent;
 			}
+            if(settings.width){
+                this._.width = settings.width;
+            }
+            if(settings.height){
+                this._.height = settings.height;
+            }
 			this._super().config( settings );
             this.render( settings );
 		},
@@ -49,11 +72,18 @@ _package( 'com.neuromantic.arete.component.widget',
 		render : function ( config ){
 			this._.build( config );
 			this._.addEvents( config );
+            this._.layout( config );
 		},
-		private_build : function( config ){
+		private_build : function () {
 		},
-		private_addEvents : function( config ){
+		private_addEvents : function () {
 		},
+        private_layout : function () {
+            if(this.element){
+                this.element.width( this._.width );
+                this.element.height( this._.height);
+            }
+        },
 		addClass : function ( className ) {
 			var elementClass = this.element.className;
 			if( elementClass.indexOf( className ) === -1 ){
