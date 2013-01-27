@@ -326,8 +326,9 @@ _verbose('package', arguments[0]);
      */
     //var fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
     // The base Class implementation --
-    // provides _get and _set shortcuts to eliminate abiguous assignment ( is it a property or a getterSetter ? )
-    // provides .add() to replace +=
+    // provides _get and _set shortcuts to eliminate abiguous assignment ( is it a property or a getter / setter ? )
+    // provides _add() to replace +=
+    // provides _exposes() to allow one ClassObject to "wear" the public API of another where there is no overlap
     var Class = function() {};
     Class._className = 'Class';
     Class.prototype = {
@@ -356,6 +357,13 @@ _verbose('package', arguments[0]);
             }
             else {
                 (typeof this[propertyName] == 'function') ? this[propertyName](this[propertyName]() + value) : this[propertyName] += value;
+            }
+        },
+        _exposes : function ( api ){
+            for( var i in api ){
+                if( typeof api[ i ] === 'function' && typeof this[i] === 'undefined' ){
+                    this[ i ] = api[ i ];
+                }
             }
         },
         toString: function() {
