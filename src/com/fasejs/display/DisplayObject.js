@@ -88,7 +88,7 @@
 			if( this._.mouseEnabled ) {
 				event.target = this;
 				this._dispatchEvent( event );
-			};
+			}
 		},
 		private_mouseX : 0,
 		get_mouseX : function () {
@@ -128,8 +128,8 @@
 			for ( index in this._.children ) {
 				if( this._.children[ index ] ) {
 					this._.children[ index ].stage( this._.stage );
-				};
-			};
+				}
+			}
 		},
 		get_parent : function () {
 			return this._.parent;
@@ -224,7 +224,7 @@
 		},
 		private_rotation : 0,
 		get_rotation : function () {
-				return this._.rotation;
+			return this._.rotation;
 		},
 		set_rotation : function ( value ) {
 			this._.element.style.transform = this._.element.style.MozTransform = this._.element.style.OTransform =  this._.element.style.WebkitTransform = 'rotate('+value+'deg)';

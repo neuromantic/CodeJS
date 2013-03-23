@@ -26,7 +26,7 @@ _package( 'com.grabnetworks.vcl.components.widgets',
 		},
 		render: function ( config ){
 			if(config.id){
-				var playerSettings = { id: config.id, parent: this.element, width: config.width || '100%', height: config.height || '100%', content : false };
+				var playerSettings = { id: config.id, parent: this.element.tag(), width: config.width || '100%', height: config.width * 0.5625 || '100%', content : false };
 				this._.player = new Player( playerSettings );
 				this._.player.on( PlayerEvent.VIDEO_ENDED, this._.onEnded );
 				this._.player.on( PlayerEvent.VIDEO_STARTED, this._.onStarted );

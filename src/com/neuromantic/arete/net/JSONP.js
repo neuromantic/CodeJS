@@ -14,7 +14,7 @@ _package( 'com.neuromantic.arete.net',
         static_receivers : [],
         private_onJSONP : function ( data ){
             this._.notify( new LoadingEvent( LoadingEvent.LOADED, data ) );
-            JSONP.receivers[ this._.uid ] = null ;
+//            JSONP.receivers[ this._.uid ] = null ;
         },
         JSONP: function ( padding ){
             if( padding ){
@@ -23,8 +23,8 @@ _package( 'com.neuromantic.arete.net',
         },
         load: function ( url ){
             this._.uid = JSONP.receivers.length;
-            JSONP.receivers.push(this._.onJSONP);
-            var callback = 'JSONP.receivers[' + this._.uid + ']';
+            com.neuromantic.arete.net.JSONP.receivers.push(this._.onJSONP);
+            var callback = 'com.neuromantic.arete.net.JSONP.receivers[' + this._.uid + ']';
             this._.script = document.createElement('script');
             var token = ( url.indexOf('?') < 0 ) ? '?' : '&';
             this._.script.src = url + token + this._.padding + '=' + callback;

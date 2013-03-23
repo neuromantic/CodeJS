@@ -7,8 +7,9 @@
 _package( 'com.neuromantic.arete.dom.media',
     _import( 'com.neuromantic.arete.dom.media.Media' ),
     _class( 'Video' )._extends( 'Media', {
+        static_TYPE : 'video',
         Video : function ( atts ){
-            this._super( 'video', atts );
+            this._super( Video.TYPE, atts );
         },
         play : function () {
             this._.tag.play();

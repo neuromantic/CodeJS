@@ -3,3 +3,4 @@
 {"ts":1357318935510,"patch":[[{"diffs":[[0,");\n\t\t\t}\n"],[1,"            _debug( this._super()._className)\n"],[0,"\t\t\tthis."]],"start1":467,"start2":467,"length1":16,"length2":62}]],"length":573,"saved":false}
 {"ts":1357318956427,"patch":[[{"diffs":[[0,"er()"],[-1,"._className"],[0,")\n\t\t"]],"start1":504,"start2":504,"length1":19,"length2":8}]],"length":562,"saved":false}
 {"ts":1357319084093,"patch":[[{"diffs":[[0,"\t\t}\n"],[-1,"            _debug( this._super())\n"],[0,"\t\t\tt"]],"start1":471,"start2":471,"length1":43,"length2":8}]],"length":527,"saved":false}
+{"contributors":[],"silentsave":false,"ts":1361492348265,"patch":[[{"diffs":[[0,"){\n\t\t\t\t_"],[-1,"debug"],[1,"trace"],[0,"( 'LOG:'"]],"start1":351,"start2":351,"length1":21,"length2":21},{"diffs":[[0,"\t\t\t_"],[-1,"debug"],[1,"trace"],[0,"( 'H"]],"start1":422,"start2":422,"length1":13,"length2":13}]],"length":527,"saved":false}

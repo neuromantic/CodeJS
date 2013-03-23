@@ -1,7 +1,7 @@
 /*!
  *
  * TweenEvent.js
- * com.fasejs.events.TimerEvent
+ * com.neuromantic.arete.events.TimerEvent
  *
  * https://github.com/neuromantic/CodeJS/
  *
@@ -9,8 +9,8 @@
  * Licensed under the MIT license.
  *
  */
- _package( 'com.fasejs.events',
- 	_import( 'com.fasejs.events.Event' ),
+ _package( 'com.neuromantic.arete.events',
+ 	_import( 'com.neuromantic.arete.events.Event' ),
 	_class('TweenEvent')._extends('Event', {
 		static_START : 'tweenStart',
 		static_STOP : 'tweenStop',

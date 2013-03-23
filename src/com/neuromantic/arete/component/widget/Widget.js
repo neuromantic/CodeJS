@@ -13,19 +13,19 @@ _package( 'com.neuromantic.arete.component.widget',
         private_width : null,
         private_height : null,
 		Widget: function ( settings ){
-            this.element = new Div();
-            this.element.style( { position: 'absolute' } );
-			this._super( settings );
+            this.element = new Div({className: this._className});
+            this._expose( this.element );
+            this.style( { position: 'absolute' } );
+    		this._super( settings );
 		},
 		element : null,
         get_style : function(){
-            return this._.tag.style;   
+            return this.element.style;   
 		},
         set_style : function( value ){
-            for ( var key in value){
-                this._.tag.style[key] = value[ key ];
-            }
+            this.element.style( value );
 		},
+        
         set_width : function ( value ){
             this._.width = value;
             this._.layout();

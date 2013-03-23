@@ -17,7 +17,6 @@ _package( 'com.neuromantic.arete.transitions',
 	_class( 'Tween' )._extends( 'Timer', {
 		static_SPECIAL_PROPERTIES : [ 'delay', 'onStart', 'onUpdate', 'onComplete', 'onStop', 'scope' ],
 		static_frameRate : 100,
-		static_defaultEasing : Easing.easeInOutQuad,
 		private_toProperties : null,
 		private_tweenDuration : 0,
 		private_startTime : 0,
@@ -54,11 +53,11 @@ _package( 'com.neuromantic.arete.transitions',
 		},
 		Tween : function( target, duration, properties ) {
 			this._super( 1000 / Tween.frameRate );
-			this.on( TimerEvent.TIMER, this._.updateTween );
+			this.on( TimerEvent.TICK, this._.updateTween );
 			this._.target = target;
 			this._.tweenDuration = duration;
 			this._.toProperties = properties;
-			this._.easing = properties.easing || Tween.defaultEasing;
+			this._.easing = properties.easing || Easing.easeInOutQuad;
 			this._.fromProperties = {};
 			if( properties.onComplete ) {
 					this.on( TweenEvent.COMPLETE, properties.onComplete );
@@ -94,7 +93,7 @@ _package( 'com.neuromantic.arete.transitions',
 		},
         private_delayTimer : null,
         startTween : function () {
-            this._dispatchEvent( new TweenEvent( TweenEvent.START , this ) );
+            this._.notify( new TweenEvent( TweenEvent.START ) );
 			this._.startTime = this._.currentTime();
 			for ( var propertyName in this._.toProperties ) {
 				if( Tween.SPECIAL_PROPERTIES.indexOf( propertyName ) < 0 ){
@@ -107,31 +106,31 @@ _package( 'com.neuromantic.arete.transitions',
 			this.start();
 		},
 		private_updateTween : function () {
-			this._dispatchEvent( new TweenEvent( TweenEvent.UPDATING , this ) );
-			var previousValues  = {};
-			for ( var propertyName in this._.toProperties ) { //all equations use this signature  t: current time, b: beginning value, c: change in value, d: duration
-					if( Tween.SPECIAL_PROPERTIES.indexOf( propertyName ) < 0 ){
-						var newValue = this._.easing( this._.elapsedTime(), this._.fromProperties[ propertyName ], this._.toProperties[ propertyName ] - this._.fromProperties[ propertyName ], this._.tweenDuration );
-						previousValues[ propertyName ] = this._.target._get(propertyName);
-						this._.target._set( propertyName , newValue );
-					}
-				}
-				this._dispatchEvent( new TweenEvent( TweenEvent.UPDATE , this, previousValues ) );
-				if( this._.elapsedTime() >= this._.tweenDuration ) {
-					return this.stopTween( true );
-				}
-			},
-			stopTween : function ( finish ) {
-                if( finish ) {
-                    for( var propertyName in this._.toProperties ) {
-                        if( Tween.SPECIAL_PROPERTIES.indexOf( propertyName ) < 0 ){
-                            this._.target._set( propertyName , this._.toProperties[ propertyName ] );
-                        }
+            this._.notify( new TweenEvent( TweenEvent.UPDATING ) );
+            var previousValues  = {};
+            for ( var propertyName in this._.toProperties ) { //all equations use this signature  t: current time, b: beginning value, c: change in value, d: duration
+                if( Tween.SPECIAL_PROPERTIES.indexOf( propertyName ) < 0 ){
+                    var newValue = this._.easing( this._.elapsedTime(), this._.fromProperties[ propertyName ], this._.toProperties[ propertyName ] - this._.fromProperties[ propertyName ], this._.tweenDuration );
+                    previousValues[ propertyName ] = this._.target._get(propertyName);
+                    this._.target._set( propertyName , newValue );
+                }
+            }
+			this._.notify( new TweenEvent( TweenEvent.UPDATE, previousValues ) );
+			if( this._.elapsedTime() >= this._.tweenDuration ) {
+				return this.stopTween( true );
+			}
+		},
+		stopTween : function ( finish ) {
+            if( finish ) {
+                for( var propertyName in this._.toProperties ) {
+                    if( Tween.SPECIAL_PROPERTIES.indexOf( propertyName ) < 0 ){
+                        this._.target._set( propertyName , this._.toProperties[ propertyName ] );
                     }
                 }
-			  this._.notify( new TweenEvent( TweenEvent.COMPLETE ) );
-			  this.stop();
-		  }//,
+            }
+		  this._.notify( new TweenEvent( TweenEvent.COMPLETE ) );
+		  this.stop();
+	  }//,
 	})
 );
 

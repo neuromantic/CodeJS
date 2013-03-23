@@ -12,10 +12,10 @@ _package( 'com.neuromantic.arete.server',
         },
 		process : function ( message ) {
 			if( message.log ){
-				_debug( 'LOG:', message.log  );
+				_trace( 'LOG:', message.log  );
 			}
 			if( message.request ){
-				_debug( 'HTTP:', message.request.req.url  );
+				_trace( 'HTTP:', message.request.req.url  );
 			}
 			this._super().process( message );
 		}//,

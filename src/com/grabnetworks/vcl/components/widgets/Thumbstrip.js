@@ -10,9 +10,6 @@ _package( 'com.grabnetworks.vcl.components.widgets',
  	_import( 'com.neuromantic.arete.component.widget.Container' ),
  	
 	_class( 'Thumbstrip' )._extends( 'Container', {
-		Thumbstrip : function ( settings ){
-			this._super( settings );
-		},
 		private_videos: [],
 		private_thumbs: [],
 		private_build : function ( config ){
@@ -26,18 +23,30 @@ _package( 'com.grabnetworks.vcl.components.widgets',
 			}
 		},
         private_layout : function (){
+            var x = 0, y = 0;
             for (var i in this._.thumbs){
                 var thumb = this._.thumbs[ i ];
                 if( this._.width > this._.height){//horizontal
                     thumb.height( this._.height );
-                    thumb.width( this._.height / 0.75 );
-                }else{
-                    thumb.height( this._.width * 0.75 );
+                    thumb.width( this._.height / 0.5625 );
+                    thumb.x( x );
+                    x += thumb.width();
+                    y = thumb.height();
+                }else{// vertical
                     thumb.width( this._.width );
+                    thumb.height( this._.width * 0.5625 );
+                    thumb.y( y );
+                    x = thumb.width();
+                    y += thumb.height() + 2;
                 }
             }
+            this._.height = y;
             this._super()._.layout();
         },
+    	Thumbstrip : function ( settings ){
+			this._super( settings );
+            this.style( { backgroundColor: '#333', overflow: 'scroll' });
+		},
 		process : function ( message ) {
 			if ( message.videos ) {
 				this._.videos = message.videos;

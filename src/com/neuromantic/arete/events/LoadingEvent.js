@@ -7,7 +7,8 @@
  _package( 'com.neuromantic.arete.events',
     _import( 'com.neuromantic.arete.events.Event'),
     _class('LoadingEvent')._extends( 'Event', {
-		static_LOADED : 'loaded',
-        static_PROGRESS : 'progress'//,
+		static_STARTED : 'loadingStarted',
+		static_COMPLETE : 'loadingComplete',
+        static_PROGRESS : 'loadingProgress'//,
 	})
 );

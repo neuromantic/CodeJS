@@ -9,8 +9,8 @@ _package( 'com.neuromantic.arete.component.widget',
 	_class( 'Experience' )._extends( 'Container', {
         private_script : null,
         Experience : function( settings ) {
-            this._super( settings);
-            this.style( { position: 'relative' } );
+            this._super( settings );
+            this.element._.tag.style.position = 'relative';
             var scripts = document.getElementsByTagName( 'script' );
             this._.script = scripts[ scripts.length-1 ];
         },

@@ -23,9 +23,9 @@ _package( 'com.neuromantic.arete.server',
             var src = new Files( settings.src );
 			var logger = new Logger();
             http.connect( logger );
-			http.connect( files );
+			http.connect( apps);
+			apps.connect( files );
 			files.connect( src );
-			src.connect( apps);
 			this.connect( http );
 			this.emit( { log: 'Arete running.' } );
 		}

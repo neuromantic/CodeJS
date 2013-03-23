@@ -4,7 +4,7 @@
  * com.neuromantic.arete.component.Emitter
  *
  */
-_package( 'com.neuromantic.arete',
+_package( 'com.neuromantic.arete.component',
  	
 	_import( 'com.neuromantic.arete.component.Transmitter' ),
 

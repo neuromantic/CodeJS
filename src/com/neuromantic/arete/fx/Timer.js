@@ -29,12 +29,12 @@ _package( 'com.neuromantic.arete.fx',
 		},
 		private_tick : function () {
 			if( this._.remaining > 0 || this._.repeat === -1 ) {
-				this._.notify( new TimerEvent( TimerEvent.TIMER ) );
+				this._.notify( new TimerEvent( TimerEvent.TICK ) );
 				this._.advance();
 			}else{
 				this._.notify( new TimerEvent( TimerEvent.COMPLETE ) );
 				this.stop();
-			};
+			}
 			this._.remaining--;
 		},
 		private_advance : function () {
@@ -53,7 +53,7 @@ _package( 'com.neuromantic.arete.fx',
 				this._.notify( new TimerEvent( TimerEvent.START ) );
 				this._.timeout = setTimeout( this._.tick , this._.tickTime );
 				this._.running = true;
-			};
+			}
 		},
 		stop : function () {
 			if ( this._.timeout ){

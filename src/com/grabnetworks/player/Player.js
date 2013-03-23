@@ -24,7 +24,8 @@ _package( 'com.grabnetworks.player',
             width: 400,
             height: 300
         },
-        private_deferredCall: null,
+        private_deferredCalls: [],
+        private_ready: false,
         private_div : null,
         private_parent : null,
         private_options : null,
@@ -35,7 +36,7 @@ _package( 'com.grabnetworks.player',
         private_defer: function( fn, argument) {
             var deferredCall;
             if( typeof fn === 'function' ){
-                deferredCall = fn;
+                deferredCall = function () { fn( argument ) };
             }else{
                 if( this._.swf){
                     var _this = this;
@@ -47,20 +48,22 @@ _package( 'com.grabnetworks.player',
             try {
                 deferredCall();
             } catch (e) {
-                this._.deferredCall = deferredCall;
+                this._.deferredCall.push( deferredCall );
             }
         },
         private_eventRouter: function(eventObject) {
             if ( eventObject.event == PlayerEvent.PLAYER_READY ) {
-                var fn = this._.deferredCall;
-                if (fn) {
-                    var name = fn.functionName;
-                    var arg = fn.argument;
-                    if( name ){
-                        fn = this._.swf[ name ];
+                for( var i = 0; i < this._.deferredCalls.length; i++){
+                    var fn = this._.deferredCall;
+                    if (fn) {
+                        var name = fn.name;
+                        var arg = fn.argument;
+                        if( name ){
+                            fn = this._.swf[ name ];
+                        }
+                        typeof arg === 'undefined' ? fn() : fn( arg );
+                        this._.deferredCall = null;
                     }
-                    typeof arg === 'undefined' ? fn() : fn( arg );
-                    this._.deferredCall = null;
                 }
             }
             this._.notify( new PlayerEvent( eventObject.event, eventObject.data ) );
@@ -69,14 +72,14 @@ _package( 'com.grabnetworks.player',
           private_onSWFObject : function ( swf ){
             if(swf.ref){
                 this._.swf = swf.ref;
-                this._.swf.style.visibility = this._.div.style().display || 'block';
-                this._.swf.style.display = this._.div.style().visibility || 'visible';
+                this._.swf.style.display =  'block';
+                this._.swf.style.visibility = 'visible';
                 this.style = this._.swf.style;
             }else if( this._.div ){
                 this._.contentServer = 'http://content.' + this._.environment + '.com';
                 this._.loadOptions( this._.settings.id );
             }else{
-                throw new Error( 'Error initializing playback engine. SWFObject did not create Flash Player, and there is no target div for a video tag.')
+                throw new Error( 'Error initializing playback engine. SWFObject did not create Flash Player, and there is no target div for a video tag.');
             }
         },
         private_loadOptions : function( id ){
@@ -130,8 +133,10 @@ _package( 'com.grabnetworks.player',
                 this.style = this._.video.style();
                 this._.video.tag({autoplay :  ( this._.settings.autoPlay || this._.options.player.behavior.autoPlay ) ? 'autoplay': null});
                 this._.video.load(content.video.media.mobile.url);
-                this._.parent.replace( this._.video, this._.div );
-                this._.div = null;
+                if(this._.div){
+                    this._.parent.replace( this._.video, this._.div );
+                    this._.div = null;
+                }
             }else{
                 this._.div.style({
                     display : 'block',
@@ -154,7 +159,7 @@ _package( 'com.grabnetworks.player',
             if(this._.video){
                 this._.loadContent( guid );
             }else{
-                this._swf.loadNewVideo( guid );
+                this._.swf.loadNewVideo( guid );
             }
         },
         private_play : function () {
@@ -200,7 +205,6 @@ _package( 'com.grabnetworks.player',
             }
         },
         Player : function ( settings ){
-            Code._.debugging = DebugLevels.DEBUG;
             if (settings.variant === '') {
 				delete settings.variant;
 			}//if

@@ -6,7 +6,7 @@
  *
  * https://github.com/neuromantic/CodeJS
  *
- * Copyright 2012, Neuromantic Industries http://www.neuromantic.com
+ * Copyright 2013, Neuromantic Industries http://www.neuromantic.com
  * Licensed under the MIT license.
 
  * The original concept for this project and early versions of the code (as FaseJS) were co-created by
@@ -16,13 +16,12 @@
  * Many thanks to the original authors, and the Open Source Software community at large
  *
  */
- 
-(function() {
-    global = (typeof window == 'object') ? window : (typeof global == 'object') ? global : { dev: null };
+( function() {
+    global = ( typeof window === 'object' ) ? window : ( typeof global === 'object' ) ? global : { dev: null };
     console = console || {};
     console.log = console.log || function() {};
     var fs, path, ast, ugg, http;
-    if (typeof require === 'function') {
+    if ( typeof require === 'function' && typeof window === 'undefined') {
         fs = require('fs');
         path = require('path');
         ast = require('uglify-js').parser;
@@ -33,14 +32,23 @@
         debugging: 0,
         application: {},
         util: {
-            stringify: function(obj, done) {
-                if (typeof obj === 'undefined') {
+            lookup : function ( path ) {
+                var scope = global;
+                var tokens = path.split( '.' );
+                for ( var i = 0; i < tokens.length; i++ ) {//create lookup tree
+                    var token = tokens[ i ];
+                    scope = scope[ token ] = scope[ token ] || {};
+                }
+                return scope;
+            },
+            stringify: function( obj, done ) {
+                if ( typeof obj === 'undefined' ) {
                     return '{undefined}';
                 }
-                if (obj === null) {
+                if ( obj === null ) {
                     return '{null}';
                 }
-                if (obj.tagName) {
+                if ( obj.tagName ) {
                     return '<' + obj.tagName + '>';
                 }
                 var s = '',
@@ -56,21 +64,21 @@
                     s += ' ]';
                     return s;
                 }
-                switch (typeof obj) {
+                switch ( typeof obj ) {
                 case 'object':
                     s += '{ ';
-                    for (var key in obj) {
-                        val = obj[key];
+                    for ( var key in obj ) {
+                        val = obj[ key ];
                         var type = typeof val;
-                        if (done) {
-                            val = (type === '{object}' || type === '{function}') ? type : val;
+                        if ( done ) {
+                            val = ( type === '{object}' || type === '{function}' ) ? type : val;
                         }
                         else {
-                            val = _.util.stringify(val, true);
+                            val = _.util.stringify( val, true );
                         }
                         s += ' ' + key + ' : ' + val + ',';
                     }
-                    s = s.slice(0, - 1);
+                    s = s.slice( 0, -1 );
                     s += ' }';
                     return s;
                 case 'function':
@@ -80,122 +88,147 @@
                 }
             },
             deepCopy: deepCopy,
-            scope: function(fn, scope, functionName) {
+            scope: function( fn, scope, functionName ) {
                 return function() {
-                    return fn.apply(scope, arguments);
-                }; //closure
-            }, //scope
-            isMethod: function(property) {
-                return ((typeof property === 'function') && (!(property instanceof RegExp)));
-            } //isMethod
-        }, // util
-        loader: {
-            queue: [],
-            _import: function(classPath) { //--------------------------------------------------------------- loader._import (load)
-                if (_.loader.queue.indexOf(classPath) < 0) {
-                    _.loader.load(classPath); // push path into loading queue
-                } // if
-            }, // _import
-            _class: function(className) { //--------------------------------------------------------------- loader._class (stub)
-_verbose('creating stub class for', className);
-                var stub = {
-                    _extends: function(superName) {
-_verbose('which extends', superName)
-                        this._super = superName; //set super name for definition tree
-                    } // _extends
-                }; // stub
-                global[className] = stub;
-                return global[className];
-            }, // _class
-            load: function(classPath) {
-_debug('loading', classPath)
-                var code, scriptPath;
-                //TODO: http classPaths
-                var binPath = 'bin/' + classPath;
-                scriptPath = 'src/' + classPath.replace(/\./g, '/') + '.js';
-                try {
-                    this.queue.push(classPath);
-                    if (fs && path && ast && ugg) { //server
-                        try {
-_verbose('looking for bytecode in', binPath);
-                            code = fs.readFileSync(binPath);
-                        }
-                        catch (e) {
-_verbose('no bytecode available.');
-                            try {
-_verbose('loading source code from', scriptPath);
-                                code = fs.readFileSync(scriptPath, 'ascii');
-                                try {
-_verbose('generating bytecode for', classPath, 'source bytes =', code.length);
-                                    if (!_.debugging) {
-                                        code = ast.parse(code); // parse code and get the initial AST
-                                        if (classPath == 'Code') {
-                                            code = ugg.ast_mangle(code); // get a new AST with mangled names
-_verbose('mangling', classPath);
-                                        }
-                                        code = ugg.ast_squeeze(code); // get an AST with compression optimizations
-_verbose('squeezing', classPath);
-                                        code = ugg.gen_code(code); // compressed code here
-
-                                        code = (code.substr(0, - 1) === ';') ? code : (code + ';');
-                                    }
-                                    if (!path.existsSync('bin/')) {
-                                        _info('creating bin');
-                                        fs.mkdirSync('bin/');
-                                    }
-_debug('writing bytecode to', binPath, 'final bytes =', code.length);
-                                    fs.writeFileSync(binPath, code);
+                    var temp = {};
+                    function explodeImports( scope ) {
+                        if( scope._imports ) {//explode imports
+                            for ( var i = 0; i < scope._imports.length; i++ ) {
+                                var classPath = scope._imports[ i ];
+                                var className = classPath.split( '.' ).pop();
+                                if( ! temp[className] ){
+                                    temp[ className ] = global[ className ];
+                                    var importedClass = _.util.lookup( classPath );
+                                    explodeImports( importedClass );
+                                    global[ className ] = importedClass;
                                 }
-                                catch (error) {
-_error('error creating bytecode');
-                                    throw new Error(error);
-                                }
-                            }
-                            catch (error) {
-_error('file system error');
-                                throw new Error(error);
                             }
                         }
                     }
-                    else { //client // ( typeof XMLHttpRequest == "function" )
-_verbose('streaming source code from', scriptURL);
+                    explodeImports( scope );
+                    var value = fn.apply( scope, arguments );
+                    for (var key in temp){
+                        global[ key ] = temp[ key ];
+                    }
+                    return value;
+                }; //closure
+            }, //scope
+            isMethod: function(property) {
+                return ( ( typeof property === 'function' ) && (! ( property instanceof RegExp ) ) );
+            } //isMethod
+        }, // util
+        loader: {
+            packagePath: '',
+            queue: [],
+            currentClass : {},
+            _package : function ( packagePath ){
+_debug( '_.loader._package', packagePath );
+                _.util.lookup( packagePath )[ _.loader.currentClass.name ] = _.loader.currentClass.code;
+            },
+            _import: function( classPath ) { //--------------------------------------------------------------- loader._import (load)
+_debug( '_.loader._import', classPath );
+                if ( _.loader.queue.indexOf( classPath ) < 0 ) {
+                    _.loader.load( classPath ); // push path into loading queue
+                } // if
+            }, // _import
+            _class: function( className) { //--------------------------------------------------------------- loader._class (stub)
+_debug( '_.loader._class', className );
+_verbose( 'creating stub class for', className);
+                var stub = {
+                    _extends: function( superName ) {
+_verbose( 'which extends', superName );
+                        this._super = superName; //set super name for definition tree
+                    } // _extends
+                }; // stub
+                _.loader.currentClass = { name: className, code: stub };
+                return stub;
+            }, // _class
+            load: function( classPath ) {
+_debug( 'loading', classPath )
+                var code, scriptPath;
+                //TODO: http classPaths
+                var binPath = 'bin/' + classPath;
+                scriptPath = 'src/' + classPath.replace( /\./g, '/' ) + '.js';
+                try {
+                    this.queue.push(classPath);
+                    if ( fs && path && ast && ugg ) { //server
+                        try {
+_verbose( 'looking for bytecode in', binPath );
+                            code = fs.readFileSync( binPath );
+                        }
+                        catch ( e ) {
+_verbose( 'no bytecode available.' );
+                            try {
+_verbose( 'loading source code from', scriptPath) ;
+                                code = fs.readFileSync(scriptPath, 'ascii');
+                                try {
+_verbose( 'generating bytecode for', classPath, 'source bytes =', code.length );
+                                    if (! _.debugging ) {
+                                        code = ast.parse( code ); // parse code and get the initial AST
+                                        if ( classPath == 'Code' ) {
+                                            code = ugg.ast_mangle( code ); // get a new AST with mangled names
+_verbose( 'mangling', classPath );
+                                        }
+                                        code = ugg.ast_squeeze( code ); // get an AST with compression optimizations
+_verbose( 'squeezing', classPath );
+                                        code = ugg.gen_code( code ); // compressed code here
+
+                                        code = ( code.substr( 0, -1 ) === ';' ) ? code : ( code + ';' ) + '\n';
+                                    }
+                                    if (! path.existsSync( 'bin/' ) ) {
+                                        _info( 'creating bin' );
+                                        fs.mkdirSync( 'bin/' );
+                                    }
+_debug( 'writing bytecode to', binPath, 'final bytes =', code.length );
+                                    fs.writeFileSync( binPath, code );
+                                }
+                                catch ( error ) {
+_error( 'error creating bytecode' );
+                                    throw error;
+                                }
+                            }
+                            catch ( error ) {
+_error( 'file system error' );
+                                throw error;
+                            }
+                        }
+                    }
+                    else if ( typeof XMLHttpRequest == "function" ) { //client //
+_verbose( 'streaming source code from', scriptURL );
                         var scriptURL = scriptPath;
                         var request = new XMLHttpRequest();
-                        request.open('GET', scriptURL, false);
-                        request.send(null);
-                        if (request.status == 200) {
+                        request.open( 'GET', scriptURL, false );
+                        request.send( null );
+                        if ( request.status == 200 ) {
                             code = request.responseText;
                         }
                         else { // else if
 _error('XMLHttpRequest error');
-                            throw new Error(request.status);
+                            throw new Error( request.status );
                         } // else
                     }
                 }
                 catch (error) {
-_error('error loading', classPath, ':', error.message);
+_error( 'error loading', classPath, ':', error.message );
                     throw error;
                 }
-_debug('loaded', classPath, 'successfully. processing imports');
+_verbose( 'loaded', classPath, 'successfully. processing imports' );
                 try {
+                    global._package = this._package; // lookup stub
                     global._import = this._import; //load
                     global._class = this._class; //stub
                     code = code.toString();
-                    if( classPath !== 'Code' && code.indexOf('_import') > -1 ) {
-_debug( 'found import statement(s), performing them...');
-                        eval(code);
-                    }else{
-_verbose( 'no imports present, skipping.');
+                    if( classPath != 'Code' && code.indexOf('_package') > -1 && code.indexOf('_class') > -1 ) {
+                        _verbose('evaluating cource for ')
+                        eval( code );
                     }
-                }
-                catch (error) {
+                } catch (error) {
 _error('error completing imports for ' + classPath + '. Error Text:' + error.message);
                     throw error;
                 }
-                var className = classPath.split('.').pop();
-                global[className] = global[className] || {};
-                global[className]._script = code; //store script
-                _.compiler.queue.push(className); // add script to compilation queue
+                var stub = _.util.lookup( classPath );
+                stub._script = code; //store script
+                _.compiler.queue.push(classPath); // add script to compilation queue
                 if (this.queue.length == _.compiler.queue.length) {
                     _.compiler.compileClasses();
                     this.queue = [];
@@ -205,18 +238,23 @@ _error('error completing imports for ' + classPath + '. Error Text:' + error.mes
         compiler: {
             buffer: '',
             queue: [],
-            _import: function(classPath) {
-                var className = classPath.split('.').pop();
-                _.compiler.compile(className);
+            _package : function ( packagePath ){
+_debug( '_.compiler._package', packagePath );
+_verbose( 'nothing to do' );
+            },
+            _import : function( classPath ) {
+_debug( '_.compiler._import', classPath );
+_verbose( 'nothing to do' );
             }, // _import
-            _class: function(className) {
-_verbose('skipping _class');
+            _class: function( className ) {
+_debug( '_.compiler._class', className );
+_verbose( 'null extender' );
                 return {
                     _extends: function() {}
-                }
-            }, // _import
+                };
+            },
             compileClasses: function() {
-_debug('compiling classes');
+_verbose( 'compiling classes' );
                 var className;
                 while (className = this.queue[0]) {
                     this.compile(className);
@@ -224,51 +262,81 @@ _debug('compiling classes');
                 _.interpreter.defineClasses();
                 this._queue = [];
             }, // compileClasses
-            compile: function(className) {
-                var index = this.queue.indexOf(className);
+            compile: function(classPath) {
+                 var index = this.queue.indexOf(classPath);
                 if (index >= 0) {
                     this.queue.splice(index, 1);
-                    var classObject = global[className];
-_debug('adding class', className);
+                    var stub = _.util.lookup( classPath );
+_verbose( 'adding class', classPath );
+                    global._package = this._package;
                     global._import = this._import;
                     global._class = this._class;
-                    if (  className !== 'Code' && (classObject._script.indexOf('_class') > -1 || classObject._script.indexOf('_import') > -1) ){
-                        eval(classObject._script);
+                    var code = stub._script;
+                    if( classPath != 'Code' && code.indexOf('_package') > -1 && code.indexOf('_class') > -1 ) {
+                        _verbose('evaluating cource for ')
+                        eval( code );
                     }
-                    this.buffer = this.buffer.concat(classObject._script);
-_verbose(this.buffer.length, 'bytes', this.queue.length, 'scripts remain.');
+                    this.buffer = this.buffer.concat( code );
+_verbose( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
                 } // if
             } //compile
         }, // compiler
-        interpreter: {
-            initializing: false,
+        interpreter : {
+            initializing : false,
+            imports : [],
+            currentClass : {},
+            _package: function( packagePath ) {
+_verbose( '_.interpreter._package', packagePath );
+                _.util.lookup( packagePath )[ _.interpreter.currentClass.name ] = _.interpreter.currentClass.code;
+                _.interpreter.imports = [];
+            },
             _import: function(classPath) { //--------------------------------------------------------------- interpreter._import (null)
-_verbose('skipping import: ', classPath);
+_verbose( '_.interpreter._import', classPath );
+                    _.interpreter.imports.push( classPath );
             }, // _import
             _class: function(className, properties) { //--------------------------------------------------------------- interpreter._class define
-_verbose('_class', className);
-                if (global[className] && global[className]._constructor) { // if class is stub
-                    return;
-                }
-                else {
-                    var newClass = Class._plus(className, properties); // create the class from Class object
-                    newClass._extends = function(parentClassName, properties) {
-_verbose('_extends', parentClassName);
-                        global[className] = global[parentClassName]._plus(className, properties);
-                        global[className]._className = className;
-                    }; // _extends
-                    global[className] = newClass;
-                } //if
-                _.interpreter.applicationName = className;
-                return global[className];
+_debug( '_.interpreter._class', className );
+                var newClass = Class._plus( className, properties ); // create the class from Class object
+                newClass._extends = function( parentClassName, properties ) {
+_debug( '_extends', parentClassName );
+                    var parentPath;
+                    for( var i = 0; i < _.interpreter.imports.length; i++ ){
+                        if( _.interpreter.imports[ i ].indexOf( parentClassName) > -1){
+                            parentPath = _.interpreter.imports[ i ];
+                        }
+                    }
+                    if(typeof parentPath === 'undefined') {
+                        throw new TypeError( className + ' cannot _extend ' + parentClassName + ', it has not been _imported.' );
+                    }
+_verbose( '_extending', parentPath );
+                    var subClass = _.util.lookup( parentPath )._plus( className, properties );
+                    subClass._className = className;
+                    subClass._imports = _.interpreter.imports;
+                    _.interpreter.bakeClass( subClass );
+                }; // _extends
+                newClass._className = className;
+                newClass._imports = _.interpreter.imports;
+                _.interpreter.bakeClass( newClass );
+                return newClass;
             }, // _class
+            bakeClass: function( classObject ){
+_verbose( 'baking', classObject.toString() );
+                for( var key in classObject){
+                    var property = classObject[ key ];
+                    if( [ classObject._className, '_plus', 'toString', '_extends'].indexOf( key ) === -1 && _.util.isMethod( property ) ){
+_verbose( 'scoping static', key );
+                        classObject[ key ] = _.util.scope( property, classObject, key );
+                    }
+                }
+                _.interpreter.currentClass = { name : classObject._className, code : classObject };
+            },
             defineClasses: function() {
-_debug('defining classes');
-                global._import = this._import; // null
+_debug( 'defining classes' );
+                global._package = this._package; //reset imports
+                global._import = this._import; // register imports
                 global._class = this._class; // define / extend class
                 eval(_.compiler.buffer);
                 _.compiler.buffer = '';
-                Code.x();
             } //defineClasses
         } // interpreter
     }; // _
@@ -280,7 +348,7 @@ _debug('defining classes');
         DEBUG: 4,
         VERBOSE: 5
     };
-    DebugLevels.LABELS = ['SILENT', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'VERBOSE'];
+    //DebugLevels.LABELS = ['SILENT', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'VERBOSE'];
     _trace = function() {
         var output = "";
         var args = arguments;
@@ -292,24 +360,20 @@ _debug('defining classes');
     }; // _trace
 
     _error = function() {
-        if (_.debugging >= DebugLevels.ERRORS) _trace.apply(this, arguments);
-    }; //
-    _warn = function() {
-        if (_.debugging >= DebugLevels.WARNINGS) _trace.apply(this, arguments);
-    }; //
-    _info = function() {
-        if (_.debugging >= DebugLevels.INFO) _trace.apply(this, arguments);
-    }; //
-    _debug = function() {
-        if (_.debugging >= DebugLevels.DEBUG) _trace.apply(this, arguments);
-    }; //
-    _verbose = function() {
-        if (_.debugging >= DebugLevels.VERBOSE) _trace.apply(this, arguments);
-    }; //
-
-    _package = function() { // Future Use
-_verbose('package', arguments[0]);
-    }; // _package
+        if (_.debugging >= DebugLevels.ERRORS) _trace.apply( this, arguments );
+    };//
+    _warn = function () {
+        if (_.debugging >= DebugLevels.WARNINGS) _trace.apply( this, arguments );
+    };//
+    _info = function () {
+        if (_.debugging >= DebugLevels.INFO) _trace.apply( this, arguments );
+    };//
+    _debug = function () {
+        if (_.debugging >= DebugLevels.DEBUG) _trace.apply( this, arguments );
+    };//
+    _verbose = function () {
+        if (_.debugging >= DebugLevels.VERBOSE) _trace.apply( this, arguments );
+    };//
 
 
     // DON'T GET CUTE.
@@ -318,17 +382,18 @@ _verbose('package', arguments[0]);
     /*
      *
      * Class is a modification of 'Class'
-     * originally by the immortal John Resig
+     * by the immortal John Resig
      *
      * http://bit.ly/4U5H
      *
+     * 'spect.
      *
      */
     //var fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
     // The base Class implementation --
     // provides _get and _set shortcuts to eliminate abiguous assignment ( is it a property or a getter / setter ? )
     // provides _add() to replace +=
-    // provides _exposes() to allow one ClassObject to "wear" the public API of another where there is no overlap
+    // provides _expose() to allow one ClassObject to "wear" the public API of another without overlapping existing methods
     var Class = function() {};
     Class._className = 'Class';
     Class.prototype = {
@@ -359,7 +424,7 @@ _verbose('package', arguments[0]);
                 (typeof this[propertyName] == 'function') ? this[propertyName](this[propertyName]() + value) : this[propertyName] += value;
             }
         },
-        _exposes : function ( api ){
+        _expose : function ( api ){
             for( var i in api ){
                 if( typeof api[ i ] === 'function' && typeof this[i] === 'undefined' ){
                     this[ i ] = api[ i ];
@@ -379,6 +444,7 @@ _verbose('package', arguments[0]);
         var newPrototype = new this();
         _.interpreter.initializing = false;
         newPrototype._className = className;
+        newPrototype._imports = _.interpreter.imports;
         var superPrototype = this.prototype;
 
         newPrototype._ = superPrototype._ ? _.util.deepCopy(superPrototype._) : {}; // private space 
@@ -433,50 +499,7 @@ _verbose('package', arguments[0]);
             var property;
             if (typeof addition == 'function') {
                 propertyType = 'function';
-                property = ( function(propertyName, fn, _super) {
-                    return function() {
-                        var args = '';
-                        for (var i in arguments) {
-                            args += _.util.stringify(arguments[i]) + ',';
-                        }
-                        args = args.slice(0, - 1);
-_verbose(className + '.' + propertyName + '( ' + args + ' )');
-                        var tmp = this._super;
-                        // Allow this._super() to call superconstructor, and allow this._super().*() to call the super method
-                        this._super = function() {
-                            if (propertyName === '__init__') {
-                                var __init__ = _super.__init__ || function() {};
-                                _super = _super._superPrototype;
-                                return __init__.apply(this, arguments);
-                            }
-                            else {
-                                var member, 
-                                    memberName, 
-                                    sup = { _ : {} };
-                                for ( memberName in _super ) {//public
-                                    member = _super[ memberName ];
-                                    if (typeof member === 'function') {
-                                        sup[ memberName ] = _.util.scope( member, this, memberName );
-                                    }
-                                }
-                                for ( memberName in _super._ ) {//'private'
-                                    member = _super._[memberName];
-                                    if (typeof member === 'function') {
-                                        sup._[memberName] = _.util.scope( member, this, memberName );
-                                    }
-                                }
-                                _super = _super._superPrototype;
-                                return sup;
-                            }
-                        };
-                        // The __init__ method only need to be bound temporarily, so we
-                        // remove it when we're done executing
-                        var ret = fn.apply(this, arguments);
-                        this._super = tmp;
-                        _super = superPrototype;
-                        return ret;
-                    };
-                })( propertyName, addition, superPrototype );
+                property = enableSuper( propertyName, addition, superPrototype );
             }
             else {
                 propertyType = 'var';
@@ -486,24 +509,67 @@ _verbose(className + '.' + propertyName + '( ' + args + ' )');
             attachTarget[propertyName] = property;
 _verbose('\t', propertyKeyword, propertyType, propertyName, '=', propertyDefault);
         }
-
+        function noConstructor(){
+            this._super.apply(this, arguments);
+        }
+        if( typeof additions !== 'undefined' && typeof additions[ className ] !== 'function' ){
+            newPrototype.__init__ = enableSuper( '__init__', noConstructor, superPrototype );
+        }
+        function enableSuper ( propertyName, fn, _super ){
+            return ( function(propertyName, fn, _super) {
+                return function() {
+                    var tmp = this._super;
+                    // Allow this._super() to call superconstructor, and allow this._super().*() to call the super method
+                    this._super = function() {
+                        if (propertyName === '__init__') {
+                            var __init__ = _super.__init__ || function() {};
+                            _super = _super._superPrototype;
+                            return __init__.apply(this, arguments);
+                        }
+                        else {
+                            sup = { _ : {} };
+                            var publicName, publicMember;
+                            for ( publicName in _super ) {//public
+                                var publicMember = _super[ publicName ];
+                                if (typeof publicMember === 'function') {
+                                    sup[ publicName ] = _.util.scope( publicMember, this, publicName );
+                                }
+                            }
+                            var privateName, privateMember;
+                            for ( privateName in _super._ ) {//'private'
+                                privateMember = _super._[privateName];
+                                if (typeof privateMember === 'function') {
+                                    sup._[privateName] = _.util.scope( privateMember, this, privateName );
+                                }
+                            }
+                            _super = _super._superPrototype;
+                            return sup;
+                        }
+                    };
+                    // The __init__ method only need to be bound temporarily, so we
+                    // remove it when we're done executing
+                    var ret = fn.apply(this, arguments);
+                    this._super = tmp;
+                    _super = superPrototype;
+                    return ret;
+                };
+            })( propertyName, fn, _super );
+        }
         // Create getter / setter properties
         for (var index in accessors) {
             var accessor = accessors[index];
-_verbose('property name:', accessor);
-            var getter = getters[accessor];
-            var setter = setters[accessor];
+_verbose( 'property name:', accessor);
+            var getter = getters[accessor] || superPrototype[accessor];
+            var setter = setters[accessor] || superPrototype[accessor];
             newPrototype[accessor] = (function(getter, setter, accessor) {
                 return function(value) {
                     if (value === undefined) {
                         if (getter) {
-_trace('getting', accessor);
                             return getter.call(this);
                         }
                         else return;
                     }
                     if (setter) {
-_trace('setting', accessor);
                         setter.call(this, value);
                     }
                 };
@@ -514,19 +580,18 @@ _trace('setting', accessor);
             // All construction is actually done in the __init__ method (declared using the new Class name as string ( _className ) )
             this._ = _.util.deepCopy(this._);
             if (!_.interpreter.initializing) {
-_verbose('new', this._className);
+_debug( 'new', this._className );
                 for (var propertyName in this) {
                     var property = this[propertyName];
                     if (_.util.isMethod(property) && ['toString', '_get', '_set', '_add'].indexOf(propertyName) < 0) {
-_verbose('scoping public', propertyName)
+_verbose( 'scoping public', propertyName );
                         this[propertyName] = _.util.scope(property, this, propertyName);
                     } //if
                 } //for
-
                 for (propertyName in this._) {
                     var property = this._[propertyName];
                     if (_.util.isMethod(property)) {
-_verbose('scoping private', propertyName)
+_verbose( 'scoping private', propertyName );
                         this._[propertyName] = _.util.scope(property, this);
                     } //if
                 } //for
@@ -545,6 +610,9 @@ _verbose('scoping private', propertyName)
 
         // And make this class extensible
         ClassObject._plus = arguments.callee;
+        ClassObject.toString = function (){
+            return '('+ this._className + ')';
+        };
 
         return ClassObject;
     };
@@ -553,35 +621,32 @@ _verbose('scoping private', propertyName)
         return Code.c('Code');
     };
     Code.r = function(applicationClassPath, parameters) {
-_verbose('Code.r(', applicationClassPath, ',', _.util.stringify(parameters), ')');
-        _.application.parameters = parameters;
-        _.application.classPath = applicationClassPath;
+_debug( 'Code.r(', applicationClassPath, ',', _.util.stringify(parameters), ')' );
+        global._package = _.loader._package;
         global._import = _.loader._import;
-        _import(applicationClassPath);
-
+        global._class = _.loader._class;
+        _import( applicationClassPath );
+_verbose( 'executing' );
+        Code.x( applicationClassPath, parameters );
     };
     Code.x = function(applicationClassPath, parameters) {
-_verbose('Code.x(', applicationClassPath, ',', _.util.stringify(parameters), ')');
-        parameters = parameters || this._.application.parameters;
-        applicationClassPath = applicationClassPath || this._.application.classPath;
-        var applicationClassName = applicationClassPath.split('.').pop();
-        new global[applicationClassName](parameters); //no namespace
-        _.application = {};
+_debug( 'Code.x(', applicationClassPath, ',', _.util.stringify( parameters ), ')' );
+        var Application = _.util.lookup( applicationClassPath );
+        new Application( parameters );
     };
     Code.c = function(applicationClassPath) {
-_debug('Code.c(', applicationClassPath, ')');
+_debug( 'Code.c(', applicationClassPath, ')' );
         var libPath = 'lib/' + applicationClassPath + '.js';
         var buffer;
         if (fs && path && path.existsSync( libPath ) ) {
                 buffer = fs.readFileSync(libPath, 'ascii');
         }else{
-_warn('no library at', libPath);
+_warn( 'no library at', libPath );
         }
         if (!buffer) {
-            var interpreter = _.interpreter;
             _.interpreter = {
                 defineClasses: function() {
-_verbose('bypassing interpreter.');
+_verbose( 'bypassing interpreter.' );
                 }
             };
             global._import = _.loader._import;
@@ -589,22 +654,23 @@ _verbose('bypassing interpreter.');
             buffer = _.compiler.buffer;
             if (fs && path) {
                 if (!path.existsSync('lib/')) {
-_debug('creating lib folder')
+_debug( 'creating lib folder' )
                     fs.mkdirSync('lib/');
                 }
-_debug('saving lib file to', libPath)
+_debug( 'saving lib file to', libPath );
                 fs.writeFileSync(libPath, buffer);
             }
             _.compiler.buffer = '';
-            _.interpreter = interpreter;
+//            _.interpreter = interpreter;
         }
         return buffer;
     };
     Code._ = _;
     global.Code = Code;
+    global._package = _.interpreter._package;
     global._import = _.interpreter._import;
     global._class = _.interpreter._class;
-console.log('Code.js is ready. @2013 Neuromantic, LLC. All Rights reserved. Licenced under the MIT license.');
+_debug( 'Code.js is ready. @2013 Neuromantic, LLC. All Rights reserved. Licenced under the MIT license.' );
 
     /////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -612,7 +678,7 @@ console.log('Code.js is ready. @2013 Neuromantic, LLC. All Rights reserved. Lice
     /////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////
 
-    //	 DEEP COPY props http://oranlooney.com/deep-copy-javascript/
+    //     DEEP COPY props http://oranlooney.com/deep-copy-javascript/
     //	   This section is part of OWL JavaScript Utilities.
     //
     //	OWL JavaScript Utilities is free software: you can redistribute it and/or

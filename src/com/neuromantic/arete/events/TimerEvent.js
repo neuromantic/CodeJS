@@ -1,7 +1,7 @@
 /*!
  *
  * TimerEvent.js
- * com.fasejs.events.TimerEvent
+ * com.neuromantic.arete.events.TimerEvent
  *
  * https://github.com/neuromantic/CodeJS/
  *
@@ -9,15 +9,15 @@
  * Licensed under the MIT license.
  *
  */
-_package( 'com.fasejs.events',
+_package( 'com.neuromantic.arete.events',
  
- 	_import( 'com.fasejs.events.Event' ),
+ 	_import( 'com.neuromantic.arete.events.Event' ),
  	
-	_class('TimerEvent')._extends('Event', {
+	_class( 'TimerEvent' )._extends( 'Event', {
 		static_START : 'timerStart',
 		static_STOP : 'timerStop',
-		static_TIMER : 'timer',
+		static_TICK : 'timerTick',
 		static_COMPLETE : 'timerComplete',
-		static_RESET : 'timerReset'
+		static_RESET : 'timerReset'//,
 	})
 );
