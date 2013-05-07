@@ -7,7 +7,7 @@
 _package( 'com.neuromantic.arete.component.widget',
 	
      _import( 'com.neuromantic.arete.component.Component' ),
-     _import( 'com.neuromantic.arete.dom.Div' ),
+     _import( 'com.neuromantic.arete.dom.elements.Div' ),
  	
 	_class( 'Widget' )._extends( 'Component', {
         private_width : null,

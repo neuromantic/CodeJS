@@ -9,7 +9,7 @@
  * Licensed under the MIT license.
  *
  */
-_package( 'com.neuromantic.arete.transitions',
+_package( 'com.neuromantic.arete.fx',
  	_import( 'com.neuromantic.arete.fx.Timer' ),
  	_import( 'com.neuromantic.arete.fx.Easing' ),
  	_import( 'com.neuromantic.arete.events.TweenEvent' ),

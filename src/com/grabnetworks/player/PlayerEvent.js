@@ -19,4 +19,4 @@ _package('com.grabnetworks.player',
 		static_PREROLL_STARTED: 'PreRollPlaybackStarted',
 		static_PREROLL_CLICKED: 'PreRollSelected'
     })
- )
+ );

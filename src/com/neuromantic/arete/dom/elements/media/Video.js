@@ -1,11 +1,11 @@
 /*!
  *
  * Video.js
- * com.neuromantic.arete.dom.media.Video
+ * com.neuromantic.arete.dom.elements.media.Video
  *
  */
-_package( 'com.neuromantic.arete.dom.media',
-    _import( 'com.neuromantic.arete.dom.media.Media' ),
+_package( 'com.neuromantic.arete.dom.elements.media',
+    _import( 'com.neuromantic.arete.dom.elements.Media' ),
     _class( 'Video' )._extends( 'Media', {
         static_TYPE : 'video',
         Video : function ( atts ){

@@ -40,11 +40,9 @@
 //			return y;
 //		},
 		static_CLICK : 'click',
-		static_ROLL_OVER : 'rollOver',
-		static_ROLL_OUT : 'rollOut',
+		static_OVER : 'over',
+		static_OUT : 'out',
 		static_MOVE : 'mouseMove',
-		static_MOUSE_OVER : 'mouseOver',
-		static_MOUSE_OUT : 'mouseOut',
 		mouseX : 0,
 		mouseY : 0,
 		MouseEvent : function ( type, target/*, mouseX, mouseY*/ ){

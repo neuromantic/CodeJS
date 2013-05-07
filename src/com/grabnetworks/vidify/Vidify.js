@@ -7,95 +7,197 @@
 _package( 'com.grabnetworks.vidify',
     _import( 'com.grabnetworks.player.Player' ),
     _import( 'com.grabnetworks.vidify.Badger' ),
-    _import( 'com.neuromantic.arete.dom.media.Img' ),
+    _import( 'com.grabnetworks.ui.CloseButton' ),
+    _import( 'com.grabnetworks.loading.ContentLoader' ),
+    _import( 'com.grabnetworks.loading.CatalogLoader' ),
+    _import( 'com.grabnetworks.tracking.Ping' ),
+    _import( 'com.grabnetworks.tracking.PlaybackPinger' ),
+    
     _import( 'com.neuromantic.arete.dom.Window' ),
+    _import( 'com.neuromantic.arete.dom.Document' ),
+    _import( 'com.neuromantic.arete.dom.elements.media.Img' ),
+    _import( 'com.neuromantic.arete.fx.Tween' ),
     _import( 'com.neuromantic.arete.events.MouseEvent' ),
     _import( 'com.neuromantic.arete.events.LoadingEvent' ),
-    _import( 'com.neuromantic.arete.net.JSONP' ),
+    _import( 'com.neuromantic.arete.data.Dictionary'),
     _class( 'Vidify', {
         private_badger : null,
-        private_badgeOptions : { src: 'http://www4.grabtest.com:8080/img/curl.png', style: { bottom:'0px', right:'0px' } },
-        private_target : 'document',
+        private_badgeImg : null,
+        private_badgerClicked: false,
+        private_target : null,
+        private_closeButton : null,
+        private_container : null, 
         private_player : null,
         private_playerSettings : {},
-        private_options:{},
+        private_options:null,
         private_guid : null,
         private_ready: false,
-        private_optionsLoader_onLoaded: function ( event ){
-_trace( 'Received Opitons...' );
+        private_onOptionsLoaded: function ( event ){
+            var whitelisted;
+            var options = event.data;
+            var productOptions = options.grabnetworks.vidify ||  options.grabnetworks.product;
+_trace( 'Received Options', productOptions );
+            if( productOptions ){
+                this._.badgeImg.tag( productOptions.badge );
+                this._.target = productOptions.target || this._.target;
+                var pages = productOptions.pages;
+                var url = location.href;
+                if( pages ){
+                    whitelisted = pages[0]=='*';
+                    for( var i = 0; i < pages.length; i++ ){
+                        whitelisted = whitelisted || url.indexOf( pages[ i ] ) > -1;
+                    }
+                }
+                if(whitelisted){
+                    new Ping( { p:'vf', e:'load', i:this._.playerSettings.id, u: encodeURIComponent(url) });
+_trace( 'Page found in whitelist' );
+                    var loader;
+                    var content = options.grabnetworks.content;
+                    switch (content){
+                        case 'MATCH':
+_trace( 'Retreiving matching video...' );
+                            loader = new CatalogLoader( 'test' );
+                            loader.on( LoadingEvent.COMPLETE, this._.onCatalogLoaded );
+                            loader.loadMatch();
+                            break;
+                        case 'RELATED':
+_trace( 'Retreiving related video...' );
+                            loader = new CatalogLoader();
+                            loader.on( LoadingEvent.COMPLETE, this._.onCatalogLoaded );
+                            loader.loadRelated();
+                            break;
+                        default:
+_trace( 'Using embedded video.' );
+                            this._.guid = content;
+                            this._.badge();
+                    }
+                }
+            }else{
+_trace( 'Options do not contain vidify config.');
+            }
             this._.options = event.data;
-            if( this._.options.grabnetworks.vidify ){
-                this._.badgeOptions = this._.options.grabnetworks.vidify.badge || this._.badgeOptions;
-                this._.target = this._.options.grabnetworks.vidify.target || this._.target;
-            }
-            this._.vidify();
         },
-        private_Window_onLoad: function (){
-_trace( 'Window Ready...' );
+        private_onWindowLoad: function (){
+_trace( 'Window ready...' );
             this._.ready = true;
-            this._.vidify();
+            this._.badge();
         },
-        private_contentLoader_onLoaded : function ( event ) {
-_trace( 'Received Content...' );
-            this._.guid = event.data.response.results[ 0 ].video.guid;
-            this._.vidify();
-        },
-        private_badger_onClick : function ( event ){
-            if(! this._.player ){
-                this._.player = new Player( this._.playerSettings );
-                this._.player.on( PlayerEvent.VIDEO_ENDED, this._.player_onVideoEnded);
-                this._.badger.visible( false );
+        private_onCatalogLoaded : function ( event ) {
+_trace( 'Received search results.' );
+            if ( event.data.response.results.length > 0 ){
+_trace( 'Found content candidates.');
+                if(! event.data.trigger){
+_trace( 'Ignoring trigger recommendation.');
+                }
+                this._.guid = event.data.response.results[ 0 ].video.guid;
+                this._.badge();
+            }else{
+_trace( 'No candidates.');
             }
         },
-        private_player_onVideoEnded : function ( event ) {
+        private_onBadgerClicked : function ( event ){
+            new Ping( { p:'vf', e:'action', i:this._.playerSettings.id, t : 'click_badge' });
+            this._.playVideo(); 
+        },
+        private_onBadgeImgOver : function ( event ){
+            this._.container.style( { backgroundColor : 'rgba(0,0,0,0.5)' } );
+        },
+        private_onBadgeImgOut : function ( event ){
+            this._.container.style( { backgroundColor : 'transparent' } );
+        },
+        private_onCloseButtonClicked : function ( event ) {
+            new Ping( { p:'vf', e:'action', i:this._.playerSettings.id, t : 'click_close' });
             this._.player.hide();  
             this._.badger.visible( true );
+            this._.closeButton.visible( false );
         },
-        private_vidify : function (){
-            if( this._.guid && this._.ready && this._.options ) {
-_trace( 'Vidifying your page...' );
-                var root = Element.find( this._.target );
-                var target, biggest = 0;
-                var images = document.getElementsByTagName('img');//.find( Img );
-                for (var i = 0; i < images.length; i++){
-                    var img = images[i];
-                    var area = img.width() * img.height();
-                    if( area > biggest ){
+        private_onPlayerVideoEnded : function ( event ) {
+            this._.player.hide();  
+            this._.badger.visible( true );
+            this._.closeButton.visible( false );
+        },
+        private_badge : function (){
+            if(this._.guid &&  this._.ready ) {
+_trace( 'Badging your page...' );
+                var root = Document.element();
+                if(this._.target){
+                    root = root.first( this._.target );
+                    
+                }
+                var TARGET_RATIO = 1.77777778;
+                var target, best = 0, area, img, images, ratio, match;
+                images = root.find( Img );
+                for ( var i = 0; i < images.length; i++ ) {
+                    img = images[i];
+                    area = img.width() * img.height();
+                    ratio = img.width() / img.height();
+                    proximity = 1 - Math.abs( TARGET_RATIO - ratio );
+                    match = area * proximity;
+                    if( match > best ) {
                         target = img;
-                        biggest = area;
+                        best = match;
                     }
                 }
-_trace( 'badging image with src =',target.tag().src );
-                this._.badger = new Badger( target, this._.badgeOptions );
-                this._.playerSettings.width = target.width();
-                this._.playerSettings.height = target.height();
-                this._.playerSettings.content = this._.guid;
-                var container = new Div( { style : { position : 'absolute', top : 0, left : 0, zIndex : 10000 } } );
-                this._.badger.append( container );
-                this._.playerSettings.parent = container.tag();
-                this._.badger.on( MouseEvent.CLICK, this._.badger_onClick );
-                var element = this._.badger;
-                var parent;
-                while( element && element.tag().parentNode !== document ) {
-                    parent = element.parent();
-                    if(parent && parent.tag().href){
-_debug( 'clearing surrounding hyperlink with href =',parent.tag().href );
-                        parent.parent().replace(element, parent);
+                if(target){
+_trace( 'Badging image with src =',target.tag().src, '...' );
+                    this._.badger = new Badger( target, this._.badgeImg );
+                    this._.badger.on( MouseEvent.CLICK, this._.onBadgerClicked );
+                    this._.badgeImg.on( MouseEvent.OVER, this._.onBadgeImgOver );
+                    this._.badgeImg.on( MouseEvent.OUT, this._.onBadgeImgOut );
+                    this._.playerSettings.width = target.width();
+                    this._.playerSettings.height = target.height();
+                    this._.playerSettings.content = this._guid;
+                    var element = this._.badger;
+                    var parent;
+                    while( element && element.tag().parentNode !== document ) {
+                        parent = element.parent();
+                        if(parent && parent.tag().href){
+_debug( 'clearing surrounding hyperlink with href =', parent.tag().href, '.' );
+                            parent.parent().replace( element, parent );
+                        }
+                        element = parent;
                     }
-                    element = parent;
+                    
+                this._.container = new Div( { style : { position : 'absolute', top : 0,  left : 0, zIndex : 10001 } } );
+                this._.container.width( target.width() );
+                this._.container.height( target.height() );
+                    this._.badger.append( this._.container );
+                new Ping( { p:'vf', e:'render', i:this._.playerSettings.id });
                 }
             }
         },
+        private_playVideo : function (){
+_trace('Playing video.')
+                this._.playerSettings.content = this._.guid;
+                // this._.playerSettings.diag = 'console';
+                this._.playerSettings.parent = this._.container.tag();
+                if(! this._.player ){
+                    this._.player = new Player( this._.playerSettings );
+                    this._.closeButton = new CloseButton();
+                    this._.closeButton.style( { position: 'absolute', top: '-10px', right: '-10px', zIndex : 10005 } );
+                    this._.closeButton.on( MouseEvent.CLICK, this._.onCloseButtonClicked );
+                    this._.badger.append( this._.closeButton );
+                    this._.player.on( PlayerEvent.VIDEO_ENDED, this._.onPlayerVideoEnded);
+                    new PlaybackPinger( this._.player, 'vf' );
+                }
+                this._.badger.visible( false );
+                this._.closeButton.visible( true );
+                this._.closeButton.alpha( 0 );
+                Tween.to( this._.closeButton, 0.5, { alpha: 1 } );
+                this._.player.show(); 
+        },
         Vidify : function( settings ){
+            settings.id = settings.id || 1720202;
             this._.playerSettings = settings;
-            Window.onLoad( this._.Window_onLoad );
-            var optionsLoader = new JSONP();
-            optionsLoader.on( LoadingEvent.LOADED, this._.optionsLoader_onLoaded );
-            optionsLoader.load( 'http://content.grabnetworks.com/options/'+settings.id+'.json' );
-            var contentLoader = new JSONP();
-            contentLoader.on( LoadingEvent.LOADED, this._.contentLoader_onLoaded );
-            contentLoader.load( 'http://catalog.grabnetworks.com/catalogs/1/videos/search?search_debug=1&catalog_id=1&date_weight=25.0&grabBoost=20.0&vcl_search=1&url=' + encodeURIComponent( location.href ) );
-        
+            new Ping( { p:'vf', e:'init', i:this._.playerSettings.id });
+            this._.badgeImg = new Img( { src: 'http://static.grab-media.com/images/badges/playS.png', style: { bottom:'0px', right:'0px' } } );
+            if( settings.badge ){
+                this._.badgeImg.tag( { src : decodeURIComponent( settings.badge ) });
+            }
+            Window.onLoad( this._.onWindowLoad );
+            var loader = new ContentLoader();
+            loader.on( LoadingEvent.LOADED, this._.onOptionsLoaded );
+            loader.loadOptions( settings.id );
         },
     })
 );

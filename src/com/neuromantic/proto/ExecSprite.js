@@ -1,8 +1,6 @@
 _package( 'net.kolektiv.proto',
 	_import( 'com.fasejs.display.Sprite' ),
 	_import( 'com.fasejs.events.Event' ),
-	// _import( 'com.fasejs.geom.Point' ),
-	// _import( 'com.fasejs.geom.Rectangle' ),
 	_import( 'com.fasejs.util.Dictionary' ),
 	
 	_class(  'ExecSprite' )._extends( 'Sprite',  {
@@ -62,7 +60,7 @@ _debug( this, '_addEvents' );
 		},
 		_addedToStageListener : function ( event ) {
 			this.removeEventListener( Event.ADDED_TO_STAGE, this._addedToStageListener, this );
-			this._stageReady()
+			this._stageReady();
 		},
 		_build : function () {
 _debug( this, '_build' );

@@ -1,11 +1,11 @@
 /*!
  *
  * Img.js
- * com.neuromantic.arete.dom.media.Img
+ * com.neuromantic.arete.dom.elements.media.Img
  *
  */
-_package( 'com.neuromantic.arete.dom.media',
-    _import( 'com.neuromantic.arete.dom.media.Media' ),
+_package( 'com.neuromantic.arete.dom.elements.media',
+    _import( 'com.neuromantic.arete.dom.elements.Media' ),
     _import( 'com.neuromantic.arete.events.LoadingEvent' ),
     _class( 'Img' )._extends( 'Media', {
         static_TYPE : 'img',
@@ -29,7 +29,7 @@ _package( 'com.neuromantic.arete.dom.media',
         },
         Img : function ( atts ){
             atts = atts || {};
-            atts.onload = this._.onload
+            atts.onload = this._.onload;
             this._super( Img.TYPE, atts );
         },
         get_loaded : function () {

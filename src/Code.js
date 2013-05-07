@@ -99,7 +99,9 @@
                                 if( ! temp[className] ){
                                     temp[ className ] = global[ className ];
                                     var importedClass = _.util.lookup( classPath );
-                                    explodeImports( importedClass );
+                                    if ( className !== scope._className ){
+                                        explodeImports( importedClass );
+                                    }
                                     global[ className ] = importedClass;
                                 }
                             }
@@ -219,7 +221,7 @@ _verbose( 'loaded', classPath, 'successfully. processing imports' );
                     global._class = this._class; //stub
                     code = code.toString();
                     if( classPath != 'Code' && code.indexOf('_package') > -1 && code.indexOf('_class') > -1 ) {
-                        _verbose('evaluating cource for ')
+                        _verbose('evaluating source for ')
                         eval( code );
                     }
                 } catch (error) {
@@ -284,9 +286,11 @@ _verbose( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
         interpreter : {
             initializing : false,
             imports : [],
+            packagePath: null,
             currentClass : {},
             _package: function( packagePath ) {
 _verbose( '_.interpreter._package', packagePath );
+                _.interpreter.currentClass.code._imports.push( packagePath + '.' + _.interpreter.currentClass.name );
                 _.util.lookup( packagePath )[ _.interpreter.currentClass.name ] = _.interpreter.currentClass.code;
                 _.interpreter.imports = [];
             },

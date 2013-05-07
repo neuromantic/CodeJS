@@ -56,7 +56,7 @@ _verbose( 'creating exec statement' );
 								'\t\tvar pair = list[i].split("=");\n'+
 								'\t\tsettings[pair[0]] = pair[1];\n'+
 								'\t};\n'+
-								'\tsettings.parent = script.parentNode;\n'+
+								'\tsettings.parent = document.getElementById( settings.target ) || script.parentNode;\n'+
 								'\tCode.x("' + classPath + '",settings);\n'+
                                 '}\n'+
                                 '})();';

@@ -5,6 +5,7 @@
  *
  */
 _package('com.neuromantic.arete.dom',
+    _import( 'visibility'),
     _import('com.neuromantic.arete.events.Notifier'),
     _import('com.neuromantic.arete.events.Event'),
     _import('com.neuromantic.arete.events.MouseEvent'),
@@ -21,35 +22,41 @@ _package('com.neuromantic.arete.dom',
         },
         static_byClass: function( className, root ) {
             root = root || document;
-            var els = root.getElementsByClassName(className);
+            var tags = root.getElementsByClassName(className);
             var list = [];
-            if (els) {
-                for ( var i = 0; i < els.length; i++ ) {
-                    list[i] = new Element(els[i]);
+            if ( tags ) {
+                for ( var i = 0; i < tags.length; i++ ) {
+                    list[i] = new Element( tags[i] );
                 }
             }
             return list;
         },
         static_all : function( ElementClass, root ) {
             root = root || document;
-            var list = root.getElementsByTagName(ElementClass.TYPE);
-            for ( var i = 0; i < list.length; i++ ) {
-                list[i] = new Element(list[i]);
+            var tags = root.getElementsByTagName(ElementClass.TYPE);
+            var list = []
+            for ( var i = 0; i < tags.length; i++ ) {
+                list[i] = new Element(tags[i]);
             }
             return list;
+        },
+        static_first : function ( selector, root ){
+            root = root || document;
+            var results = Element.find( selector );
+            return results[0] || results;
         },
         static_find : function ( selector, root ){
             root = root || document;
             if (selector.TYPE){
-                return Element.all( selector.TYPE );
+                return Element.all( selector );
             }
             switch( selector.charAt( 0 ) ){
                 case '#' :
-                    return Element.byID( selector.slice( 1 ), root )[0];
+                    return Element.byID( selector.slice( 1 ), root );
                 case '.' : 
-                    return Element.byClass( selector.slice( 1 ), root )[0];
+                    return Element.byClass( selector.slice( 1 ), root );
                 default :
-                    return Element.all(selector.slice( 1 ), root );
+                    return Element.all(selector, root );
            }
         },
         private_tag: null,
@@ -97,6 +104,15 @@ _package('com.neuromantic.arete.dom',
             this._.notify(new Event(Event.CHANGE));
         },
         private_mouseNotify: function(type, nativeEvent) {
+              nativeEvent = nativeEvent || window.event;
+            //IE9 & Other Browsers
+            if (nativeEvent.stopPropagation) {
+              nativeEvent.stopPropagation();
+            }
+            //IE8 and Lower
+            else {
+              nativeEvent.cancelBubble = true;
+            }
             if (this._.mouseEnabled) {
                 this._.notify(new MouseEvent(type));
             }
@@ -107,7 +123,7 @@ _package('com.neuromantic.arete.dom',
         Element: function(tag, atts) {
             atts = atts || {};
             if (tag) {
-                if (typeof tag.nodeType === 'number' && tag.attributes && tag.childNodes && tag.cloneNode) {
+                if ( ( typeof document == 'object' && tag === document ) || ( typeof tag.nodeType === 'number' && tag.attributes && tag.childNodes && tag.cloneNode ) ){
                     this._.tag = tag;
                 } else if (typeof tag === 'string') {
                     try {
@@ -116,7 +132,7 @@ _package('com.neuromantic.arete.dom',
                             atts.className = this._className;
                         }
                         if ( typeof atts.style === 'undefined' || typeof atts.style.position === 'undefined' ) {
-                            this.style( { position: 'absolute' } );
+                            // this.style( { position: 'absolute' } );
                         }
                     } catch (error) {
                         throw new TypeError('Arete Elements require a valid HTML tag name');
@@ -141,7 +157,10 @@ _package('com.neuromantic.arete.dom',
             }
         },
         find : function ( selector ){
-            Element.find( selector, this.tag() );  
+            return Element.find( selector, this.tag() );  
+        },
+        first : function ( selector ){
+            return Element.first( selector, this.tag() );  
         },
         append: function(child) {
             this._.tag.appendChild(child.tag());
@@ -150,7 +169,10 @@ _package('com.neuromantic.arete.dom',
             this._.tag.replaceChild(newChild.tag(), oldChild.tag());
         },
         remove: function(child) {
-            this._.tag.removeChild(child.tag());
+            if( child ){
+                return this._.tag.removeChild(child.tag());
+            }
+            this.parent().remove(this);
         },
         set_tag: function(value) {
             for (var a in value) {
@@ -260,6 +282,9 @@ _package('com.neuromantic.arete.dom',
         set_autoAlpha: function(value) {
             this.alpha(value);
             this.visible(this._.alpha > 0);
+        },
+        get_viewable : function () {
+            return VISIBILITY._isVisible( this._.tag)
         }
     })
 );

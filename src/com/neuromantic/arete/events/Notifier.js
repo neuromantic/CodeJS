@@ -7,10 +7,15 @@
  _package( 'com.neuromantic.arete.events',
 	_class('Notifier', {
     	private_notify : function( event ) {
+            event.source = this;
 			if( this._.handlers[ event.type ] ) {
 				event.source = this;
 				for( var index in this._.handlers[ event.type ] ) {
-					this._.handlers[ event.type ][ index ]( event );
+                    // try {
+					    this._.handlers[ event.type ][ index ]( event );
+//                     } catch ( error ){
+// _trace('async error caught handling', event.type, 'of', event.source.toString(), ':',  error.message )
+//                     }
 				}
 			}
 		},

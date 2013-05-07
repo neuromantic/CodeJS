@@ -1,7 +1,7 @@
 /*!
  *
  * Easing.js
- * com.fasejs.fs.transitions.Easing
+ * com.neuromantic.arete.fx.Easing
  *
  * https://github.com/neuromantic/CodeJS/
  *
@@ -45,7 +45,7 @@
 	  http://www.robertpenner.com/profmx
 	  http://www.amazon.com/exec/obidos/ASIN/0072223561/robertpennerc-20
 	*/
-_package( 'com.fasejs.fs.transitions',
+_package( 'com.neuromantic.arete.fx',
 
 	_class ('Easing', {
 	// Ported to Code.js 5 / 13 / 2011 by Neuromantic

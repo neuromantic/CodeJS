@@ -7,14 +7,16 @@
 _package( 'com.grabnetworks.player',
     _import('swfobject'),
     _import( 'com.grabnetworks.player.PlayerEvent' ),
-    _import( 'com.neuromantic.arete.dom.Div'),
-    _import( 'com.neuromantic.arete.dom.media.Video'),
-    _import( 'com.neuromantic.arete.utils.BrowserUtil'),
+    _import( 'com.grabnetworks.loading.ContentLoader' ),
+    
+    _import( 'com.neuromantic.arete.dom.elements.Div'),
+    _import( 'com.neuromantic.arete.dom.elements.media.Video'),
+    _import( 'com.neuromantic.arete.environment.Browser'),
     _import( 'com.neuromantic.arete.utils.URIUtil'),
     _import( 'com.neuromantic.arete.net.JSONP'),
     _import( 'com.neuromantic.arete.events.LoadingEvent'),
     _import( 'com.neuromantic.arete.events.Notifier'),
-	_class( 'Player' )._extends( 'Notifier', {
+	_class( 'Player' )._extends( 'Div', {
 		static_local: false,
         static_players : [],
         private_swf: null,
@@ -72,20 +74,16 @@ _package( 'com.grabnetworks.player',
           private_onSWFObject : function ( swf ){
             if(swf.ref){
                 this._.swf = swf.ref;
-                this._.swf.style.display =  'block';
-                this._.swf.style.visibility = 'visible';
-                this.style = this._.swf.style;
-            }else if( this._.div ){
-                this._.contentServer = 'http://content.' + this._.environment + '.com';
-                this._.loadOptions( this._.settings.id );
+                this.type = 'v5';
             }else{
-                throw new Error( 'Error initializing playback engine. SWFObject did not create Flash Player, and there is no target div for a video tag.');
+                this._.loadOptions( this._.settings.id );
+                this.type = 'h5';
             }
         },
         private_loadOptions : function( id ){
-            this._.optionsLoader = new JSONP( 'jsonp' );
-            this._.optionsLoader.on( LoadingEvent.LOADED, this._.onOptionsLoaded);
-            this._.optionsLoader.load(this._.contentServer + '/' + 'options/' + id + '.json');
+            this._.optionsLoader = new ContentLoader();
+            this._.optionsLoader.on( LoadingEvent.COMPLETE, this._.onOptionsLoaded);
+            this._.optionsLoader.loadOptions( id );
         },
         private_onOptionsLoaded : function( event ){
             var options = event.data;
@@ -94,24 +92,9 @@ _package( 'com.grabnetworks.player',
             this._.loadContent( guid );
         },
         private_loadContent : function( contentID ){
-		    var type;
-			var guid;
-			switch ( contentID.length ) {
-				case 40:
-					guid = contentID;
-					type = 'v';
-					break;
-				case 41:
-					guid = contentID.substr( 1 );
-					type = contentID.substr( 0, 1 );
-					break;
-				default:
-					throw new Error( 'Invalid GUID length' );
-			}
-            var fromPage = escape(global.location.href.toString());
-            this._.contentLoader = new JSONP( 'jsonp' );
-            this._.contentLoader.on( LoadingEvent.LOADED, this._.onContentLoaded );
-            this._.contentLoader.load(  this._.contentServer + '/' +  type + '/' + guid + '?from=' + fromPage );
+            this._.contentLoader = new ContentLoader();
+            this._.contentLoader.on( LoadingEvent.COMPLETE, this._.onContentLoaded );
+            this._.contentLoader.loadContent( guid );
         },
         private_onContentLoaded: function ( event ){
             var content = event.data;
@@ -125,16 +108,14 @@ _package( 'com.grabnetworks.player',
                         preload : 'auto',
                         id : this._.playerID,
                         style : {
-                            visibility : 'block',
-                            display : 'visible'
+                            background : 'black' 
                         }
                     });
 				}
-                this.style = this._.video.style();
                 this._.video.tag({autoplay :  ( this._.settings.autoPlay || this._.options.player.behavior.autoPlay ) ? 'autoplay': null});
                 this._.video.load(content.video.media.mobile.url);
                 if(this._.div){
-                    this._.parent.replace( this._.video, this._.div );
+                    this.replace( this._.video, this._.div );
                     this._.div = null;
                 }
             }else{
@@ -142,7 +123,7 @@ _package( 'com.grabnetworks.player',
                     display : 'block',
                     textAlign : 'center',
                     verticalAlign : 'middle',
-                    backgroundColor : '#a12a3d',
+                    background : 'url(' + content.video.media.preview + ')',
                     color : '#FFFFFF',
                     width : this._.settings.width + 'px',
                     height :  this._.settings.height + 'px',
@@ -205,6 +186,7 @@ _package( 'com.grabnetworks.player',
             }
         },
         Player : function ( settings ){
+            this._super();
             if (settings.variant === '') {
 				delete settings.variant;
 			}//if
@@ -212,44 +194,49 @@ _package( 'com.grabnetworks.player',
 			var params = { allowScriptAccess: 'always', allowFullScreen: 'true', wmode: 'transparent', menu: 'false', bgcolor: '#000000', quality: 'high' };//params
 			var env = settings.env || '';
 			delete settings.env;
-			var width = settings.width;
-			var height = settings.height;
+			var width = settings.width || 640;
+			var height = settings.height || 360;
 			var flashvars = settings;
-			var id = settings.id;
-			var namespace = 'Player.players[' + id + ']';
+			this.id = settings.id;
+			var namespace = 'Player.players[' + this.id + ']';
 			var eventhandler = '_.eventRouter';
 			flashvars.namespace = namespace;
 			flashvars.eventhandler = eventhandler;
 			this._.playerID = 'GrabPlayer' + settings.id;
-            this._.divID = 'grabDiv' + id;
-			this._.parent = new Element(settings.parent);
+            this._.divID = 'grabDiv' + this.id;
 			var div = Element.byID( this._.divID );
-            if( !div ){
-                div = new Div({
-                    id : this._.divID
-                });
-                this._.parent.append( div );
+            if( div ){
+                div.parent().replace( this, div );
             }else{
-                this._.parent = div.parent();   
+                div = new Div( { id : this._.divID } );
+                if( settings.parent ){
+                    new Element(settings.parent).append( this );
+                }
             }
+            this.append( div );
             this._.div = div;
             var attributes = { id: this._.playerID, name: this._.playerID };
-//            if ( !settings.local && scriptInfo.host.indexOf('grabqa') > -1 ){
-//                settings.tgt = settings.tgt || 'grabqa';
-//                this._.environment = 'grabqa';
-//            }
+           // if ( !settings.local && scriptInfo.host.indexOf('grabqa') > -1 ){
+           //     settings.tgt = settings.tgt || 'grabqa';
+           //     this._.environment = 'grabqa';
+           // }
             var swfDir = ( settings.local ) ?  settings.local + '/'  : 'http://player.' + this._.environment + '.com/v5' + env + '/';
             swfobject.embedSWF( swfDir + 'Player.swf', this._.divID, width, height, '9.0.0', false, flashvars, params, attributes, this._.onSWFObject);
-			Player.players[id] = this;
+			Player.players[this.id] = this;
 		},
-        style : {},
+        id : 'uninitialized',
+        type : 'uninitialized',
         hide : function () {
-            this.style.display = 'none';
-            this.style.visibility = 'hidden';
+            this.style( { 
+                display: 'none', 
+                visibility: 'hidden' 
+            } );
         },
         show : function () {
-            this.style.visibility = 'visible';
-            this.style.display = 'block';
+            this.style( { 
+                display: 'block', 
+                visibility: 'visible' 
+            } );
         },
         loadNewVideo: function( guid ) {
             this._.defer( this._.load, guid );

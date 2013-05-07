@@ -6,31 +6,36 @@
  */
 _package( 'com.grabnetworks.vidify',
     _import( 'com.grabnetworks.player.Player' ),
-    _import( 'com.neuromantic.arete.dom.Div'),
     _import( 'com.neuromantic.arete.dom.Element'),
-    _import( 'com.neuromantic.arete.dom.media.Img'),
+    _import( 'com.neuromantic.arete.dom.elements.Div'),
+    _import( 'com.neuromantic.arete.dom.elements.media.Img'),
     _import( 'com.neuromantic.arete.events.MouseEvent'),
     _class( 'Badger' )._extends( 'Div', {
-        Badger : function( target, badgeOptions ){
+        private_badge : null,
+        private_onBadgeClicked : function ( event ){
+            this._.notify( event );
+        },
+        Badger : function( target, badgeImg ){
             this._super();
             var width = target.width();
             var height = target.height();
-            var parent = target.parent() ; 
+            var parent = target.parent(); 
             var style = target.style();
             this.style( style );
-            this.style( { position : 'relative'});
+            style = { position: 'relative', display: ( style.display === 'inline' ? 'inline-block' : style.display ) };
+            this.style( style );
             this.width( width );
             this.height( height );
-            target.style({border:0, margin:0, padding: 0});
+            target.style( { border:0, margin:0, padding: 0 } );
             parent.replace( this, target );
             this.append( target );
-            var badge = new Img( badgeOptions );
-            badge.style( { position:'absolute', border: 0 , zIndex : 10000 });
-            badge.on( MouseEvent.CLICK, this._.badge_onClick );
-            this.append(badge);
+            this._.badge = badgeImg;
+            this._.badge.style( { position: 'absolute', border: 0 , zIndex : 10003 } );
+            this._.badge.on( MouseEvent.CLICK, this._.onBadgeClicked );
+            this.append( this._.badge );
         },
-        private_badge_onClick : function ( event ){
-            this._.notify( event );
+        set_visible : function( value ) {
+            this._.badge.visible( value );
         }//,
     })
 );

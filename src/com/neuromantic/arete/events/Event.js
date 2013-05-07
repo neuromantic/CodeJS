@@ -10,7 +10,7 @@
         static_RESIZE : "resize",
 		type : '',
         data: null,
-		target : null,
+		source : null,
 		Event : function( type, data ) {
 			this.type = type;
             this.data = data;

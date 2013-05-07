@@ -1,10 +1,10 @@
 /*!
  *
  * Div.js
- * com.neuromantic.arete.dom.Div
+ * com.neuromantic.arete.dom.elements.Div
  *
  */
-_package( 'com.neuromantic.arete.dom',
+_package( 'com.neuromantic.arete.dom.elements',
     _import( 'com.neuromantic.arete.dom.Element' ),
     _class( 'Div' )._extends( 'Element', {
         static_TYPE : 'div',

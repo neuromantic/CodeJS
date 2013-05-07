@@ -1,14 +1,14 @@
 console.log( '\n========================================\n' );
 require( './src/Code.js' );
-Code._.debugging = DebugLevels.VERBOSE;
+Code._.debugging = DebugLevels.DEBUG;
 var path = require('path');
 var fs = require('fs');
 clearDir('bin');
 clearDir('lib');
 Code.r('com.neuromantic.arete.server.Arete', { 
 	http: { host: process.env.IP, port: process.env.PORT },
-    files: {root:'files'},
-    src: { root: 'src'}
+    files: { root: 'files' },
+    src: { root: 'src' }
 });
 console.log( '\nA R E T E | S E R V E R\n');
 function clearDir ( dir ) {

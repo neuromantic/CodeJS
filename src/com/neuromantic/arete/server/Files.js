@@ -34,7 +34,7 @@ _package( 'com.neuromantic.arete.server',
 		},
 		process : function ( message ){
 			if( message.request ) {
-				var request = message.request;
+                var request = message.request;
 				var path = require( 'url' ).parse( request.req.url ).path;
 				var root = this._.root;
 				if( root.indexOf('/') === 0 ){
@@ -48,22 +48,22 @@ _package( 'com.neuromantic.arete.server',
 				var ext = file.substring( file.lastIndexOf( '.' ) + 1 );
 				var type = this._.types[ ext ];
 				if( type ) {
-					try{
-						var filePath = root + path;
-                        var fs = require('fs');
+					var filePath = root + path;
+_debug( 'looking for file of type', type, 'at', filePath);
+                    var fs = require('fs');
+                    if(fs.existsSync( filePath)){
+_debug( 'found', filePath);
                         var buffer = fs.readFileSync( filePath );
+_debug( 'data:', buffer.length, 'bytes');
                         if( buffer ) {
                             if( type.indexOf ( 'text' ) >= 0 ){
                                 buffer = buffer.toString();
                             }
                             request.res.setHeader("Content-Type", type );
 							request.res.statusCode = 200;
+_debug( 'sending', buffer.length, 'bytes');
 							request.res.end( buffer );
                         }
-                    } catch ( error ) {
-_error( error );
-                        request.res.statusCode = 404;
-                        request.res.end( error.message );
                     }
 				}
 			}			
