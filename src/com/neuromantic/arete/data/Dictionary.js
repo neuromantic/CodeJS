@@ -10,26 +10,26 @@
 	_class('Dictionary', {
     	_ :  function ( key, value ) {
 			if ( value === undefined ) {
-				return this._.values[ this._.values.indexOf( key ) ]; // get
+				return this._values[ this._values.indexOf( key ) ]; // get
 			}
-			var index = this._.keys.indexOf( key );
+			var index = this._keys.indexOf( key );
 			if ( index < 0 ) { // new key
 				index = this._.keys.length;
-				this._.keys[index] =  key ;
+				this._keys[index] =  key ;
 			}
 			if ( value === null ) { // null value (delete)
-				this._.keys.splice( index, 1 );
-				this._.values.splice( index, 1 );
+				this._keys.splice( index, 1 );
+				this._values.splice( index, 1 );
 			}else{
-				this._.values[ index ] = value; // set
+				this._values[ index ] = value; // set
 			}
 		},
-    	private_keys : [],
-		private_values : [],
+    	_keys : [],
+		_values : [],
 		Dictionary : function () {
 		},
 		toString : function () {
-			return 'Dictionary with ' + this._.keys.length + ' keys and ' + this._.values.length + ' values.';
+			return 'Dictionary with ' + this._.keys.length + ' keys and ' + this._values.length + ' values.';
 		}//,
 	})
 );

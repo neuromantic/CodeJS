@@ -1,6 +1,6 @@
 console.log( '\n========================================\n' );
 require( './src/Code.js' );
-Code._.debugging = DebugLevels.DEBUG;
+// Code._.debugging = DebugLevels.DEBUG;
 var path = require('path');
 var fs = require('fs');
 clearDir('bin');
