@@ -5,7 +5,7 @@
  *
  */
 _package('com.neuromantic.arete.dom',
-    _import( 'visibility'),
+    _import( 'com.useallfive.VISIBILITY'),
     _import('com.neuromantic.arete.events.Notifier'),
     _import('com.neuromantic.arete.events.Event'),
     _import('com.neuromantic.arete.events.MouseEvent'),

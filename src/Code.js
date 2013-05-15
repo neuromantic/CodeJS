@@ -631,13 +631,59 @@ _debug( 'Code.r(', applicationClassPath, ',', _.util.stringify(parameters), ')' 
         global._class = _.loader._class;
         _import( applicationClassPath );
 _verbose( 'executing' );
-        Code.x( applicationClassPath, parameters );
+        var Application = _.util.lookup( applicationClassPath );
+		new Application( parameters );
     };
     Code.x = function(applicationClassPath, parameters) {
-_debug( 'Code.x(', applicationClassPath, ',', _.util.stringify( parameters ), ')' );
-        var Application = _.util.lookup( applicationClassPath );
-        new Application( parameters );
-    };
+		var init = '( function (){\n';
+	    var code;
+		try{
+_debug( 'getting Code.js from file system' );
+			code = Code();
+		}catch (error){
+_error( 'src/Code.js could not be read:\n'+ error.message );
+			throw( error );
+	    }
+		var app;
+		try{
+_verbose( 'compiling', applicationClassPath , 'from source files' );
+				app =  Code.c( applicationClassPath );
+	    } catch ( error ) {//try
+_error( applicationClassPath + ' could not be compiled:\n'+ error.message );
+			throw( error );
+		}
+_verbose( 'creating exec statement' );
+		var exec = 	'var scripts = document.getElementsByTagName( "script" );\n'+
+					'var script = scripts[ scripts.length - 1 ];\n'+
+					'var query = script.src.split("?")[1];\n'+
+	                'if( query.length > 0 ){\n'+
+						'\tvar settings = {};\n'+
+						'\tvar list = query.split( "&");\n'+
+						'\tfor (var i = 0; i < list.length; i++ ){\n'+
+							'\t\tvar pair = list[i].split("=");\n'+
+							'\t\tsettings[pair[0]] = pair[1];\n'+
+						'\t};\n'+
+						'\tnew ' + applicationClassPath + '( settings );\n'+
+	                '}\n';
+	      var end = '})();';
+_debug( 'Code.js:', code.length, 'bytes' );
+_debug( 'init statement:', init.length, 'bytes' );
+_debug( 'App:', app.length, 'bytes' );
+_debug( 'exec statement:', exec.length, 'bytes');
+_debug( 'end statement:', end.length, 'bytes')
+	    if( init && app && code && exec && end) {
+_debug( 'returning executable script');
+			return( code + init + app + exec + end);
+	    }else{//if
+_error( 'incomplete app, not sending.' );
+	        throw  'Error  ' + applicationClassPath + ' not found.';
+	    }//else
+	};
+
+
+
+
+
     Code.c = function(applicationClassPath) {
 _debug( 'Code.c(', applicationClassPath, ')' );
         var libPath = 'lib/' + applicationClassPath + '.js';
@@ -665,7 +711,6 @@ _debug( 'saving lib file to', libPath );
                 fs.writeFileSync(libPath, buffer);
             }
             _.compiler.buffer = '';
-//            _.interpreter = interpreter;
         }
         return buffer;
     };
@@ -991,7 +1036,7 @@ _debug( 'Code.js is ready. @2013 Neuromantic, LLC. All Rights reserved. Licenced
         }
     });
 
-    // Code.js : Fase Dictionary
+    // Code.js : Arete Dictionary
     deepCopy.register({
         canCopy: function(source) {
             return source._className == 'Dictionary';

@@ -5,7 +5,7 @@
  *
  */
 _package( 'com.grabnetworks.player',
-    _import('swfobject'),
+    _import('com.deconcept.swfobject'),
     _import( 'com.grabnetworks.player.PlayerEvent' ),
     _import( 'com.grabnetworks.loading.ContentLoader' ),
     
