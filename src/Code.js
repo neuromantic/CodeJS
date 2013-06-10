@@ -2,7 +2,7 @@
  *
  * Code.js
  *
- * Class / Object Descripion Engine for Javascript
+ * Class / Object Description Engine for Javascript
  *
  * https://github.com/neuromantic/CodeJS
  *
@@ -221,7 +221,7 @@ _verbose( 'loaded', classPath, 'successfully. processing imports' );
                     global._class = this._class; //stub
                     code = code.toString();
                     if( classPath != 'Code' && code.indexOf('_package') > -1 && code.indexOf('_class') > -1 ) {
-                        _verbose('evaluating source for ')
+                        _verbose('evaluating source for ', classPath)
                         eval( code );
                     }
                 } catch (error) {
@@ -275,7 +275,7 @@ _verbose( 'adding class', classPath );
                     global._class = this._class;
                     var code = stub._script;
                     if( classPath != 'Code' && code.indexOf('_package') > -1 && code.indexOf('_class') > -1 ) {
-                        _verbose('evaluating cource for ')
+                        _verbose('evaluating source for ', classPath)
                         eval( code );
                     }
                     this.buffer = this.buffer.concat( code );
@@ -519,8 +519,8 @@ _verbose('\t', propertyKeyword, propertyType, propertyName, '=', propertyDefault
         if( typeof additions !== 'undefined' && typeof additions[ className ] !== 'function' ){
             newPrototype.__init__ = enableSuper( '__init__', noConstructor, superPrototype );
         }
-        function enableSuper ( propertyName, fn, _super ){
-            return ( function(propertyName, fn, _super) {
+        function enableSuper( propertyName, fn, _super ) {
+            return ( function( propertyName, fn, _super ) {
                 return function() {
                     var tmp = this._super;
                     // Allow this._super() to call superconstructor, and allow this._super().*() to call the super method
@@ -534,16 +534,16 @@ _verbose('\t', propertyKeyword, propertyType, propertyName, '=', propertyDefault
                             sup = { _ : {} };
                             var publicName, publicMember;
                             for ( publicName in _super ) {//public
-                                var publicMember = _super[ publicName ];
+                                var publicMember = enableSuper(publicName, _super[ publicName ], _super );
                                 if (typeof publicMember === 'function') {
                                     sup[ publicName ] = _.util.scope( publicMember, this, publicName );
                                 }
                             }
                             var privateName, privateMember;
                             for ( privateName in _super._ ) {//'private'
-                                privateMember = _super._[privateName];
-                                if (typeof privateMember === 'function') {
-                                    sup._[privateName] = _.util.scope( privateMember, this, privateName );
+                                privateMember = enableSuper( privateName, _super._[ privateName ], _super );
+                                if ( typeof privateMember === 'function' ) {
+                                    sup._[ privateName ] = _.util.scope( privateMember, this, privateName );
                                 }
                             }
                             _super = _super._superPrototype;
@@ -634,8 +634,15 @@ _verbose( 'executing' );
         var Application = _.util.lookup( applicationClassPath );
 		new Application( parameters );
     };
-    Code.x = function(applicationClassPath, parameters) {
-		var init = '( function (){\n';
+    Code.x = function(applicationClassPath, applicationFileName) {
+_debug( 'Code.x(', applicationClassPath, ',', applicationFileName, ')' );
+        applicationFileName = applicationFileName || applicationClassPath + '.js';
+        var applicationDirectoryName = 'app';
+        var applicationFilePath = applicationDirectoryName + '/' + applicationFileName;
+        if( fs.existsSync( applicationFilePath ) ){
+            return fs.readFileSync( applicationFilePath );
+        }
+		var start = '( function (){\n';
 	    var code;
 		try{
 _debug( 'getting Code.js from file system' );
@@ -644,6 +651,7 @@ _debug( 'getting Code.js from file system' );
 _error( 'src/Code.js could not be read:\n'+ error.message );
 			throw( error );
 	    }
+        
 		var app;
 		try{
 _verbose( 'compiling', applicationClassPath , 'from source files' );
@@ -656,7 +664,7 @@ _verbose( 'creating exec statement' );
 		var exec = 	'var scripts = document.getElementsByTagName( "script" );\n'+
 					'var script = scripts[ scripts.length - 1 ];\n'+
 					'var query = script.src.split("?")[1];\n'+
-	                'if( query.length > 0 ){\n'+
+	                'if( query && query.length > 0 ){\n'+
 						'\tvar settings = {};\n'+
 						'\tvar list = query.split( "&");\n'+
 						'\tfor (var i = 0; i < list.length; i++ ){\n'+
@@ -664,16 +672,30 @@ _verbose( 'creating exec statement' );
 							'\t\tsettings[pair[0]] = pair[1];\n'+
 						'\t};\n'+
 						'\tnew ' + applicationClassPath + '( settings );\n'+
-	                '}\n';
-	      var end = '})();';
+                    '}\n';
+        var end = '})();';
 _debug( 'Code.js:', code.length, 'bytes' );
-_debug( 'init statement:', init.length, 'bytes' );
+_debug( 'start statement:', start.length, 'bytes' );
 _debug( 'App:', app.length, 'bytes' );
 _debug( 'exec statement:', exec.length, 'bytes');
 _debug( 'end statement:', end.length, 'bytes')
-	    if( init && app && code && exec && end) {
+	    if( start && app && code && exec && end) {
+            if( !fs.existsSync( applicationDirectoryName) ){
+_debug( 'creating app directory');
+                fs.mkdir( applicationDirectoryName );
+            }else{
+_debug( 'removing cached copy');
+                fs.unlinkSync( applicationFilePath );
+            }
+_debug( 'saving script file');
+            var file = code + start + app + exec + end;
+            try{
+                fs.writeFileSync( applicationFilePath, file );
+            }catch( e ){
+                _trace ("W T FFFFFFFFFF", e);
+            }
 _debug( 'returning executable script');
-			return( code + init + app + exec + end);
+			return( file);
 	    }else{//if
 _error( 'incomplete app, not sending.' );
 	        throw  'Error  ' + applicationClassPath + ' not found.';

@@ -14,6 +14,7 @@ _package( 'com.neuromantic.arete.net',
         private_uid : null,
         private_script : null,
         static_receivers : [],
+        private_data: null,
         private_onJSONP : function ( data ){
             this._.notify( new LoadingEvent( LoadingEvent.COMPLETE, data ) );
 //          JSONP.receivers[ this._.uid ] = null;

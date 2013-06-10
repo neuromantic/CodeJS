@@ -1,6 +1,6 @@
 /*!
  *
- * Vidify.js
+ * Ping.js
  * com.grabnetworks.tracking.Ping
  *
  */

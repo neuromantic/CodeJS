@@ -12,6 +12,11 @@ _package('com.neuromantic.arete.dom',
     _import('com.neuromantic.arete.events.KeyboardEvent'),
     _import('com.neuromantic.arete.events.FocusEvent'),
     _class('Element')._extends('Notifier', {
+        static_canWrap : function ( node ){
+            if( node ){
+                return  ( typeof document == 'object' && node === document ) || ( typeof node.nodeType === 'number' && node.attributes && node.childNodes && node.cloneNode );
+            }
+        },
         static_byID: function( id , root ) {
             root = root || document;
             var el = root.getElementById( id );
@@ -47,8 +52,9 @@ _package('com.neuromantic.arete.dom',
         },
         static_find : function ( selector, root ){
             root = root || document;
+            if( selector)
             if (selector.TYPE){
-                return Element.all( selector );
+                return Element.all( selector, root );
             }
             switch( selector.charAt( 0 ) ){
                 case '#' :
@@ -94,9 +100,6 @@ _package('com.neuromantic.arete.dom',
         private_onfocus : function(e) {
             this._.notify(new FocusEvent(FocusEvent.IN));
         },
-        private_onfocus : function(e) {
-            this._.notify(new FocusEvent(FocusEvent.IN));
-        },
         private_onblur : function() {
             this._.notify(new FocusEvent(FocusEvent.OUT));
         },
@@ -107,11 +110,11 @@ _package('com.neuromantic.arete.dom',
               nativeEvent = nativeEvent || window.event;
             //IE9 & Other Browsers
             if (nativeEvent.stopPropagation) {
-              nativeEvent.stopPropagation();
+              // nativeEvent.stopPropagation();
             }
             //IE8 and Lower
             else {
-              nativeEvent.cancelBubble = true;
+              // nativeEvent.cancelBubble = true;
             }
             if (this._.mouseEnabled) {
                 this._.notify(new MouseEvent(type));
@@ -123,7 +126,7 @@ _package('com.neuromantic.arete.dom',
         Element: function(tag, atts) {
             atts = atts || {};
             if (tag) {
-                if ( ( typeof document == 'object' && tag === document ) || ( typeof tag.nodeType === 'number' && tag.attributes && tag.childNodes && tag.cloneNode ) ){
+                if ( Element.canWrap( tag ) ){
                     this._.tag = tag;
                 } else if (typeof tag === 'string') {
                     try {
@@ -164,9 +167,10 @@ _package('com.neuromantic.arete.dom',
         },
         append: function(child) {
             this._.tag.appendChild(child.tag());
+            child.style({position:'absolute'});
         },
         replace: function(newChild, oldChild) {
-            this._.tag.replaceChild(newChild.tag(), oldChild.tag());
+            this._.tag.replaceChild( newChild.tag(), oldChild.tag()) ;
         },
         remove: function(child) {
             if( child ){
@@ -204,10 +208,19 @@ _package('com.neuromantic.arete.dom',
         get_text: function() {
             return this._.tag.innerText || this._.tag.textContent;
         },
+        get_id : function () {
+            return this._.tag.id;
+        },
+        set_id : function( value ) {
+            this._.tag.id = value;
+        },
         set_style: function(value) {
-            for (var s in value) {
-                if( typeof s === 'string'){
-                    this._.tag.style[s] = value[s];
+            if(this._.tag.style){
+                for (var k in value) {
+                    if( typeof k === 'string'){
+                        var v = value[k]
+                        this._.tag.style[k] = v;
+                    }
                 }
             }
         },
@@ -220,8 +233,7 @@ _package('com.neuromantic.arete.dom',
             return this._.tag.style;
         },
         get_height: function() {
-            this._.height = this._.height || this._.tag.offsetHeight || 0;
-            return Number(this._.height);
+            return Number(this._.height || this._.tag.offsetHeight || 0);
         },
         set_height: function(value) {
             this._.height = value;
@@ -230,8 +242,7 @@ _package('com.neuromantic.arete.dom',
             });
         },
         get_width: function() {
-            this._.width = this._.width || this._.tag.offsetWidth || 0;
-            return Number(this._.width);
+            return Number(this._.width || this._.tag.offsetWidth || 0);
         },
         set_width: function(value) {
             this._.width = value;
@@ -245,6 +256,7 @@ _package('com.neuromantic.arete.dom',
         set_x: function(value) {
             this._.x = value;
             this.style({
+                position: 'absolute',
                 left: this._.x + 'px'
             });
         },
@@ -254,6 +266,7 @@ _package('com.neuromantic.arete.dom',
         set_y: function(value) {
             this._.y = value;
             this.style({
+                position: 'absolute',
                 top: this._.y + 'px'
             });
         },
@@ -266,25 +279,25 @@ _package('com.neuromantic.arete.dom',
             this._.alpha = value;
         },
         get_visible: function() {
-            if (this._.visible === null) {
-                this._.visible = this._.tag.style.visible != 'hidden';
-            }
-            return this._.visible;
+            return this._.tag.style.visible != 'hidden';
         },
         set_visible: function(value) {
             this._.visible = value;
             this._.tag.style.visibility = this._.visible ? 'visible' : 'hidden';
     
         },
+        get_aspect : function (){
+            return this.width() /this.height();
+        },
         get_autoAlpha: function() {
             return this._.alpha;
         },
         set_autoAlpha: function(value) {
-            this.alpha(value);
-            this.visible(this._.alpha > 0);
+            this.alpha( value );
+            this.visible( this._.alpha > 0 );
         },
         get_viewable : function () {
-            return VISIBILITY._isVisible( this._.tag)
+            return VISIBILITY._isVisible( this._.tag )
         }
     })
 );

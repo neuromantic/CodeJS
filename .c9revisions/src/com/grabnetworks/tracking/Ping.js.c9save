@@ -6,3 +6,4 @@
 {"ts":1366123046865,"patch":[[{"diffs":[[0,"    new "],[-1,"Script"],[1,"Img"],[0,"({src : "]],"start1":993,"start2":993,"length1":22,"length2":19}]],"length":1067,"saved":false}
 {"ts":1366123258188,"patch":[[{"diffs":[[0," ),\n"],[-1,"    _import( 'com.neuromantic.arete.dom.elements.Script' ),\n"],[0,"    "]],"start1":159,"start2":159,"length1":68,"length2":8}]],"length":1007,"saved":false}
 {"contributors":[],"silentsave":false,"ts":1367889074502,"patch":[[{"diffs":[[0,"grab"],[-1,"-media"],[1,"test"],[0,".com"]],"start1":221,"start2":221,"length1":14,"length2":12}]],"length":1005,"saved":false}
+{"contributors":[],"silentsave":false,"ts":1368729819609,"patch":[[{"diffs":[[0,"\n * "],[-1,"Vidify"],[1,"Ping"],[0,".js\n"]],"start1":6,"start2":6,"length1":14,"length2":12}]],"length":1003,"saved":false}

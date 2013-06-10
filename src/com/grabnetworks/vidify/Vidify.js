@@ -30,10 +30,10 @@ _package( 'com.grabnetworks.vidify',
         private_player : null,
         private_playerSettings : {},
         private_options:null,
-        private_guid : null,
+        private_content : null,
         private_ready: false,
         private_onOptionsLoaded: function ( event ){
-            var whitelisted;
+            var contentID;
             var options = event.data;
             var productOptions = options.grabnetworks.vidify ||  options.grabnetworks.product;
 _trace( 'Received Options', productOptions );
@@ -42,35 +42,26 @@ _trace( 'Received Options', productOptions );
                 this._.target = productOptions.target || this._.target;
                 var pages = productOptions.pages;
                 var url = location.href;
+                var page;
+                var score = 0;
+                var length = 0;
                 if( pages ){
-                    whitelisted = pages[0]=='*';
                     for( var i = 0; i < pages.length; i++ ){
-                        whitelisted = whitelisted || url.indexOf( pages[ i ] ) > -1;
+                        page = pages[ i ];
+                        length = page.url.length;
+                        if( page.url = '*' ||  ( url.indexOf( page.url) > -1 && length > score ) ){
+                            contentID = page.content;
+                            score = length;
+                        }
                     }
                 }
-                if(whitelisted){
-                    new Ping( { p:'vf', e:'load', i:this._.playerSettings.id, u: encodeURIComponent(url) });
+                contentID = this._.playerSettings.content || contentID;
+                if(contentID){
+                    new Ping( { p:'vf', e:'load', i:this._.playerSettings.id, u: encodeURIComponent(url) } );
 _trace( 'Page found in whitelist' );
-                    var loader;
-                    var content = options.grabnetworks.content;
-                    switch (content){
-                        case 'MATCH':
-_trace( 'Retreiving matching video...' );
-                            loader = new CatalogLoader( 'test' );
-                            loader.on( LoadingEvent.COMPLETE, this._.onCatalogLoaded );
-                            loader.loadMatch();
-                            break;
-                        case 'RELATED':
-_trace( 'Retreiving related video...' );
-                            loader = new CatalogLoader();
-                            loader.on( LoadingEvent.COMPLETE, this._.onCatalogLoaded );
-                            loader.loadRelated();
-                            break;
-                        default:
-_trace( 'Using embedded video.' );
-                            this._.guid = content;
-                            this._.badge();
-                    }
+                    var loader = new MetaLoader();
+                    loader.on(LoadingEvent.COMPLETE, this._.onContentLoaded)
+                    loader.load( contentID );
                 }
             }else{
 _trace( 'Options do not contain vidify config.');
@@ -82,18 +73,9 @@ _trace( 'Window ready...' );
             this._.ready = true;
             this._.badge();
         },
-        private_onCatalogLoaded : function ( event ) {
-_trace( 'Received search results.' );
-            if ( event.data.response.results.length > 0 ){
-_trace( 'Found content candidates.');
-                if(! event.data.trigger){
-_trace( 'Ignoring trigger recommendation.');
-                }
-                this._.guid = event.data.response.results[ 0 ].video.guid;
-                this._.badge();
-            }else{
-_trace( 'No candidates.');
-            }
+        private_onContentLoaded : function ( event ){
+          this._.content = event.data;
+          this._.badge();
         },
         private_onBadgerClicked : function ( event ){
             new Ping( { p:'vf', e:'action', i:this._.playerSettings.id, t : 'click_badge' });

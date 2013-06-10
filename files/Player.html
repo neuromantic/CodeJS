@@ -1,0 +1,373 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Player - Javascript API</title>
+	<link href="css/grab.css" rel="stylesheet" type="text/css" />
+
+	<style type="text/css">
+    body {
+		margin: 10px;
+	}
+	.header {
+		font-size: 12px;
+		font-style: normal;
+		font-weight: normal;
+		text-transform: uppercase;
+		color: #FFFFFF;
+	}
+	.maintext {
+		padding:5px;
+		font-size: 12px;
+		font-style: normal;
+		font-weight: normal;
+		color: #AABBDD;
+	}
+	.spacetext {
+		font-size: 6px;
+		font-style: normal;
+		font-weight: normal;
+		color: #AAAAAA;
+	}
+	.largeheader {
+		font-size: 15px;
+		font-style: normal;
+		font-weight: normal;
+		text-transform: uppercase;
+		color: #FFFFFF;
+	}     
+	.colortable {
+		background-color: #DDDDDD;
+	}    
+	.controlTable {
+		background-color: #666666;
+	}
+	
+	</style>
+
+	</head>
+    <body>
+    <table width="1200" border="0" cellspacing="0" cellpadding="0">
+  		<tr>
+    		<td width="50" height="50"></td>
+    		<td height="50"></td>
+    		<td width="50" height="50"></td>
+
+	  	</tr>
+  		<tr>
+			<td width="50" height="800"></td>
+    		<td><table width="1100" height="800" border="0" cellpadding="0" cellspacing="1" class="controlTable">
+      			<tr>
+       				<td valign="top" cellpadding="10">
+       					<table width="1100" border="0" cellpadding="10" cellspacing="0">
+	          				<tr class="bkgrnd">
+					            <td width="20" height="650" align="left" valign="top">
+
+					            </td>
+					            <td width="500" height="650" align="left" valign="top">
+					            	<table border="0" cellspacing="0" cellpadding="10" class="maintext">
+					            	<tr>
+										<td width="10">&nbsp;<br /></td>
+										<td width="180">&nbsp;<br /></td>
+	              						<td width="19">&nbsp;<br /></td> 
+        	      					</tr>
+	              					<tr>
+
+	         							<td>&nbsp;</td>
+	         							<td><span class="largeheader">Javascript Player API</span></td>
+    	            					<td>&nbsp;</td>
+        	      					</tr>
+            	  					<tr>
+            	  						<td>&nbsp;</td>
+            	  						<td valign="top"><span class="header">Player Control Functions</span></td>
+                						<td valign="top"><br /></td>
+									</tr>
+                    				<tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.playVideo(); return false;" class="maintext">Play Video</a></td>
+                    					<td valign="top">&nbsp;</td>
+                    				</tr>
+                    				<tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.pauseVideo(); return false;" class="maintext">Pause Video</a></td>
+
+                    					<td valign="top">&nbsp;</td>
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.stopVideo(); return false;" class="maintext">Stop Video</a></td>
+                    					<td valign="top">&nbsp;</td>
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.replayVideo(); return false;" class="maintext">Replay Video</a></td>
+                    					<td valign="top">&nbsp;</td>
+                    				</tr>
+                                    <tr>
+
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.seekVideoTo(document.getElementById('seekPercentage').value); return false;" class="maintext">Seek Video (percent 0-100)</a></td>
+                    					<td valign="top"><input name="seekPercentage" type="text" id="seekPercentage" value="35" ></td>
+                    				</tr>
+                                     <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.seekVideoToMS(document.getElementById('seekMS').value); return false;" class="maintext">Seek Video (milliseconds)</a></td>
+                    					<td valign="top"><input name="seekMS" type="text" id="seekMS" value="10000" ></td>
+                    				</tr>
+                                     <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.setVolume(document.getElementById('vol').value); return false;" class="maintext">Set Volume (0 to 100)</a></td>
+                    					<td valign="top"><input name="vol" type="text" id="vol" value="50"></td>
+                    				</tr>
+                    				<tr>
+                                    	<td>&nbsp;</td> 
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.mute(); return false;" class="maintext">Mute</a></td>
+                    					<td valign="top">&nbsp;</td>
+                    				</tr>
+                                    <tr>
+										<td width="10" height="20"></td>
+        	      					</tr>
+        	      					<tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.skipAd(); return false;" class="maintext">Skip Ad</a></td>
+                    					<td valign="top">&nbsp;</td>
+                    				</tr>
+                    				 <tr>
+										<td width="10" height="20"></td>
+        	      					</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.showEmbed(); return false;" class="maintext">Show Embed</a></td>
+                    					<td valign="top">&nbsp;</td>
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.hideEmbed(); return false;" class="maintext">Hide Embed</a></td>
+                    					<td valign="top">&nbsp;</td>
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.showSharing(); return false;" class="maintext">Show Sharing</a></td>
+                    					<td valign="top">&nbsp;</td>
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.hideSharing(); return false;" class="maintext">Hide Sharing</a></td>
+                    					<td valign="top">&nbsp;</td>
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.showInfo(); return false;" class="maintext">Show Info</a></td>
+                    					<td valign="top">&nbsp;</td>
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.hideInfo(); return false;" class="maintext">Hide Info</a></td>
+                    					<td valign="top">&nbsp;</td>
+
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.showPreview(); return false;" class="maintext"></a>Show Preview</a></td>
+                    					<td valign="top">not available yet</td>
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.hidePreview(); return false;" class="maintext">Hide Preview</a></td>
+                    					<td valign="top">not available yet</td>
+                    				</tr>
+                                    <tr>
+										<td width="10" height="10"></td>
+        	      					</tr> 
+                                 <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.loadNewVideo(document.getElementById('loadAssetId1').value ); return false;" class="maintext">Load New Video</a></td>
+                    					<td valign="top"><input name="loadAssetId1" type="text" id="loadAssetId1" value="v432cafc4167ae402bedb2d69441f282c3f910ef4"></td>
+                    				</tr>
+                                 <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="loadAndRenderContent(document.getElementById('loadAssetId1').value); return false;" class="maintext">Load And Render New Video via JS</a></td>
+                    					<td valign="top"><input name="loadAssetId1" type="text" id="loadAssetId1" value="v432cafc4167ae402bedb2d69441f282c3f910ef4"></td>
+                    				</tr>
+                    				 <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabPlayer.loadNewVideo(document.getElementById('loadAssetId2').value); return false;" class="maintext">Load Playlist</a></td>
+										<td valign="top"><input name="loadAssetId2" type="text" id="loadAssetId2" value="p3b4a8524f644cc7f248c0591e0e76e2b9c5e09a2"></td>
+                    				</tr> 
+                                    <!-- tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="grabModal.play(document.getElementById('loadAssetId3').value); return false;" class="maintext">Open Modal Video</a></td>
+                    					<td valign="top"><input name="loadAssetId3" type="text" id="loadAssetId3" value="v432cafc4167ae402bedb2d69441f282c3f910ef4"></td>
+                    				</tr -->
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="document.getElementById('totalTime').innerHTML = grabPlayer.videoTotalTime(); return false;" class="maintext">Video Total Time</a></td>
+                    					<td valign="top" id="totalTime" > ‹- Click </td>  
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td> 
+                                    	<td valign="top"><a href="#" onclick="document.getElementById('currentTime').innerHTML = grabPlayer.videoCurrentTime(); return false;" class="maintext">Video Current Time</a></td>
+
+                    					<td valign="top" id="currentTime" > ‹- Click </td> 
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="document.getElementById('videoTitle').innerHTML = grabPlayer.videoTitleText(); return false;" class="maintext">Video Title Text</a></td>
+                    					<td valign="top" id="videoTitle" > ‹- Click </td> 
+                    				</tr>
+
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="document.getElementById('videoDescription').innerHTML = grabPlayer.videoDescriptionText(); return false;" class="maintext">Video Description Text</a></td>
+                    					<td valign="top" id="videoDescription" > ‹- Click </td> 
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="document.getElementById('videoSourceLogo').innerHTML = getImageTag(grabPlayer.videoSourceLogo()); return false;" class="maintext">Video Provider Logo</a></td>
+
+                    					<td valign="top" id="videoSourceLogo" > ‹- Click </td> 
+                    				</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="document.getElementById('videoSourceURL').innerHTML = grabPlayer.videoSourceURL(); return false;" class="maintext">Video Provider URL</a></td>
+                    					<td valign="top" id="videoSourceURL"> ‹- Click </td> 
+                    				</tr>
+
+                                   <!--tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"><a href="#" onclick="document.getElementById('videoInfo').innerHTML = grabPlayer.videoInfo(); return false;" class="maintext">Video Info</a></td>
+                    					<td valign="top" id="videoInfo" >not available yet</td> 
+                    				</tr-->
+                    				<tr>
+										<td width="10"> <br /></td>
+										<td width="180"> <br /></td>
+
+	              						<td width="19"> <br /></td> 
+        	      					</tr>
+	              					<tr>
+	         							<td>&nbsp;</td>
+	         							<td><span class="header">Player Events</span></td>
+    	            					<td>&nbsp;</td>
+        	      					</tr>
+                                    <tr>
+
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top" class="maintext">Player Loaded</td>
+                    					<td valign="middle" id="playerLoaded" >NO</td>
+                                   	</tr>
+                                   	<tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top" class="maintext">Update Time</td>
+                    					<td valign="middle" id="updateTime" >WAITING</td> 
+                                   	</tr>
+
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top" class="maintext">Content Loaded</td>
+                    					<td valign="middle" id="contentLoaded" >NO</td> 
+                                   	</tr>
+                                    <tr> 
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top" class="maintext">Content Error</td>
+
+                    					<td valign="middle" id="contentError" >NONE</td> 
+                                   	</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top" class="maintext">Video Playback Started</td>
+                    					<td valign="middle" id="playbackStarted" >NO</td>
+                                   	</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top" class="maintext">Video Playback Ended</td>
+                    					<td valign="middle" id="playbackEnded" >NO</td>
+                                   	</tr>
+                                    <tr>
+
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top" class="maintext">Video Playback Paused</td>
+                    					<td valign="middle" id="playbackPaused" >NO</td>
+                                   	</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top" class="maintext">Preroll Playback Started</td>
+
+                    					<td valign="middle" id="prerollStarted" >NO</td>
+                                   	</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top"class="maintext">PreRoll Playback Ended</td>
+                    					<td valign="middle" id="prerollEnded" >NO</td>
+                                   	</tr>
+                                    <tr>
+                                    	<td>&nbsp;</td>
+                                    	<td valign="top" class="maintext">PreRoll Clicked</td>
+
+                    					<td valign="middle" id="prerollClicked">NO</td>
+                                   	</tr>
+                                    <tr>
+                                    <td>&nbsp;</td>
+                                    	<td valign="top" class="maintext">Companion Ad Displayed</td>
+
+                    					<td valign="middle" id="adCompanion">NONE</td>
+                                   	</tr>
+            					</table> 
+              				</td>
+            				<td width="660" height="650" align="left" valign="top" class="colortable" >
+            					<table width="700" border="0" cellspacing="10" cellpadding="40">
+                					<tr>
+                						<td ><!--1754882-->
+                  							<div id="grabDiv1720202" align="center">
+												<img src = "http://grab-media.com/corpsite-static/images/grab_logo.jpg" alt="Grab" style="clear:both"/>
+												The Grab Player requires Flash and JavaScript.
+												<script language="javascript" src="app/com.grabnetworks.player.Player.js" type="text/javascript"></script>
+												<script>
+													( function ( global ) {
+														global.getImageTag = function ( url ) {
+															return '<img src="'+url+'" />';
+														}
+                                                        global.update = function ( id, message ){
+                                                            document.getElementById( id ).innerHTML = message;
+                                                        }
+                                                        var Player = com.grabnetworks.player.Player;
+                                                        var PlayerEvent = com.grabnetworks.player.PlayerEvent;
+														var grabPlayer = new Player( { id: 1720202, width: 640, height: 360, diag: 'console', likeButton: true } );
+
+														grabPlayer.on( PlayerEvent.PLAYER_READY, function ( event ){ update ( 'playerLoaded', 'YES' ) });
+														grabPlayer.on( PlayerEvent.VIDEO_KEYFRAME, function ( event ){ update ( 'updateTime', event.data + 's' )  });
+														grabPlayer.on( PlayerEvent.CONTENT_ERROR, function ( event ){ update ( 'contentError', event.data ) });
+														grabPlayer.on( PlayerEvent.CONTENT_LOADED, function ( event ){update ( 'contentLoaded', event.data )  });
+														grabPlayer.on( PlayerEvent.PREROLL_STARTED, function ( event ) { update ( 'prerollStarted', 'YES' ) });
+														grabPlayer.on( PlayerEvent.PREROLL_ENDED, function ( event ) { update ( 'prerollEnded', 'YES' ) });
+														grabPlayer.on( PlayerEvent.PREROLL_CLICKED, function ( event ) { update ( 'prerollClicked', 'YES' ) });
+														grabPlayer.on( PlayerEvent.VIDEO_STARTED, function ( event ) { update ( 'playbackStarted', 'YES' )  });
+														grabPlayer.on( PlayerEvent.VIDEO_PAUSED, function ( event ) {update ( 'playbackPaused', 'YES' ) });
+														grabPlayer.on( PlayerEvent.VIDEO_PLAYING, function ( event ) {update ( 'playerLoaded', 'YES' ) });
+														grabPlayer.on( PlayerEvent.VIDEO_ENDED, function( event ) { update ( 'playbackEnded', 'YES' )  });
+														global.grabPlayer = grabPlayer;
+													} )( window );
+												</script>
+											</div>
+										</td>
+									</tr>
+
+   							  	</table>	
+       						</td>
+       					</tr>
+              		</table>
+              	</td>
+          	</tr> 
+       	</table></td>
+	</tr>
+    
+    
+    <tr>
+	<td width="50" height="800"></td>
+	</tr>
+
+</table>
+</body>
+</html>

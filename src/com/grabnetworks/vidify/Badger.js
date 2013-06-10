@@ -5,7 +5,6 @@
  *
  */
 _package( 'com.grabnetworks.vidify',
-    _import( 'com.grabnetworks.player.Player' ),
     _import( 'com.neuromantic.arete.dom.Element'),
     _import( 'com.neuromantic.arete.dom.elements.Div'),
     _import( 'com.neuromantic.arete.dom.elements.media.Img'),
@@ -21,9 +20,8 @@ _package( 'com.grabnetworks.vidify',
             var height = target.height();
             var parent = target.parent(); 
             var style = target.style();
-            this.style( style );
-            style = { position: 'relative', display: ( style.display === 'inline' ? 'inline-block' : style.display ) };
-            this.style( style );
+            //this.style( style );
+            this.style( { position: 'relative', display: ( style.display === 'inline' ? 'inline-block' : style.display ) } );
             this.width( width );
             this.height( height );
             target.style( { border:0, margin:0, padding: 0 } );

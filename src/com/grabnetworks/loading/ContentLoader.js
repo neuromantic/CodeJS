@@ -22,22 +22,19 @@ _package( 'com.grabnetworks.loading',
             this._super().load(  this._.server + '/options/' + embedID + '.json' );
         },
         loadContent : function ( contentID ){
-            var type;
             var guid;
 			switch ( contentID.length ) {
 				case 40:
 					guid = contentID;
-					type = 'v';
 					break;
 				case 41:
 					guid = contentID.substr( 1 );
-					type = contentID.substr( 0, 1 );
 					break;
 				default:
 					throw new Error( 'Invalid GUID length' );
 			}
             var href = encodeURIComponent(Document.url());
-            this.load(  this._.server + '/' +  type + '/' + guid + '?from=' + href );
+            this.load(  this._.server + '/' + guid + '?from=' + href );
         }
     })
 );

@@ -25,12 +25,21 @@ _package( 'com.neuromantic.arete.dom.elements.media',
             if (this._.width !== null){
                 this.width( this._.width );
             }
-            this._.notify( new LoadingEvent( LoadingEvent.LOADED ) );
+            this._.tag.style.visibility = this._.visible ? 'visible' : 'hidden';
+            this._.notify( new LoadingEvent( LoadingEvent.COMPLETE ) );
         },
         Img : function ( atts ){
             atts = atts || {};
+            if( atts.src ){
+                atts.style = atts.style || {};
+                atts.style.visibility='hidden';
+            }
             atts.onload = this._.onload;
             this._super( Img.TYPE, atts );
+        },
+        load : function ( url ){
+            this._.tag.style.visibility = 'hidden'
+            this._super().load( url );  
         },
         get_loaded : function () {
             return this._.loaded;

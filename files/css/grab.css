@@ -1,0 +1,82 @@
+*{
+	margin:0;
+	padding:0;
+}
+
+body {
+	background: #242424;
+	font:normal 11px/21px Futura, "Trebuchet MS", Helvetica, Arial, sans-serif;
+}
+.logo{
+	background:#000;
+	border-bottom:2px solid #FFF;
+}
+#example{
+	margin:0 auto;
+	box-shadow: 10px 10px 20px #ccc;
+	-moz-box-shadow: 1px 1px 8px #ccc;
+	-webkit-box-shadow: 1px 1px 8px #ccc;
+	
+}
+.bkgrnd{
+	background:#373737;
+	color:#fff;
+}
+#leftlinks{
+	border:1px solid #999;
+}
+h1{
+	font: normal 17px  Futura, "Trebuchet MS", Helvetica, Arial, sans-serif;
+	padding:3px;
+	background:#CCC;
+	color:#333;
+	
+	
+}
+h2{
+	font: bold 14px  Futura, "Trebuchet MS", Helvetica, Arial, sans-serif;
+	padding:3px;
+	background:#CCC;
+	color:#333;
+	border-bottom:1px solid #666;
+	
+}
+
+h3{
+	font: bold 12px  Futura, "Trebuchet MS", Helvetica, Arial, sans-serif;
+	padding:3px;
+	background:#CCC;
+	color:#333;
+	border-bottom:1px solid #666;
+	
+}
+
+
+#leftlinks {
+	color:#FFF;
+	
+}
+#leftlinks td {
+	padding-left:2px;
+	border-bottom:1px solid #666;
+	background:#525151;
+}
+#leftlinks a, #righdisplay a{
+	color:#fff;
+	
+	text-decoration:none;
+}
+#leftlinks a:hover, #righdisplay  a:hover{
+	text-decoration:underline;
+}
+.txtbox{
+	font:normal 11px Arial, Helvetica, sans-serif;
+	margin:2px;
+	width:150px;
+	border:1px solid #666;
+}
+#righdisplay td{
+	padding:2px 0 0 5px;
+}
+
+
