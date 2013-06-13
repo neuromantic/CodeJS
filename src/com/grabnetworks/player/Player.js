@@ -9,6 +9,7 @@ _package( 'com.grabnetworks.player',
     _import( 'com.grabnetworks.player.PlayerEvent' ),
     _import( 'com.grabnetworks.vidify.Badger' ),
     _import( 'com.grabnetworks.loading.ContentLoader' ),
+    _import( 'com.grabnetworks.advertisement.VideoAd' ),
     _import( 'com.grabnetworks.proto.GrabApp' ),
     
     _import( 'com.neuromantic.arete.dom.elements.Div'),
@@ -24,6 +25,7 @@ _package( 'com.grabnetworks.player',
         static_players : [],
         private_swf: null,
         private_video: null,
+        private_videoAd: null,
         private_currentVideo: null,
         private_settings: {
             width: 640,
@@ -57,11 +59,10 @@ _package( 'com.grabnetworks.player',
             for( var i = 0; i < this._.deferredCalls.length; i++){
                     var fn = this._.deferredCalls[i];
                     if (fn) {
-                        var args = fn.args;
-                        if( name ){
+                        if( fn.name ){
                             fn = this._.swf[ fn.name ];
                         }
-                        fn.apply(this, args);
+                        fn.apply(this, fn.args);
                         this._.deferredCall = null;
                     }
                 }
@@ -70,14 +71,15 @@ _package( 'com.grabnetworks.player',
             this.type = 'h5';
     		if( !this._.video ){
                 this._.video = new Video( {
-                    height : this._.settings.height,
-                    width : this._.settings.width,
                     id : this._.playerID,
                     style : {
                         background : 'black' 
                     }
                 } );
 			}
+            if( this._.options.grabnetworks.advertisement.enabled && !this._.ad){
+                this._.videoAd = new VideoAd();
+            }
             if(this._.div){
                 this.replace( this._.video, this._.div );
             }
@@ -169,10 +171,18 @@ _package( 'com.grabnetworks.player',
                 this._.playButton.x( ( this._.settings.width - this._.playButton.width() ) * 0.5 );
                 this._.playButton.y( ( this._.settings.height - this._.playButton.height() ) * 0.5 );
             }
+            if(this._.video){
+                this._.video.width( this.width() );
+                this._.video.height( this.height() );
+            }
+            if(this._.videoAd){
+                this._.videoAd.width( this.width() );
+                this._.videoAd.height( this.height() );
+            }
         },
         private_onMouseOver : function ( event ){
             if( this._.video ){
-                this._.video.tag({ controls : 'controls' });
+                this._.video.tag({ controls : 'controls' });//until a ui layer exists
             }
         },
         private_onMouseOut : function ( event ){
@@ -181,10 +191,13 @@ _package( 'com.grabnetworks.player',
             }
         },
         private_onPlayButtonClick : function ( event ){
-            this.playVideo();
+            this._.startVideo();
         },
         private_onImageLoaded : function ( event ){
             this._.layout();
+        },
+        private_onAdStopped : function ( event ){
+            this._.playVideo();
         },
         private_addEvents : function (){
             this.on( MouseEvent.OVER, this._.onMouseOver);
@@ -192,6 +205,9 @@ _package( 'com.grabnetworks.player',
             this._.playButton.on( MouseEvent.CLICK, this._.onPlayButtonClick );
             this._.playButton.on( LoadingEvent.COMPLETE, this._.onImageLoaded );
             this._.previewImage.on( LoadingEvent.COMPLETE, this._.onImageLoaded );
+            if( this._.videoAd ){
+                this._.videoAd.on( AdEvent.STOPPED, this._.onAdStopped)
+            }
         },
         /***********************************************************/
         private_load : function ( guid ) {
@@ -254,9 +270,16 @@ _package( 'com.grabnetworks.player',
                 this._.swf.renderContent( content );
             }
             if (secret && secret.autoPlay){
-                this.playVideo();
+                this._.startVideo();
             }else{
                 this.stopVideo();
+            }
+        },
+        private_startVideo : function(){
+            if(this._.videoAd){
+                this._.videoAd.play( ) 
+            } else {
+                this.playVideo();
             }
         },
         Player : function ( settings ){
@@ -283,19 +306,23 @@ _package( 'com.grabnetworks.player',
         },
         destroy: function() {
             if (this._.swf) {
-                this.replace( this._.div, new Element(this._.swf));
+                this.replace( this._.div, new Element(this._.swf) );
                 this._.swf = null;
             }
             if (this._.video) {
-                this.replace( this._.div, this._.video);
+                this.replace( this._.div, this._.video );
                 this._.video = null;
             }
+            if (this._.videoAd) {
+                this.remove( this._.videoAd );
+                this._.videoAd = null;
+            }
             if (this._.previewImage){
-                this.remove( this._.previewImage);
+                this.remove( this._.previewImage );
                 this._.previewImage = null;
             }
             if (this._.playButton){
-                this.remove( this._.playButton);
+                this.remove( this._.playButton );
                 this._.playButton = null;
             }
             

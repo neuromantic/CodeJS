@@ -99,7 +99,7 @@
                                 if( ! temp[className] ){
                                     temp[ className ] = global[ className ];
                                     var importedClass = _.util.lookup( classPath );
-                                    if ( className !== scope._className ){
+                                    if ( classPath !== scope._classPath ){
                                         explodeImports( importedClass );
                                     }
                                     global[ className ] = importedClass;
@@ -290,7 +290,9 @@ _verbose( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
             currentClass : {},
             _package: function( packagePath ) {
 _verbose( '_.interpreter._package', packagePath );
-                _.interpreter.currentClass.code._imports.push( packagePath + '.' + _.interpreter.currentClass.name );
+                var classPath = packagePath + '.' + _.interpreter.currentClass.name
+                _.interpreter.currentClass.code._imports.push( classPath );
+                _.interpreter.currentClass.code._classPath = classPath;
                 _.util.lookup( packagePath )[ _.interpreter.currentClass.name ] = _.interpreter.currentClass.code;
                 _.interpreter.imports = [];
             },
@@ -684,8 +686,10 @@ _debug( 'end statement:', end.length, 'bytes')
 _debug( 'creating app directory');
                 fs.mkdir( applicationDirectoryName );
             }else{
+                if( fs.existsSync( applicationFilePath )){
 _debug( 'removing cached copy');
-                fs.unlinkSync( applicationFilePath );
+                    fs.unlinkSync( applicationFilePath );
+                }
             }
 _debug( 'saving script file');
             var file = code + start + app + exec + end;
@@ -2176,18 +2180,19 @@ _package('com.neuromantic.arete.dom',
         },
         static_find : function ( selector, root ){
             root = root || document;
-            if( selector)
-            if (selector.TYPE){
-                return Element.all( selector, root );
+            if( selector){
+                if (selector.TYPE){
+                    return Element.all( selector, root );
+                }
+                switch( selector.charAt( 0 ) ){
+                    case '#' :
+                        return Element.byID( selector.slice( 1 ), root );
+                    case '.' : 
+                        return Element.byClass( selector.slice( 1 ), root );
+                    default :
+                        return Element.all(selector, root );
+               }
             }
-            switch( selector.charAt( 0 ) ){
-                case '#' :
-                    return Element.byID( selector.slice( 1 ), root );
-                case '.' : 
-                    return Element.byClass( selector.slice( 1 ), root );
-                default :
-                    return Element.all(selector, root );
-           }
         },
         private_tag: null,
         private_alpha: 1,
@@ -2342,7 +2347,7 @@ _package('com.neuromantic.arete.dom',
             if(this._.tag.style){
                 for (var k in value) {
                     if( typeof k === 'string'){
-                        var v = value[k]
+                        var v = value[k];
                         this._.tag.style[k] = v;
                     }
                 }
@@ -2393,6 +2398,12 @@ _package('com.neuromantic.arete.dom',
                 position: 'absolute',
                 top: this._.y + 'px'
             });
+        },
+        get_z : function (){
+            return this._.tag.style.zIndex;
+        },
+        set_z : function( value ){
+            return this._.tag.style.zIndex = value;
         },
         get_alpha: function() {
             return this._.alpha;
@@ -2712,19 +2723,43 @@ _package( 'com.grabnetworks.loading',
 );
         /*!
  *
+ * ComponentEvent.js
+ * com.neuromantic.arete.events.ComponentEvent
+ *
+ */
+  _package( 'com.neuromantic.arete.events',
+ 
+     _import( 'com.neuromantic.arete.events.Event' ),
+ 	
+	_class('ComponentEvent')._extends('Event', { 
+        
+		static_EXEC : 'componentExec',
+		static_RUN : 'componentRun',
+        static_SHOW : 'componentShow',
+        static_HIDE : 'componentHide',
+		static_INIT : 'componentInit',
+		static_START : 'componentStart',
+		static_STOP : 'componentStop',
+        static_RENDER : 'componentRender',
+        static_DESTOY : 'componentDestroy',
+		static_LAYOUT : 'componentLayout',
+		static_SETUP : 'componentSetup'
+	})
+);/*!
+ *
  * Component.js
  * com.neuromantic.arete.proto.Component
  *
  */
 _package( 'com.neuromantic.arete.proto',
 	_import( 'com.neuromantic.arete.dom.elements.Div' ),
+    _import( 'com.neuromantic.arete.events.ComponentEvent'),
 	_class( 'Component' )._extends( 'Div',  {
 		private_height : null,
 		get_height : function () {	
 				return this._.height || this._super().height();
 		},
         set_height : function ( value ){
-			this._super().height( value );
 			this._.layout();
 		},
 		private_width : null,
@@ -2732,7 +2767,6 @@ _package( 'com.neuromantic.arete.proto',
 			return this._.width || this._super().width();
 		},
         set_width : function ( value ){
-			this._super().width( value );
 			this._.layout();
 		},
 		Component : function ( atts ) {
@@ -2773,7 +2807,11 @@ _debug( this, 'stop' );
     		this._.build();
 			this._.layout( false );
             this._.addEvents();
+            this._.notify( new ComponentEvent( ComponentEvent.RENDER ) );
     		this.run();
+        },
+        private_destroy : function (){
+_debug( this, 'destroy');
         },
 		private_addEvents : function () {
 _debug( this, 'addEvents' );
@@ -2783,6 +2821,8 @@ _debug( this, 'build' );
 		},
 		private_layout : function( animated ) {
 _debug( this, 'layout' );
+    		this._super().width( this._.width );
+    		this._super().height( this._.height );
 		},
 		private_setup : function () {
 _debug( this, 'setup' );
@@ -2802,9 +2842,11 @@ _package('com.neuromantic.arete.proto',
         App : function( settings, atts ){
             this._super( atts );
             var target;
-            if( Element.canWrap( settings.target ) ){
+            if( settings.target instanceof Element ){
+                target = settings.target;
+            } else if( Element.canWrap( settings.target ) ){
                 target = new Element( settings.target );
-            } else if( typeof settings.parent === 'string' && settings.target.charAt( 0 ) === '#' ) {
+            } else if( typeof settings.target === 'string' && settings.target.charAt( 0 ) === '#' ) {
                 target = Element.find( settings.target );
             } else {
                 var script = Script.current();
@@ -2817,8 +2859,6 @@ _package('com.neuromantic.arete.proto',
             }
             this.style({ 
                 position: 'relative',
-                width : ( this._.settings.width || target.width() ) +'px',
-                height : ( this._.settings.height || target.height() )+'px'
             });
             this.exec();
         }
@@ -2936,8 +2976,13 @@ _package('com.grabnetworks.proto',
             this._.configWithOptions( event.data );
         },
         private_configWithOptions : function ( options ){
+            var contentID;
             this._.options = options;
-            var contentID = this._.settings.content || this._.options.grabnetworks.content;
+            if( this._.settings.content === false){
+                delete this._.settings.content;
+            }else{
+                 contentID = this._.settings.content || this._.options.grabnetworks.content;
+            }
             this.id = this._.options.grabnetworks.id;
             delete this._.settings.id;
             if(contentID){
@@ -3080,7 +3125,7 @@ _package( 'com.grabnetworks.player',
     _import( 'com.neuromantic.arete.events.LoadingEvent'),
     _import( 'com.neuromantic.arete.events.Notifier'),
     _class( 'Player' )._extends( 'GrabApp', {
-		static_local: false,
+    	static_local: false,
         static_players : [],
         private_swf: null,
         private_video: null,
@@ -3092,6 +3137,7 @@ _package( 'com.grabnetworks.player',
         private_deferredCalls: [],
         private_ready: false,
         private_div : null,
+        private_likeDiv: null,
         private_parent : null,
         private_environment : 'grabqa', // 'grabnetworks',
         private_defer: function( fn, args ) {
@@ -3117,19 +3163,13 @@ _package( 'com.grabnetworks.player',
                     var fn = this._.deferredCalls[i];
                     if (fn) {
                         var args = fn.args;
-                        if( name ){
+                        if( fn.name ){
                             fn = this._.swf[ fn.name ];
                         }
                         fn.apply(this, args);
                         this._.deferredCall = null;
                     }
                 }
-        },
-        private_eventRouter: function(eventObject) {
-            if ( eventObject.event == PlayerEvent.PLAYER_READY ) {
-                this._.callDeferred();
-            }
-            this._.notify( new PlayerEvent( eventObject.event, eventObject.value ) );
         },
         private_buildHTML : function (){
             this.type = 'h5';
@@ -3145,18 +3185,25 @@ _package( 'com.grabnetworks.player',
 			}
             if(this._.div){
                 this.replace( this._.video, this._.div );
-                this._.div = null;
             }
             this._.notify( new PlayerEvent( PlayerEvent.PLAYER_READY ) );
         },
-        private_onSWFObject : function ( swf ){
+        private_onSWFObject : function( swf ){
             if(swf.ref){
                 this._.swf = swf.ref;
                 this.type = 'v5';
+            if(this._.settings.likeButton){
+               this._.likeDiv = new Div( { id: 'grabLike'} );
+               this._.likeDiv.width( this.width() );
+               this._.likeDiv.height( 70 );
+               this.append( this._.likeDiv );
+            }
             }else{
                 this._.buildHTML(); 
             }
-            this.renderContent( this._.playlist.videos[0], { autoPlay : this._.settings.autoPlay || this._.options.grabnetworks.player.behavior.autoPlay } );
+            if(this._.playlist){
+                this.renderContent( this._.playlist.videos[0], { autoPlay : this._.settings.autoPlay || this._.options.grabnetworks.player.behavior.autoPlay } );
+            }
             if (typeof this._.onReady === 'function') {
                 this._.onReady();
     			this._.onReady = null;
@@ -3171,7 +3218,7 @@ _package( 'com.grabnetworks.player',
 			var height = settings.height || 360;
 			var flashvars = settings;
 			var namespace = 'com.grabnetworks.player.Player.players[' + this.id + ']';
-			var eventhandler = '_.eventRouter';
+			var eventhandler = 'eventRouter';
 			flashvars.namespace = namespace;
 			flashvars.eventhandler = eventhandler;
             flashvars.content = false;
@@ -3189,11 +3236,16 @@ _package( 'com.grabnetworks.player',
         private_build : function () {
             this._.playerID = 'GrabPlayer' + this.id;
             var divID = 'grabDiv' + this.id;
-			this._.div = Element.byID( divID );
-            if( this._.div ){
-                this._.div.parent().replace( this, this._.div );
-            }else{
-                this._.div = new Div( { id : divID } );
+            if(! this._.div ) {
+    			this._.div = Element.byID( divID );
+                if( this._.div ){
+                    this._.div.parent().replace( this, this._.div );
+                }else{
+                    this._.div = new Div( { id : divID } );
+                    this._.div.style({ backgroundColor : '#000000' });
+                    this.width( this._.settings.width );
+                    this.height( this._.settings.height );
+                }
             }
             this.append( this._.div );
             this._.previewImage = new Img(); 
@@ -3207,13 +3259,21 @@ _package( 'com.grabnetworks.player',
         },
         /************************* events **************************/
         private_layout : function () {
+            if( this._.likeDiv ){
+                this._.likeDiv.y( this._.settings.height );
+                this._.height = this._.likeDiv.y() + this._.likeDiv.height();
+            }
             this._super()._.layout();
-            this._.previewImage.x( 0 );
-            this._.previewImage.y( 0 );
-            this._.previewImage.height( this.height() );
-            this._.previewImage.width( this.width() );
-            this._.playButton.x( ( this.width() - this._.playButton.width() ) * 0.5 );
-            this._.playButton.y( ( this.height() - this._.playButton.height() ) * 0.5 );
+            if(this._.previewImage){
+                this._.previewImage.x( 0 );
+                this._.previewImage.y( 0 );
+                this._.previewImage.height( this._.settings.height );
+                this._.previewImage.width( this._.settings.width );
+            }
+            if( this._.playButton ){
+                this._.playButton.x( ( this._.settings.width - this._.playButton.width() ) * 0.5 );
+                this._.playButton.y( ( this._.settings.height - this._.playButton.height() ) * 0.5 );
+            }
         },
         private_onMouseOver : function ( event ){
             if( this._.video ){
@@ -3310,6 +3370,41 @@ _package( 'com.grabnetworks.player',
 			}//if
             this._super( settings );
 		},
+        eventRouter: function(eventObject) {
+            if ( eventObject.event == PlayerEvent.PLAYER_READY ) {
+                this._.callDeferred();
+            }
+            this._.notify( new PlayerEvent( eventObject.event, eventObject.value ) );
+        },
+        hide : function () {
+            this.destroy();
+            this._super().hide();
+        },
+        show: function () {
+            this._super().show();
+            if( ! this._.swf && ! this._.video ){
+                this._.render();
+            }
+        },
+        destroy: function() {
+            if (this._.swf) {
+                this.replace( this._.div, new Element(this._.swf));
+                this._.swf = null;
+            }
+            if (this._.video) {
+                this.replace( this._.div, this._.video);
+                this._.video = null;
+            }
+            if (this._.previewImage){
+                this.remove( this._.previewImage);
+                this._.previewImage = null;
+            }
+            if (this._.playButton){
+                this.remove( this._.playButton);
+                this._.playButton = null;
+            }
+            
+        },
         id : 'uninitialized',
         type : 'uninitialized',
         renderContent: function( content, secret ) {
@@ -3317,7 +3412,7 @@ _package( 'com.grabnetworks.player',
             this._.previewImage.load( media.preview.url || media.thumbnail.url );
             this._.defer( this._.renderVideo, arguments );
         },
-        loadNewVideo: function( guid ) {
+        loadNewVideo: function( guid, secret ) {
             this._.defer( this._.load, arguments);
         },
         toggleDebug: function() {
