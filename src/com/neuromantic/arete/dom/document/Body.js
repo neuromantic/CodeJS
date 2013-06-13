@@ -10,7 +10,7 @@ _package( 'com.neuromantic.arete.dom.document',
     _class( 'Body' )._extends( 'Element', {
         static_TYPE : 'body',
         static_element : function(){
-            return Document.element().find( Body.TYPE )[ 0 ];
+            return Document.element().find( Body )[ 0 ];
         },
         Body : function ( atts ){
             this._super( Body.TYPE, atts );

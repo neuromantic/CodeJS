@@ -52,18 +52,19 @@ _package('com.neuromantic.arete.dom',
         },
         static_find : function ( selector, root ){
             root = root || document;
-            if( selector)
-            if (selector.TYPE){
-                return Element.all( selector, root );
+            if( selector){
+                if (selector.TYPE){
+                    return Element.all( selector, root );
+                }
+                switch( selector.charAt( 0 ) ){
+                    case '#' :
+                        return Element.byID( selector.slice( 1 ), root );
+                    case '.' : 
+                        return Element.byClass( selector.slice( 1 ), root );
+                    default :
+                        return Element.all(selector, root );
+               }
             }
-            switch( selector.charAt( 0 ) ){
-                case '#' :
-                    return Element.byID( selector.slice( 1 ), root );
-                case '.' : 
-                    return Element.byClass( selector.slice( 1 ), root );
-                default :
-                    return Element.all(selector, root );
-           }
         },
         private_tag: null,
         private_alpha: 1,
@@ -218,7 +219,7 @@ _package('com.neuromantic.arete.dom',
             if(this._.tag.style){
                 for (var k in value) {
                     if( typeof k === 'string'){
-                        var v = value[k]
+                        var v = value[k];
                         this._.tag.style[k] = v;
                     }
                 }
@@ -269,6 +270,12 @@ _package('com.neuromantic.arete.dom',
                 position: 'absolute',
                 top: this._.y + 'px'
             });
+        },
+        get_z : function (){
+            return this._.tag.style.zIndex;
+        },
+        set_z : function( value ){
+            return this._.tag.style.zIndex = value;
         },
         get_alpha: function() {
             return this._.alpha;

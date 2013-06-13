@@ -1,0 +1,3 @@
+{"ts":1371061712868,"silentsave":true,"restoring":false,"patch":[[]],"length":0}
+{"contributors":[],"silentsave":false,"ts":1371061862128,"patch":[[{"diffs":[[1,"/*!\n *\n * AssetURLs.js\n * com.grabnetworks.loading.AssetURLs\n *\n */\n _package( 'com.grabnetworks.loading',\n    _class('AssetURLs', {\n\t\tstatic_CLOSE_BUTTON : 'http://static.grab-media.com/images/ui/close.png'\n    })\n);"]],"start1":0,"start2":0,"length1":0,"length2":217}]],"length":217,"saved":false}
+{"ts":1371061885273,"patch":[[{"diffs":[[0,"\n *\n */\n"],[-1," "],[0,"_package"]],"start1":60,"start2":60,"length1":17,"length2":16}]],"length":216,"saved":false}

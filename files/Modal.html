@@ -184,24 +184,10 @@
         	      					</tr> 
                                  <tr>
                                     	<td>&nbsp;</td>
-                                    	<td valign="top"><a href="#" onclick="grabPlayer.loadNewVideo(document.getElementById('loadAssetId1').value ); return false;" class="maintext">Load New Video</a></td>
+                                    	<td valign="top"><a href="#" onclick="grabModal.play(document.getElementById('loadAssetId1').value ); return false;" class="maintext">Load New Video</a></td>
                     					<td valign="top"><input name="loadAssetId1" type="text" id="loadAssetId1" value="v432cafc4167ae402bedb2d69441f282c3f910ef4"></td>
                     				</tr>
                                  <tr>
-                                    	<td>&nbsp;</td>
-                                    	<td valign="top"><a href="#" onclick="loadAndRenderContent(document.getElementById('loadAssetId1').value); return false;" class="maintext">Load And Render New Video via JS</a></td>
-                    					<td valign="top"><input name="loadAssetId1" type="text" id="loadAssetId1" value="v432cafc4167ae402bedb2d69441f282c3f910ef4"></td>
-                    				</tr>
-                    				 <tr>
-                                    	<td>&nbsp;</td>
-                                    	<td valign="top"><a href="#" onclick="grabPlayer.loadNewVideo(document.getElementById('loadAssetId2').value); return false;" class="maintext">Load Playlist</a></td>
-										<td valign="top"><input name="loadAssetId2" type="text" id="loadAssetId2" value="p3b4a8524f644cc7f248c0591e0e76e2b9c5e09a2"></td>
-                    				</tr> 
-                                    <!-- tr>
-                                    	<td>&nbsp;</td>
-                                    	<td valign="top"><a href="#" onclick="grabModal.play(document.getElementById('loadAssetId3').value); return false;" class="maintext">Open Modal Video</a></td>
-                    					<td valign="top"><input name="loadAssetId3" type="text" id="loadAssetId3" value="v432cafc4167ae402bedb2d69441f282c3f910ef4"></td>
-                    				</tr -->
                                     <tr>
                                     	<td>&nbsp;</td>
                                     	<td valign="top"><a href="#" onclick="document.getElementById('totalTime').innerHTML = grabPlayer.videoTotalTime(); return false;" class="maintext">Video Total Time</a></td>
@@ -320,7 +306,7 @@
             					<table width="700" border="0" cellspacing="10" cellpadding="40">
                 					<tr>
                 						<td ><!--1754882-->
-                  							<div id="grabDiv1720202" align="center">
+                  							<div id="xxx" align="center">
 												<img src = "http://grab-media.com/corpsite-static/images/grab_logo.jpg" alt="Grab" style="clear:both"/>
 												The Grab Player requires Flash and JavaScript.
 												<script language="javascript" src="app/com.grabnetworks.Player.js" type="text/javascript"></script>
@@ -332,29 +318,31 @@
                                                         global.update = function ( id, message ){
                                                             document.getElementById( id ).innerHTML = message;
                                                         };
-                                                        var Player = com.grabnetworks.Player;
+                                                        var Modal = com.grabnetworks.Modal;
                                                         var PlayerEvent = com.grabnetworks.PlayerEvent;
-														var grabPlayer = new Player( { id: 1720202, width: 640, height: 360, diag: 'console', likeButton: true } );
-
-														grabPlayer.on( PlayerEvent.PLAYER_READY, function ( event ){ update ( 'playerLoaded', 'YES' ) });
-														grabPlayer.on( PlayerEvent.VIDEO_KEYFRAME, function ( event ){ update ( 'updateTime', event.data + 's' )  });
-														grabPlayer.on( PlayerEvent.CONTENT_ERROR, function ( event ){ update ( 'contentError', event.data ) });
-														grabPlayer.on( PlayerEvent.CONTENT_LOADED, function ( event ){update ( 'contentLoaded', event.data )  });
-														grabPlayer.on( PlayerEvent.PREROLL_STARTED, function ( event ) { update ( 'prerollStarted', 'YES' ) });
-														grabPlayer.on( PlayerEvent.PREROLL_ENDED, function ( event ) { update ( 'prerollEnded', 'YES' ) });
-														grabPlayer.on( PlayerEvent.PREROLL_CLICKED, function ( event ) { update ( 'prerollClicked', 'YES' ) });
-														grabPlayer.on( PlayerEvent.VIDEO_STARTED, function ( event ) { update ( 'playbackStarted', 'YES' )  });
-														grabPlayer.on( PlayerEvent.VIDEO_PAUSED, function ( event ) {update ( 'playbackPaused', 'YES' ) });
-														grabPlayer.on( PlayerEvent.VIDEO_PLAYING, function ( event ) {update ( 'playerLoaded', 'YES' ) });
-														grabPlayer.on( PlayerEvent.VIDEO_ENDED, function( event ) { update ( 'playbackEnded', 'YES' )  });
-														global.grabPlayer = grabPlayer;
+                                                        var ComponentEvent = com.neuromantic.arete.events.ComponentEvent;
+														var grabModal = new Modal( { id: 1720202, width: 640, height: 360, diag: 'console', likeButton: true } );
+                                                            var grabPlayer = grabModal.player;
+    														grabPlayer.on( PlayerEvent.PLAYER_READY, function ( event ){ update ( 'playerLoaded', 'YES' ) });
+    														grabPlayer.on( PlayerEvent.VIDEO_KEYFRAME, function ( event ){ update ( 'updateTime', event.data + 's' )  });
+    														grabPlayer.on( PlayerEvent.CONTENT_ERROR, function ( event ){ update ( 'contentError', event.data ) });
+    														grabPlayer.on( PlayerEvent.CONTENT_LOADED, function ( event ){update ( 'contentLoaded', event.data )  });
+    														grabPlayer.on( PlayerEvent.PREROLL_STARTED, function ( event ) { update ( 'prerollStarted', 'YES' ) });
+    														grabPlayer.on( PlayerEvent.PREROLL_ENDED, function ( event ) { update ( 'prerollEnded', 'YES' ) });
+    														grabPlayer.on( PlayerEvent.PREROLL_CLICKED, function ( event ) { update ( 'prerollClicked', 'YES' ) });
+    														grabPlayer.on( PlayerEvent.VIDEO_STARTED, function ( event ) { update ( 'playbackStarted', 'YES' )  });
+    														grabPlayer.on( PlayerEvent.VIDEO_PAUSED, function ( event ) {update ( 'playbackPaused', 'YES' ) });
+    														grabPlayer.on( PlayerEvent.VIDEO_PLAYING, function ( event ) {update ( 'playerLoaded', 'YES' ) });
+    														grabPlayer.on( PlayerEvent.VIDEO_ENDED, function( event ) { update ( 'playbackEnded', 'YES' )  });
+    														global.grabPlayer = grabPlayer;
+                                                        global.grabModal = grabModal;
 													} )( window );
 												</script>
 											</div>
 										</td>
 									</tr>
                                     <tr>
-                                        <td><a href="#" onclick="grabPlayer.hide(); return false;">hide</a>|<a href="#" onclick="grabPlayer.show(); return false;">show</a></td>
+                                        <td><a href="#" onclick="grabModal.hide(); return false;">hide</a> | <a href="#" onclick="grabModal.show(); return false;">show</a></td>
                                     </tr>
    							  	</table>	
        						</td>

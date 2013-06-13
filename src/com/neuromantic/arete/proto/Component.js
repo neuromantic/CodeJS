@@ -6,13 +6,13 @@
  */
 _package( 'com.neuromantic.arete.proto',
 	_import( 'com.neuromantic.arete.dom.elements.Div' ),
+    _import( 'com.neuromantic.arete.events.ComponentEvent'),
 	_class( 'Component' )._extends( 'Div',  {
 		private_height : null,
 		get_height : function () {	
 				return this._.height || this._super().height();
 		},
         set_height : function ( value ){
-			this._super().height( value );
 			this._.layout();
 		},
 		private_width : null,
@@ -20,7 +20,6 @@ _package( 'com.neuromantic.arete.proto',
 			return this._.width || this._super().width();
 		},
         set_width : function ( value ){
-			this._super().width( value );
 			this._.layout();
 		},
 		Component : function ( atts ) {
@@ -61,7 +60,11 @@ _debug( this, 'stop' );
     		this._.build();
 			this._.layout( false );
             this._.addEvents();
+            this._.notify( new ComponentEvent( ComponentEvent.RENDER ) );
     		this.run();
+        },
+        private_destroy : function (){
+_debug( this, 'destroy');
         },
 		private_addEvents : function () {
 _debug( this, 'addEvents' );
@@ -71,6 +74,8 @@ _debug( this, 'build' );
 		},
 		private_layout : function( animated ) {
 _debug( this, 'layout' );
+    		this._super().width( this._.width );
+    		this._super().height( this._.height );
 		},
 		private_setup : function () {
 _debug( this, 'setup' );

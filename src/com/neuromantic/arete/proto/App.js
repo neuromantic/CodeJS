@@ -12,9 +12,11 @@ _package('com.neuromantic.arete.proto',
         App : function( settings, atts ){
             this._super( atts );
             var target;
-            if( Element.canWrap( settings.target ) ){
+            if( settings.target instanceof Element ){
+                target = settings.target;
+            } else if( Element.canWrap( settings.target ) ){
                 target = new Element( settings.target );
-            } else if( typeof settings.parent === 'string' && settings.target.charAt( 0 ) === '#' ) {
+            } else if( typeof settings.target === 'string' && settings.target.charAt( 0 ) === '#' ) {
                 target = Element.find( settings.target );
             } else {
                 var script = Script.current();
@@ -27,8 +29,6 @@ _package('com.neuromantic.arete.proto',
             }
             this.style({ 
                 position: 'relative',
-                width : ( this._.settings.width || target.width() ) +'px',
-                height : ( this._.settings.height || target.height() )+'px'
             });
             this.exec();
         }

@@ -99,7 +99,7 @@
                                 if( ! temp[className] ){
                                     temp[ className ] = global[ className ];
                                     var importedClass = _.util.lookup( classPath );
-                                    if ( className !== scope._className ){
+                                    if ( classPath !== scope._classPath ){
                                         explodeImports( importedClass );
                                     }
                                     global[ className ] = importedClass;
@@ -290,7 +290,9 @@ _verbose( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
             currentClass : {},
             _package: function( packagePath ) {
 _verbose( '_.interpreter._package', packagePath );
-                _.interpreter.currentClass.code._imports.push( packagePath + '.' + _.interpreter.currentClass.name );
+                var classPath = packagePath + '.' + _.interpreter.currentClass.name
+                _.interpreter.currentClass.code._imports.push( classPath );
+                _.interpreter.currentClass.code._classPath = classPath;
                 _.util.lookup( packagePath )[ _.interpreter.currentClass.name ] = _.interpreter.currentClass.code;
                 _.interpreter.imports = [];
             },
@@ -684,8 +686,10 @@ _debug( 'end statement:', end.length, 'bytes')
 _debug( 'creating app directory');
                 fs.mkdir( applicationDirectoryName );
             }else{
+                if( fs.existsSync( applicationFilePath )){
 _debug( 'removing cached copy');
-                fs.unlinkSync( applicationFilePath );
+                    fs.unlinkSync( applicationFilePath );
+                }
             }
 _debug( 'saving script file');
             var file = code + start + app + exec + end;

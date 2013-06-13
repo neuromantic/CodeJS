@@ -21,8 +21,13 @@ _package('com.grabnetworks.proto',
             this._.configWithOptions( event.data );
         },
         private_configWithOptions : function ( options ){
+            var contentID;
             this._.options = options;
-            var contentID = this._.settings.content || this._.options.grabnetworks.content;
+            if( this._.settings.content === false){
+                delete this._.settings.content;
+            }else{
+                 contentID = this._.settings.content || this._.options.grabnetworks.content;
+            }
             this.id = this._.options.grabnetworks.id;
             delete this._.settings.id;
             if(contentID){

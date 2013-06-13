@@ -1,0 +1,2 @@
+{"ts":1371051824118,"silentsave":true,"restoring":false,"patch":[[]],"length":0}
+{"contributors":[],"silentsave":false,"ts":1371051804890,"patch":[[{"diffs":[[1,"/*!\n *\n * Modal.js\n * com.grabnetworks.Player\n *\n * Legacy compatibility class to supplement the Player.js Modal\n */\n_package( 'com.grabnetworks',\n    _import( 'com.grabnetworks.player.Modal'),\n    _class( 'Modal')._extends( 'com.grabnetworks.player.Modal')\n);"]],"start1":0,"start2":0,"length1":0,"length2":260}]],"length":260,"saved":false}
