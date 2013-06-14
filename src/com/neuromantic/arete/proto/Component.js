@@ -28,12 +28,13 @@ _package( 'com.neuromantic.arete.proto',
             this.y(0);
 		},
 		exec : function () {
-_debug( this, 'exec' );
+//_trace( 'EXEC' );
 			this._.setup();
             this._.render();
+        	this.run();
 		},
 		run : function () {
-_debug( this, 'run' );
+//_trace( 'RUN' );
 			this.init();
 			this.start();
 		},
@@ -44,13 +45,13 @@ _debug( this, 'run' );
 			this.visible( true );
 		},
 		init : function () {
-_debug( this, 'init' );
+//_trace( 'INIT' );
 		},
 		start : function () {
-_debug( this, 'start' );
+//_trace( 'START' );
 		},
 		stop : function () {
-_debug( this, 'stop' );
+//_trace( 'STOP' );
 		},
         append: function (child){
             child.style( { position: 'absolute' } );
@@ -61,24 +62,23 @@ _debug( this, 'stop' );
 			this._.layout( false );
             this._.addEvents();
             this._.notify( new ComponentEvent( ComponentEvent.RENDER ) );
-    		this.run();
         },
         private_destroy : function (){
-_debug( this, 'destroy');
+//_trace( this, 'destroy');
         },
 		private_addEvents : function () {
-_debug( this, 'addEvents' );
+//_trace( this, 'addEvents' );
 		},
     	private_build : function () {
-_debug( this, 'build' );
+//_trace( this, 'build' );
 		},
 		private_layout : function( animated ) {
-_debug( this, 'layout' );
+//_trace( this, 'layout' );
     		this._super().width( this._.width );
     		this._super().height( this._.height );
 		},
 		private_setup : function () {
-_debug( this, 'setup' );
+//_trace( this, 'setup' );
 		}
 	})
 );

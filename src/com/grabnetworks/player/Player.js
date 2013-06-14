@@ -10,6 +10,7 @@ _package( 'com.grabnetworks.player',
     _import( 'com.grabnetworks.vidify.Badger' ),
     _import( 'com.grabnetworks.loading.ContentLoader' ),
     _import( 'com.grabnetworks.advertisement.VideoAd' ),
+    _import( 'com.grabnetworks.advertisement.AdEvent' ),
     _import( 'com.grabnetworks.proto.GrabApp' ),
     
     _import( 'com.neuromantic.arete.dom.elements.Div'),
@@ -31,6 +32,7 @@ _package( 'com.grabnetworks.player',
             width: 640,
             height: 360
         },
+        private_content: null,
         private_deferredCalls: [],
         private_ready: false,
         private_div : null,
@@ -67,7 +69,12 @@ _package( 'com.grabnetworks.player',
                     }
                 }
         },
-        private_buildHTML : function (){
+        start : function () {
+            if(this._.playlist){
+                this.renderContent( this._.playlist.videos[0], { autoPlay : this._.settings.autoPlay || this._.options.grabnetworks.player.behavior.autoPlay } );
+            }
+        },
+        private_buildHTML : function () {
             this.type = 'h5';
     		if( !this._.video ){
                 this._.video = new Video( {
@@ -78,7 +85,7 @@ _package( 'com.grabnetworks.player',
                 } );
 			}
             if( this._.options.grabnetworks.advertisement.enabled && !this._.ad){
-                this._.videoAd = new VideoAd();
+                this._.videoAd = new VideoAd( this._.video );
             }
             if(this._.div){
                 this.replace( this._.video, this._.div );
@@ -89,21 +96,18 @@ _package( 'com.grabnetworks.player',
             if(swf.ref){
                 this._.swf = swf.ref;
                 this.type = 'v5';
-            if(this._.settings.likeButton){
-               this._.likeDiv = new Div( { id: 'grabLike'} );
-               this._.likeDiv.width( this.width() );
-               this._.likeDiv.height( 70 );
-               this.append( this._.likeDiv );
-            }
+                if(this._.settings.likeButton){
+                   this._.likeDiv = new Div( { id: 'grabLike' } );
+                   this._.likeDiv.width( this.width() );
+                   this._.likeDiv.height( 70 );
+                   this.append( this._.likeDiv );
+                }
             }else{
                 this._.buildHTML(); 
             }
-            if(this._.playlist){
-                this.renderContent( this._.playlist.videos[0], { autoPlay : this._.settings.autoPlay || this._.options.grabnetworks.player.behavior.autoPlay } );
-            }
             if (typeof this._.onReady === 'function') {
                 this._.onReady();
-    			this._.onReady = null;
+                this._.onReady = null;
             }
         },
         private_trySWF : function () {
@@ -172,12 +176,8 @@ _package( 'com.grabnetworks.player',
                 this._.playButton.y( ( this._.settings.height - this._.playButton.height() ) * 0.5 );
             }
             if(this._.video){
-                this._.video.width( this.width() );
-                this._.video.height( this.height() );
-            }
-            if(this._.videoAd){
-                this._.videoAd.width( this.width() );
-                this._.videoAd.height( this.height() );
+                this._.video.width( this._.settings.width );
+                this._.video.height( this._.settings.height );
             }
         },
         private_onMouseOver : function ( event ){
@@ -206,7 +206,8 @@ _package( 'com.grabnetworks.player',
             this._.playButton.on( LoadingEvent.COMPLETE, this._.onImageLoaded );
             this._.previewImage.on( LoadingEvent.COMPLETE, this._.onImageLoaded );
             if( this._.videoAd ){
-                this._.videoAd.on( AdEvent.STOPPED, this._.onAdStopped)
+                this._.videoAd.on( AdEvent.STOPPED, this._.onAdStopped );
+                this._.videoAd.on( AdEvent.ERROR, this._.onAdStopped );
             }
         },
         /***********************************************************/
@@ -218,8 +219,6 @@ _package( 'com.grabnetworks.player',
             }
         },
         private_play : function () {
-            this._.previewImage.visible( false );
-            this._.playButton.visible( false );
             if(this._.video){
                 this._.video.play();
             }else{
@@ -263,26 +262,36 @@ _package( 'com.grabnetworks.player',
                 this._.swf.setVolume(level);
             }
         },
+        private_renderPreview : function () {
+            this._.previewImage.visible( false );
+            this._.playButton.visible( false );
+        },
         private_renderVideo : function( content, secret ){
-            if(this._.video){
+            if( this._.video ) {
                 this._.video.load( content.video.media.mobile.url );
             }else{
                 this._.swf.renderContent( content );
             }
-            if (secret && secret.autoPlay){
+            this._.content = content;
+            if (secret && secret.autoPlay) {
                 this._.startVideo();
             }else{
+                this._.renderPreview();
                 this.stopVideo();
             }
         },
         private_startVideo : function(){
+            
+            this._.previewImage.visible( false );
+            this._.playButton.visible( false );
             if(this._.videoAd){
-                this._.videoAd.play( ) 
+                this._.videoAd.play( this._.content );
             } else {
                 this.playVideo();
             }
         },
         Player : function ( settings ){
+            //Code._.debugging = DebugLevels.ERROR;
             if ( settings.variant === '' ) {
 				delete settings.variant;
 			}//if

@@ -16,7 +16,7 @@ _trace( '\nA R E T E | P A C K A G E R\n');
 		var fileName = (applicationFileName || applicationClassPath + '.js' );
 		var destination = dirName + '/' + fileName;
 		fs.writeFileSync( destination, Code.x( applicationClassPath ) );
-		_trace( 'Compiled application', applicationClassPath, 'to', destination,'\n'); 
+_trace( 'Wrote compiled application', applicationClassPath, 'to', destination,'\n'); 
 		break;
     case '-s':
 _trace( '\nA R E T E | S E R V E R\n');
@@ -51,5 +51,4 @@ function clearDir ( dir ) {
         }
 		fs.rmdirSync( dir );
 	}
-
 }

@@ -46,7 +46,7 @@ _error( applicationClassPath + ' could not be compiled:\n'+ error.message );
 		                fs.writeFileSync( destination, app );
 		                _trace( 'saving compiled application', applicationClassPath, 'to', destination,'\n'); 
 			        	message.request.res.statusCode = 200;
-_debug( 'sending app to client');
+_debug( 'sending',app.length,'bytes to client');
 						message.request.res.end( app );
 			        }else{//if
 _error( 'incomplete app, not sending.' );
