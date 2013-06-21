@@ -39,7 +39,7 @@ _package('com.neuromantic.arete.dom',
         static_all : function( ElementClass, root ) {
             root = root || document;
             var tags = root.getElementsByTagName(ElementClass.TYPE);
-            var list = []
+            var list = [];
             for ( var i = 0; i < tags.length; i++ ) {
                 list[i] = new Element(tags[i]);
             }
@@ -73,7 +73,7 @@ _package('com.neuromantic.arete.dom',
         private_height: null,
         private_y: 0,
         private_x: 0,
-        private_mouseEnabled : true,
+        private_enabled : null,
         private_onmouseover : function(e) {
             this._.mouseNotify(MouseEvent.OVER, e);
         },
@@ -108,18 +108,16 @@ _package('com.neuromantic.arete.dom',
             this._.notify(new Event(Event.CHANGE));
         },
         private_mouseNotify: function(type, nativeEvent) {
-              nativeEvent = nativeEvent || window.event;
+            nativeEvent = nativeEvent || window.event;
             //IE9 & Other Browsers
             if (nativeEvent.stopPropagation) {
-              // nativeEvent.stopPropagation();
+                nativeEvent.stopPropagation();
             }
             //IE8 and Lower
             else {
-              // nativeEvent.cancelBubble = true;
+              nativeEvent.cancelBubble = true;
             }
-            if (this._.mouseEnabled) {
-                this._.notify(new MouseEvent(type));
-            }
+            this._.notify(new MouseEvent(type) );
         },
         private_keyNotify: function(type, nativeEvent) {
             this._.notify(new KeyboardEvent(type));
@@ -138,24 +136,16 @@ _package('com.neuromantic.arete.dom',
                         if ( typeof atts.style === 'undefined' || typeof atts.style.position === 'undefined' ) {
                             // this.style( { position: 'absolute' } );
                         }
+                        this.tag(atts);
+                        this.enabled( true );
+                        this.style({position:'absolute', top: '0px', left: '0px'});
                     } catch (error) {
                         throw new TypeError('Arete Elements require a valid HTML tag name');
                     }
                 } else {
                     throw new TypeError('Arete Elements may only be instantiated with an HTML node or tag name string argument');
                 }
-                this.tag(atts);
-                this._.tag.onmouseover = this._.onmouseover;
-                this._.tag.onmouseout = this._.onmouseout;
-                this._.tag.onmousedown = this._.onmousedown;
-                this._.tag.onmouseup =this._.onmouseup;
-                this._.tag.onclick = this._.onclick;
-                this._.tag.onkeydown = this._.onkeydown;
-                this._.tag.onkeyup = this._.onkeyup;
-                this._.tag.onkeypress = this._.onkeypress;
-                this._.tag.onfocus = this._.unfocus;
-                this._.tag.onblur = this._.onblur;
-                this._.tag.onchange = this._.onchange;
+                this._.visible = ( this._.tag === document || this._.tag.style.visibility !== 'hidden' );
             } else {
                 throw new TypeError('Arete Elements require an argument on instantiation');
             }
@@ -168,7 +158,6 @@ _package('com.neuromantic.arete.dom',
         },
         append: function(child) {
             this._.tag.appendChild(child.tag());
-            child.style({position:'absolute'});
         },
         replace: function(newChild, oldChild) {
             this._.tag.replaceChild( newChild.tag(), oldChild.tag()) ;
@@ -194,6 +183,41 @@ _package('com.neuromantic.arete.dom',
         },
         set_parent: function(parent) {
             parent.append(this);
+        },
+        get_enabled : function () {
+            return this._.enabled;
+        },
+        set_enabled : function ( value ) {
+            if( value ){
+                this.tag({
+                    onmouseover : this._.onmouseover,
+                    onmouseout : this._.onmouseout,
+                    onmousedown : this._.onmousedown,
+                    onmouseup :this._.onmouseup,
+                    onclick : this._.onclick,
+                    onkeydown : this._.onkeydown,
+                    onkeyup : this._.onkeyup,
+                    onkeypress : this._.onkeypress,
+                    onfocus : this._.unfocus,
+                    onblur : this._.onblur,
+                    onchange : this._.onchange
+                });
+            }else{
+                 this.tag({
+                    onmouseover : null,
+                    onmouseout : null,
+                    onmousedown : null,
+                    onmouseup : null,
+                    onclick : null,
+                    onkeydown : null,
+                    onkeyup : null,
+                    onkeypress : null,
+                    onfocus : null,
+                    onblur : null,
+                    onchange : null
+                });
+            }
+            this._.enabled = value;
         },
         get_parent: function() {
             if(this._.tag.parentNode){
@@ -286,12 +310,12 @@ _package('com.neuromantic.arete.dom',
             this._.alpha = value;
         },
         get_visible: function() {
-            return this._.tag.style.visible != 'hidden';
+            return this._.visible;
         },
         set_visible: function(value) {
             this._.visible = value;
             this._.tag.style.visibility = this._.visible ? 'visible' : 'hidden';
-    
+            this.enabled( value );
         },
         get_aspect : function (){
             return this.width() /this.height();

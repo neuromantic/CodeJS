@@ -11,7 +11,7 @@
 			if( this._.handlers[ event.type ] ) {
 				event.source = this;
 				for( var index in this._.handlers[ event.type ] ) {
-                    // try {
+//                    try {
 					    this._.handlers[ event.type ][ index ]( event );
 //                     } catch ( error ){
 // _trace('async error caught handling', event.type, 'of', event.source.toString(), ':',  error.message )
@@ -23,6 +23,12 @@
 		},
 		private_handlers : {},
 		on : function( eventType, eventHandler ) {
+            if( !( eventType) ) {
+                throw new Error( 'Notifier.on() requires a valid event type.');
+            }
+            if( !( eventHandler) ) {
+                throw new Error( 'Notifier.on() requires a valid event handler.');
+            }
 			this._.handlers[ eventType ] = this._.handlers[ eventType ] || [];
 			this._.handlers[ eventType ].push( eventHandler );
 		},

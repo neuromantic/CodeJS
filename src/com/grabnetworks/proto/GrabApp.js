@@ -37,9 +37,7 @@ _package('com.grabnetworks.proto',
             }
         },
         private_onPlaylistLoadingComplete : function ( event ){
-            this._.playlist = event.data;
-            delete this._.options.grabnetworks.content;
-            this.exec();
+            this.renderPlaylist( event.data);
         },
         private_loadPlaylist : function( contentID ){
             var playlistLoader = new PlaylistLoader( this._.settings.environment );
@@ -53,9 +51,13 @@ _package('com.grabnetworks.proto',
         },
         GrabApp : function ( settings ){
             this._super( settings );
-            if( settings.config && typeof settings.config === 'object'){
-                delete this._.settings.id;
-                this._.configWithOptions( settings.config );
+            if( settings.config ){
+                switch( typeof settings.config ){
+                case 'string':
+                    settings.config = JSON.parse( settings.config );//fall through
+                case 'object':
+                    this._.configWithOptions( settings.config );
+                }
             }else if( settings.id ){
                 this._.loadOptions( settings.id );
             }
@@ -64,6 +66,10 @@ _package('com.grabnetworks.proto',
             if( this._.options && this._.playlist ){
                 this._super().exec();
             }
+        },
+        renderPlaylist : function ( playlist ) {
+            this._.playlist = playlist;
+            this.exec();
         }
     })
 );

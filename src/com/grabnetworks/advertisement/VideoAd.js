@@ -14,9 +14,6 @@ _package( 'com.grabnetworks.advertisement',
         private_baseAdTagUrl : "http://ads.adap.tv/a/t/voxant",
         VideoAd : function ( video ) {
             this._super();
-            if(video){
-                this._.tag = video.tag();
-            }
             this._.environmentVars = {
                 maxWrapperLevels  : 5, // Maximum number of VAST wrapper redirects; default is 5.
                 adTagTimeout      : 10, // Time in seconds to wait for the network to resolve the ad tag; default is 10s.
@@ -27,10 +24,6 @@ _package( 'com.grabnetworks.advertisement',
         },
         private_onAdLoaded : function() {
             this.ad.startAd();
-        },
-        private_onAdError : function(e) {
-console.log( e.type + '! Error code: ' + e.data.errorCode + '. Error message: ' + e.data.errorMessage);
-            this._.notify( e );
         },
         play: function( content ){
             var customParams = {};
@@ -48,8 +41,9 @@ console.log( e.type + '! Error code: ' + e.data.errorCode + '. Error message: ' 
             this._.ad.subscribe('AdStarted', function(e) { console.log(e.type); });
             this._.ad.subscribe('AdLoaded', this._.onAdLoaded);
             this._.ad.subscribe('AdStopped', function() { console.log('Ad stopped.');});
-            this._.ad.subscribe('AdError', this._.onAdError );
+            this._.ad.subscribe('AdError', function(e) {console.log(e.type + '! Error code: ' + e.data.errorCode + '. Error message: ' + e.data.errorMessage)});
             this._.ad.initAd(this.width(), this.height(), -1, -1, creativeData, this._.environmentVars);
+            this._.ad.startAd();
         }
     })
 );

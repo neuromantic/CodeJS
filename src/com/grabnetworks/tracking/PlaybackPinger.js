@@ -35,13 +35,13 @@ _package( 'com.grabnetworks.tracking',
             player.on( PlayerEvent.VIDEO_STARTED, this._.onPlayerVideoStarted)
             player.on( PlayerEvent.PLAYER_READY, this._.onPlayerPlayerSWFReady);
             player.on( PlayerEvent.VIDEO_KEYFRAME, this._.onPlayerVideoKeyFrame);
-            player.on( PlayerEvent.CONTENT_ERROR, this._.onPlayerContentError);
-            player.on( PlayerEvent.VIDEO_ENDED, this._.onPlayerVideoEnded);
-            player.on( PlayerEvent.VIDEO_PAUSED, this._.onPlayerVideoPaused);
-        	player.on( PlayerEvent.VIDEO_PLAYING, this._.onPlayerVideoPlayed);
-    		player.on( PlayerEvent.PREROLL_ENDED, this._.onPlayerPreRollEnded);
+            //player.on( PlayerEvent.CONTENT_ERROR, this._.onPlayerContentError);
+            //player.on( PlayerEvent.VIDEO_ENDED, this._.onPlayerVideoEnded);
+            //player.on( PlayerEvent.VIDEO_PAUSED, this._.onPlayerVideoPaused);
+            player.on( PlayerEvent.VIDEO_PLAYING, this._.onPlayerVideoPlayed);
+    		// player.on( PlayerEvent.PREROLL_ENDED, this._.onPlayerPreRollEnded);
     		player.on( PlayerEvent.PREROLL_STARTED, this._.onPlayerPreRollStarted);
-    		player.on( PlayerEvent.PREROLL_CLICKED, this._.onPlayerPreRollSelected);
+    		// player.on( PlayerEvent.PREROLL_CLICKED, this._.onPlayerPreRollSelected);
         }
     })
 );

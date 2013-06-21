@@ -84,7 +84,7 @@ _package( 'com.grabnetworks.player',
                     }
                 } );
 			}
-            if( this._.options.grabnetworks.advertisement.enabled && !this._.ad){
+            if( this._.options.grabnetworks.advertisement.enabled && !this._.videoAd){
                 this._.videoAd = new VideoAd( this._.video );
             }
             if(this._.div){
@@ -120,6 +120,7 @@ _package( 'com.grabnetworks.player',
 			var flashvars = settings;
 			var namespace = 'com.grabnetworks.player.Player.players[' + this.id + ']';
 			var eventhandler = 'eventRouter';
+            flashvars.id = this.id;
 			flashvars.namespace = namespace;
 			flashvars.eventhandler = eventhandler;
             flashvars.content = false;
@@ -180,12 +181,12 @@ _package( 'com.grabnetworks.player',
                 this._.video.height( this._.settings.height );
             }
         },
-        private_onMouseOver : function ( event ){
+        private_onVideoMouseOver : function ( event ){
             if( this._.video ){
                 this._.video.tag({ controls : 'controls' });//until a ui layer exists
             }
         },
-        private_onMouseOut : function ( event ){
+        private_onVideoMouseOut : function ( event ){
             if( this._.video ){
                 this._.video.tag({ controls : null });//until a ui layer exists
             }
@@ -200,9 +201,12 @@ _package( 'com.grabnetworks.player',
             this._.playVideo();
         },
         private_addEvents : function (){
-            this.on( MouseEvent.OVER, this._.onMouseOver);
-            this.on( MouseEvent.OUT, this._.onMouseOut);    
+            if( this._.video){
+                this._.video.on( MouseEvent.OVER, this._.onVideoMouseOver);
+                this._.video.on( MouseEvent.OUT, this._.onVideoMouseOut);    
+            }
             this._.playButton.on( MouseEvent.CLICK, this._.onPlayButtonClick );
+            this._.previewImage.on( MouseEvent.CLICK, this._.onPlayButtonClick );
             this._.playButton.on( LoadingEvent.COMPLETE, this._.onImageLoaded );
             this._.previewImage.on( LoadingEvent.COMPLETE, this._.onImageLoaded );
             if( this._.videoAd ){
@@ -262,28 +266,27 @@ _package( 'com.grabnetworks.player',
                 this._.swf.setVolume(level);
             }
         },
-        private_renderPreview : function () {
-            this._.previewImage.visible( false );
-            this._.playButton.visible( false );
+        private_renderPreview : function() {
+            var media = this._.content.video.media;
+            if( this._.swf){
+                this._.swf.renderContent ( this._.content );
+            }else{
+                this._.previewImage.load( media.preview.url || media.thumbnail.url );
+                this._.previewImage.visible( true );
+                this._.playButton.visible( true );
+            }
         },
         private_renderVideo : function( content, secret ){
             if( this._.video ) {
-                this._.video.load( content.video.media.mobile.url );
-            }else{
-                this._.swf.renderContent( content );
-            }
-            this._.content = content;
-            if (secret && secret.autoPlay) {
-                this._.startVideo();
-            }else{
-                this._.renderPreview();
-                this.stopVideo();
+                this._.video.load( this._.content.video.media.mobile.url );
             }
         },
         private_startVideo : function(){
-            
             this._.previewImage.visible( false );
             this._.playButton.visible( false );
+            if(this._.video){
+                this._.renderVideo();
+            }
             if(this._.videoAd){
                 this._.videoAd.play( this._.content );
             } else {
@@ -339,9 +342,11 @@ _package( 'com.grabnetworks.player',
         id : 'uninitialized',
         type : 'uninitialized',
         renderContent: function( content, secret ) {
-            var media = content.video.media;
-            this._.previewImage.load( media.preview.url || media.thumbnail.url );
-            this._.defer( this._.renderVideo, arguments );
+            this._.content = content;
+            this._.defer( this._.renderPreview, arguments );
+            if (secret && secret.autoPlay) {
+                this._.defer( this._.startVideo, arguments );
+            }
         },
         loadNewVideo: function( guid, secret ) {
             this._.defer( this._.load, arguments);

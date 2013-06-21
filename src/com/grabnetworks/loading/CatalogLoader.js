@@ -11,11 +11,11 @@ _package( 'com.grabnetworks.loading',
         private_server : 'http://catalog.grabnetworks.com',
         CatalogLoader : function( environment ){
             switch( environment ){
-                case 'qa':
+                case 'qa' :
                     this._.server = 'http://catalog.grabqa.com';
                     break;
                 case 'test' :
-                    this._.server = 'http://catalog2.grabtest.com:8080';
+                    this._.server = 'http://catalog0.grabtest.com:8080';
                     break;
             }
             this._super( 'jsonp' );

@@ -25,7 +25,7 @@ _package( 'com.neuromantic.arete.dom.elements.media',
             if (this._.width !== null){
                 this.width( this._.width );
             }
-            this._.tag.style.visibility = this._.visible ? 'visible' : 'hidden';
+            this._.tag.style.visibility = (this._.visible === false ) ? 'hidden' : 'visible';
             this._.notify( new LoadingEvent( LoadingEvent.COMPLETE ) );
         },
         Img : function ( atts ){

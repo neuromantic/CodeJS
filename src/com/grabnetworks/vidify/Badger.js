@@ -20,7 +20,7 @@ _package( 'com.grabnetworks.vidify',
             var height = target.height();
             var parent = target.parent(); 
             var style = target.style();
-            //this.style( style );
+            this.style( style );
             this.style( { position: 'relative', display: ( style.display === 'inline' ? 'inline-block' : style.display ) } );
             this.width( width );
             this.height( height );
@@ -28,12 +28,12 @@ _package( 'com.grabnetworks.vidify',
             parent.replace( this, target );
             this.append( target );
             this._.badge = badgeImg;
-            this._.badge.style( { position: 'absolute', border: 0 , zIndex : 10003 } );
             this._.badge.on( MouseEvent.CLICK, this._.onBadgeClicked );
             this.append( this._.badge );
         },
         set_visible : function( value ) {
             this._.badge.visible( value );
+            this._super().visible( value );
         }//,
     })
 );
