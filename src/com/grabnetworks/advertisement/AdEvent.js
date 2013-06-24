@@ -7,7 +7,7 @@
 
   _package( 'com.grabnetworks.advertisement',
     _import( 'com.neuromantic.arete.events.Event' ),
-    _class('ComponentEvent')._extends('Event', { 
+    _class('AdEvent')._extends('Event', { 
         static_LOADED: 'AdLoaded',// The event is sent by the ad to notify that the ad has finished any loading of assets and is ready for display.
         static_STARTED: 'AdStarted',// The event is sent by the ad to notify that the ad is displaying.
         static_STOPPED: 'AdStopped',// The event is sent by the ad to notify that the ad has stopped displaying, and all ad resources have been cleaned up.

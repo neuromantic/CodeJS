@@ -14,6 +14,7 @@ _package( 'com.grabnetworks.advertisement',
         private_baseAdTagUrl : "http://ads.adap.tv/a/t/voxant",
         VideoAd : function ( video ) {
             this._super();
+            this._.tag = video;
             this._.environmentVars = {
                 maxWrapperLevels  : 5, // Maximum number of VAST wrapper redirects; default is 5.
                 adTagTimeout      : 10, // Time in seconds to wait for the network to resolve the ad tag; default is 10s.
@@ -22,8 +23,18 @@ _package( 'com.grabnetworks.advertisement',
             };
             this._.ad = new __adaptv__.vpaid.VPAIDAd();
         },
-        private_onAdLoaded : function() {
-            this.ad.startAd();
+        private_onadloaded : function( e ) {
+            this._.notify( new AdEvent( AdEvent.LOADED ) );
+            this._.ad.startAd();
+        },
+        private_onadstarted : function( e ) {
+            this._.notify( new AdEvent( AdEvent.STARTED ) );
+        },
+        private_onadstopped : function( e ) {
+            this._.notify( new AdEvent( AdEvent.STOPPED ) );
+        },
+        private_onaderror : function( e ) {
+            this._.notify( e );
         },
         play: function( content ){
             var customParams = {};
@@ -38,12 +49,12 @@ _package( 'com.grabnetworks.advertisement',
             var creativeData =  { 
                 adTagUrl      : __adaptv__.vpaid.constructAdTag(this._.baseAdTagUrl, params, customParams) // Helper method to append and encode all defined data
             };
-            this._.ad.subscribe('AdStarted', function(e) { console.log(e.type); });
-            this._.ad.subscribe('AdLoaded', this._.onAdLoaded);
-            this._.ad.subscribe('AdStopped', function() { console.log('Ad stopped.');});
-            this._.ad.subscribe('AdError', function(e) {console.log(e.type + '! Error code: ' + e.data.errorCode + '. Error message: ' + e.data.errorMessage)});
+            this._.ad.subscribe(AdEvent.STARTED, this._.onadstarted );
+            this._.ad.subscribe(AdEvent.STOPPED, this._.onadstopped );
+            this._.ad.subscribe(AdEvent.LOADED, this._.onadloaded);
+            this._.ad.subscribe(AdEvent.ERROR, this._.onaderror);
             this._.ad.initAd(this.width(), this.height(), -1, -1, creativeData, this._.environmentVars);
-            this._.ad.startAd();
+            // this._.ad.startAd();
         }
     })
 );

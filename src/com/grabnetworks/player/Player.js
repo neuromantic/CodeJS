@@ -85,7 +85,7 @@ _package( 'com.grabnetworks.player',
                 } );
 			}
             if( this._.options.grabnetworks.advertisement.enabled && !this._.videoAd){
-                this._.videoAd = new VideoAd( this._.video );
+                this._.videoAd = new VideoAd( this._.video.tag() )
             }
             if(this._.div){
                 this.replace( this._.video, this._.div );
@@ -115,8 +115,8 @@ _package( 'com.grabnetworks.player',
             var params = { allowScriptAccess: 'always', allowFullScreen: 'true', wmode: 'transparent', menu: 'false', bgcolor: '#000000', quality: 'high' };//params
 			var env = settings.env || '';
 			delete settings.env;
-			var width = settings.width || 640;
-			var height = settings.height || 360;
+			var width = settings.width;
+			var height = settings.height;
 			var flashvars = settings;
 			var namespace = 'com.grabnetworks.player.Player.players[' + this.id + ']';
 			var eventhandler = 'eventRouter';
@@ -180,6 +180,10 @@ _package( 'com.grabnetworks.player',
                 this._.video.width( this._.settings.width );
                 this._.video.height( this._.settings.height );
             }
+            if(this._.videoAd){
+                this._.videoAd.width( this._.settings.width );
+                this._.videoAd.height( this._.settings.height );
+            }
         },
         private_onVideoMouseOver : function ( event ){
             if( this._.video ){
@@ -198,7 +202,7 @@ _package( 'com.grabnetworks.player',
             this._.layout();
         },
         private_onAdStopped : function ( event ){
-            this._.playVideo();
+            this.playVideo();
         },
         private_addEvents : function (){
             if( this._.video){
@@ -207,6 +211,7 @@ _package( 'com.grabnetworks.player',
             }
             this._.playButton.on( MouseEvent.CLICK, this._.onPlayButtonClick );
             this._.previewImage.on( MouseEvent.CLICK, this._.onPlayButtonClick );
+            this.tag().addEventListener( 'touchstart', function () {window.alert( 'Touch!')});
             this._.playButton.on( LoadingEvent.COMPLETE, this._.onImageLoaded );
             this._.previewImage.on( LoadingEvent.COMPLETE, this._.onImageLoaded );
             if( this._.videoAd ){
@@ -295,6 +300,8 @@ _package( 'com.grabnetworks.player',
         },
         Player : function ( settings ){
             //Code._.debugging = DebugLevels.ERROR;
+            settings.width = settings.width || 640;
+    		settings.height = settings.height || 360;
             if ( settings.variant === '' ) {
 				delete settings.variant;
 			}//if

@@ -38,7 +38,7 @@ _package( 'com.neuromantic.arete.dom.elements.media',
             this._super( Img.TYPE, atts );
         },
         load : function ( url ){
-            this._.tag.style.visibility = 'hidden'
+            this._.tag.style.visibility = 'hidden';
             this._super().load( url );  
         },
         get_loaded : function () {

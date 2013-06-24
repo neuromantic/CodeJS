@@ -9,6 +9,7 @@ _package('com.neuromantic.arete.dom',
     _import('com.neuromantic.arete.events.Notifier'),
     _import('com.neuromantic.arete.events.Event'),
     _import('com.neuromantic.arete.events.MouseEvent'),
+    _import('com.neuromantic.arete.events.TouchEvent'),
     _import('com.neuromantic.arete.events.KeyboardEvent'),
     _import('com.neuromantic.arete.events.FocusEvent'),
     _class('Element')._extends('Notifier', {
@@ -107,15 +108,19 @@ _package('com.neuromantic.arete.dom',
         private_onchange : function() {
             this._.notify(new Event(Event.CHANGE));
         },
+        private_ontouchevent : function ( e ) {
+            e.preventDefault();
+            this._.notify( e );
+        },
         private_mouseNotify: function(type, nativeEvent) {
             nativeEvent = nativeEvent || window.event;
             //IE9 & Other Browsers
             if (nativeEvent.stopPropagation) {
-                nativeEvent.stopPropagation();
+                //nativeEvent.stopPropagation();
             }
             //IE8 and Lower
             else {
-              nativeEvent.cancelBubble = true;
+              //nativeEvent.cancelBubble = true;
             }
             this._.notify(new MouseEvent(type) );
         },
@@ -201,7 +206,14 @@ _package('com.neuromantic.arete.dom',
                     onfocus : this._.unfocus,
                     onblur : this._.onblur,
                     onchange : this._.onchange
+                    
                 });
+                this._.tag.addEventListener( TouchEvent.START, this._.ontouchevent );
+                this._.tag.addEventListener( TouchEvent.END, this._.ontouchevent );
+                this._.tag.addEventListener( TouchEvent.CANCEL, this._.ontouchevent );
+                this._.tag.addEventListener( TouchEvent.LEAVE, this._.ontouchevent );
+                this._.tag.addEventListener( TouchEvent.ENTER, this._.ontouchevent );
+                this._.tag.addEventListener( TouchEvent.MOVE, this._.ontouchevent );
             }else{
                  this.tag({
                     onmouseover : null,
@@ -209,6 +221,7 @@ _package('com.neuromantic.arete.dom',
                     onmousedown : null,
                     onmouseup : null,
                     onclick : null,
+                    ontouchend : null,
                     onkeydown : null,
                     onkeyup : null,
                     onkeypress : null,
@@ -216,6 +229,12 @@ _package('com.neuromantic.arete.dom',
                     onblur : null,
                     onchange : null
                 });
+                this._.tag.removeEventListener( TouchEvent.START, this._.ontouchevent, false);
+                this._.tag.removeEventListener( TouchEvent.END, this._.ontouchevent, false);
+                this._.tag.removeEventListener( TouchEvent.CANCEL, this._.ontouchevent, false);
+                this._.tag.removeEventListener( TouchEvent.LEAVE, this._.ontouchevent, false);
+                this._.tag.removeEventListener( TouchEvent.ENTER, this._.ontouchevent, false);
+                this._.tag.removeEventListener( TouchEvent.MOVE, this._.ontouchevent, false);
             }
             this._.enabled = value;
         },
