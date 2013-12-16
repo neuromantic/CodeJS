@@ -1,6 +1,6 @@
 #!/usr/local/bin/node
 require( './src/Code.js' );
-Code._.debugging = DebugLevels.DEBUG;
+// Code._.debugging = DebugLevels.VERBOSE;
 var path = require('path');
 var fs = require('fs');
 
@@ -28,7 +28,7 @@ _trace( '\nA R E T E | S E R V E R\n');
         });
         break;
 	default:
-		_trace( 'arete.js USAGE');
+		_trace( 'arete.js USAGE___________________________________________________');
         _trace( 'PACKAGER: arete.js -x applicationClassPath [ applicationFileName ]');
     	_trace( 'compiles an executable for the provided application class and saves it in ./app/' );
 		_trace( 'optional: provide a file name for the resultant script, default is the full class path plus `.js`\n')

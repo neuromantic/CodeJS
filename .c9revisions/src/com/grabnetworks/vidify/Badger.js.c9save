@@ -59,3 +59,4 @@
 {"contributors":[],"silentsave":false,"ts":1371658342695,"patch":[[{"diffs":[[0,"        "],[-1,"//"],[0,"this.sty"]],"start1":739,"start2":739,"length1":18,"length2":16}]],"length":1466,"saved":false}
 {"ts":1371658457929,"patch":[[{"diffs":[[0,"mg;\n"],[-1,"            this._.badge.style( { position: 'absolute', border: 0 , zIndex : 10003 } );\n"],[0,"    "]],"start1":1138,"start2":1138,"length1":96,"length2":8}]],"length":1378,"saved":false}
 {"ts":1371674473707,"patch":[[{"diffs":[[0,"e( value );\n"],[1,"            this._super().visible( value );\n"],[0,"        }//,"]],"start1":1339,"start2":1339,"length1":24,"length2":68}]],"length":1422,"saved":false}
+{"contributors":[],"silentsave":false,"ts":1373310616458,"patch":[[{"diffs":[[0,"style( {"],[1," overflow: 'visible',"],[0," positio"]],"start1":785,"start2":785,"length1":16,"length2":37}]],"length":1443,"saved":false}

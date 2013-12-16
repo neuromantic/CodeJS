@@ -13,7 +13,6 @@ _package('com.grabnetworks.proto',
     _import( 'com.grabnetworks.loading.ContentLoader'),
 
     _class( 'GrabApp')._extends( 'App', {
-        id: null,
         private_options : null,
         private_playlist : null,
         private_media : null,
@@ -23,13 +22,12 @@ _package('com.grabnetworks.proto',
         private_configWithOptions : function ( options ){
             var contentID;
             this._.options = options;
-            if( this._.settings.content === false){
+            if( this._.settings.content === false ){
                 delete this._.settings.content;
             }else{
-                 contentID = this._.settings.content || this._.options.grabnetworks.content;
+                contentID = this._.settings.content || this._.options.grabnetworks.content;
             }
-            this.id = this._.options.grabnetworks.id;
-            delete this._.settings.id;
+            this.id( this._.options.grabnetworks.id );
             if(contentID){
                 this._.loadPlaylist( contentID );
             }else{
@@ -37,7 +35,7 @@ _package('com.grabnetworks.proto',
             }
         },
         private_onPlaylistLoadingComplete : function ( event ){
-            this.renderPlaylist( event.data);
+            this.renderPlaylist( event.data );
         },
         private_loadPlaylist : function( contentID ){
             var playlistLoader = new PlaylistLoader( this._.settings.environment );
@@ -58,7 +56,7 @@ _package('com.grabnetworks.proto',
                 case 'object':
                     this._.configWithOptions( settings.config );
                 }
-            }else if( settings.id ){
+            }else if( settings.id){
                 this._.loadOptions( settings.id );
             }
         },
@@ -69,7 +67,15 @@ _package('com.grabnetworks.proto',
         },
         renderPlaylist : function ( playlist ) {
             this._.playlist = playlist;
-            this.exec();
+            if(this._.playlist.videos.length > 0){
+                this.exec();
+            }
+        },
+        get_id : function () {
+            return this._super().id().split(this._className)[1];
+        },
+        set_id : function( value ) {
+            this._super().id( this._className + value );
         }
     })
 );

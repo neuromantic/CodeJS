@@ -27,21 +27,21 @@ _package( 'com.grabnetworks.vidify',
         private_badgerClicked: false,
         private_target : null,
         private_closeButton : null,
-        private_playerContainer : null, 
+        // private_playerContainer : null, 
         private_player : null,
         private_ready: false,
         private_onWindowLoad: function (){
-_trace( 'Window ready...' );
             this._.ready = true;
             this._.render();
         },
         private_build : function () {
-            if(this._.ready ) {
+            if(this._.ready && this._.playlist) {
 _trace( 'Vidifying your page...' );
                 var productOptions = this._.options.grabnetworks.vidify;
                 if( productOptions ){
 _trace( 'Vidify Options:', productOptions );
                     var badge = productOptions.badge || { style: { bottom: '0px', right: '0px' } };
+                    badge.style.position = 'absolute';
                     if( this._.settings.badge){
                         badge.src = this._.settings.badge;
                     }
@@ -69,7 +69,7 @@ _trace( 'No Vidify config in Options file, please contact Grab.')
                         h = w / TARGET_RATIO;
                     }
                     area = w * h;
-                    if( area > best ) {
+                    if( w > 300 && h > 168 && area > best && img.viewable() ) {
                         target = img;
                         best = area;
                     }
@@ -81,26 +81,37 @@ _trace( 'No Vidify config in Options file, please contact Grab.')
 _trace( 'Badging image with src =',target.tag().src, '...' );
                     this._.badger = new Badger( this._.target, this._.badgeImg );
                     var element = this._.badger;
-                    var parent;
+                    var parent, dw, dh;
                     while( element && element.tag().parentNode !== document ) {
                         parent = element.parent();
-                        if(parent && parent.tag().href){
-_debug( 'clearing surrounding hyperlink with href =', parent.tag().href, '.' );
-                            parent.parent().replace( element, parent );
+                        if(parent ) {
+                            dw = parent.width() - element.width();
+                            dh = parent.height() - element.height();
+_trace( dw, dh );
+                            if( parent.tag().href || ( element.isOnlyChildOf( parent ) && dw <= 20 && dh <= 20 ) ) {
+_trace( 'clearing surrounding container with href =', parent.tag().href, ', or dw =', dw, ', or dh =', dh );
+                                parent.replace( element );
+                            }else{
+                                element = null;
+                            }
                         }
-                        element = parent;
                     }
-                    this._.playerContainer = new Div( { style : { position : 'absolute', top : 0,  left : 0, zIndex : 10001 } } );
-                    this._.badger.append( this._.playerContainer );
-                    new Ping( { p:'vf', e:'render', i:this._.settings.id });
+                    // this._.playerContainer = new Div({id:'playerContainer'});
+                    // this._.playerContainer.x( 0 );
+                    // this._.playerContainer.y( 0 );
+                    // this._.playerContainer.z( 10001 );
+                    // this._.badger.append( this._.playerContainer );
+                }else{
+                    //inject a player at the top of the root//root.
                 }
             }
+            new Ping( { p:'vf', e:'render', i:this._.settings.id });
         },
         private_addEvents : function () {
-            if( this._.badger ) {
-                this._.badger.on( MouseEvent.CLICK, this._.onBadgerClicked );
-                this._.badgeImg.on( MouseEvent.OVER, this._.onBadgeImgOver );
-                this._.badgeImg.on( MouseEvent.OUT, this._.onBadgeImgOut );
+            if( this._.badgeImg ) {
+                this._.badgeImg.on( MouseEvent.CLICK, this._.onBadgerClicked );
+                // this._.badgeImg.on( MouseEvent.OVER, this._.onBadgeImgOver );
+                // this._.badgeImg.on( MouseEvent.OUT, this._.onBadgeImgOut );
                 this._.badgeImg.on(LoadingEvent.COMPLETE, this._.onImgLoaded );
             }
         },
@@ -108,21 +119,21 @@ _debug( 'clearing surrounding hyperlink with href =', parent.tag().href, '.' );
             this._.layout();
         },
         private_layout: function () {
-            if( this._.playerContainer ) {
-                this._.playerContainer.width( this._.target.width() );
-                this._.playerContainer.height( this._.target.height() );
-            }
+            // if( this._.playerContainer ) {
+            //     this._.playerContainer.width( this._.target.width() );
+            //     this._.playerContainer.height( this._.target.height() );
+            // }
         },
         private_onBadgerClicked : function ( event ){
-            new Ping( { p:'vf', e:'action', i:this._.settings.id, t : 'click_badge' });
+            new Ping( { p : 'vf', e : 'action', i : this._.settings.id, t : 'click_badge' } );
             this._.playVideo(); 
         },
-        private_onBadgeImgOver : function ( event ){
-            this._.playerContainer.style( { backgroundColor : 'rgba(0,0,0,0.5)' } );
-        },
-        private_onBadgeImgOut : function ( event ){
-            this._.playerContainer.style( { backgroundColor : 'transparent' } );
-        },
+        // private_onBadgeImgOver : function ( event ){
+        //     this._.playerContainer.style( { backgroundColor : 'rgba(0,0,0,0.5)' } );
+        // },
+        // private_onBadgeImgOut : function ( event ){
+        //     this._.playerContainer.style( { backgroundColor : 'transparent' } );
+        // },
         private_onCloseButtonClicked : function ( event ) {
             new Ping( { p:'vf', e:'action', i:this._.settings.id, t : 'click_close' });
             this._.hidePlayer();
@@ -137,19 +148,21 @@ _debug( 'clearing surrounding hyperlink with href =', parent.tag().href, '.' );
             this._.hidePlayer();
         },
         private_playVideo : function (){
-_trace('Playing video.')
+_trace('Playing video.');
                 this._.settings.diag = 'console';
-                this._.settings.target = this._.playerContainer;
+                this._.settings.target = this._.badger;
                 this._.settings.config = this._.options;
                 this._.settings.content = false;
                 if(! this._.player ){
+_trace( 'creating player');
                     this._.closeButton = new CloseButton();
                     this._.closeButton.style( { position: 'absolute', top: '-10px', right: '-10px', zIndex : 10005 } );
                     this._.closeButton.on( MouseEvent.CLICK, this._.onCloseButtonClicked );
                     this._.badger.append( this._.closeButton );
                     this._.player = new Player( this._.settings );
+                    this._.player.style( { position: 'absolute' } );//XXX: can this be less manual?
                     this._.player.on( PlayerEvent.VIDEO_ENDED, this._.onPlayerVideoEnded);
-                    this._.player.renderContent( this._.playlist.videos[0] );
+                    this._.player.renderPlaylist( this._.playlist );
                     this._.player.playVideo();
                     new PlaybackPinger( this._.player, 'vf' );
                 }

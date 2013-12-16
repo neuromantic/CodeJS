@@ -34,10 +34,12 @@
         util: {
             lookup : function ( path ) {
                 var scope = global;
+                if( path !== ''){
                 var tokens = path.split( '.' );
-                for ( var i = 0; i < tokens.length; i++ ) {//create lookup tree
-                    var token = tokens[ i ];
-                    scope = scope[ token ] = scope[ token ] || {};
+                    for ( var i = 0; i < tokens.length; i++ ) {//create lookup tree
+                        var token = tokens[ i ];
+                        scope = scope[ token ] = scope[ token ] || {};
+                    }
                 }
                 return scope;
             },
@@ -290,7 +292,8 @@ _verbose( this.buffer.length, 'bytes', this.queue.length, 'scripts remain.' );
             currentClass : {},
             _package: function( packagePath ) {
 _verbose( '_.interpreter._package', packagePath );
-                var classPath = packagePath + '.' + _.interpreter.currentClass.name
+                var prefix = packagePath === '' ? '' : packagePath + '.';
+                var classPath = prefix + _.interpreter.currentClass.name;
                 _.interpreter.currentClass.code._imports.push( classPath );
                 _.interpreter.currentClass.code._classPath = classPath;
                 _.util.lookup( packagePath )[ _.interpreter.currentClass.name ] = _.interpreter.currentClass.code;
@@ -311,6 +314,7 @@ _debug( '_extends', parentClassName );
                             parentPath = _.interpreter.imports[ i ];
                         }
                     }
+_debug( _.util.lookup(parentPath) );
                     if(typeof parentPath === 'undefined') {
                         throw new TypeError( className + ' cannot _extend ' + parentClassName + ', it has not been _imported.' );
                     }
@@ -663,18 +667,25 @@ _error( applicationClassPath + ' could not be compiled:\n'+ error.message );
 			throw( error );
 		}
 _verbose( 'creating exec statement' );
-		var exec = 	'var scripts = document.getElementsByTagName( "script" );\n'+
-					'var script = scripts[ scripts.length - 1 ];\n'+
-					'var query = script.src.split("?")[1];\n'+
-	                'if( query && query.length > 0 ){\n'+
-						'\tvar settings = {};\n'+
-						'\tvar list = query.split( "&");\n'+
-						'\tfor (var i = 0; i < list.length; i++ ){\n'+
-							'\t\tvar pair = list[i].split("=");\n'+
-							'\t\tsettings[pair[0]] = pair[1];\n'+
-						'\t};\n'+
-						'\tnew ' + applicationClassPath + '( settings );\n'+
-                    '}\n';
+		var exec =  '//try{\n'+
+                        '\tvar scripts = document.getElementsByTagName( "script" );\n'+
+					    '\tvar script = scripts[ scripts.length - 1 ];\n'+
+					    '\tvar query = script.src.split("?")[1];\n'+
+                        '\tif( query && query.length > 0 ){\n'+
+					    '\t\tvar settings = {};\n'+
+				        '\t\tvar list = query.split( "&");\n'+
+					    '\t\tfor (var i = 0; i < list.length; i++ ){\n'+
+					    '\t\t\tvar pair = list[i].split("=");\n'+
+			         '\t\t\tsettings[pair[0]] = pair[1];\n'+
+        				    '\t\t};\n'+
+    				    '\t\tnew ' + applicationClassPath + '( settings );\n'+
+                        '\t};\n'+
+                    '/*}catch( e ){ \n'+
+                    '_trace( "A R E T E | D E B U G :", e.message );\n'+
+                    	'\tif(Code._.debugging){\n'+
+                            '\t\tthrow e\n'+
+                		'\t}\n'+
+                    '}*/\n';
         var end = '})();';
 _debug( 'Code.js:', code.length, 'bytes' );
 _debug( 'start statement:', start.length, 'bytes' );
@@ -685,18 +696,17 @@ _debug( 'end statement:', end.length, 'bytes')
             if( !fs.existsSync( applicationDirectoryName) ){
 _debug( 'creating app directory');
                 fs.mkdir( applicationDirectoryName );
-            }else{
-                if( fs.existsSync( applicationFilePath )){
+            }
+            if( fs.existsSync( applicationFilePath )){
 _debug( 'removing cached copy');
                     fs.unlinkSync( applicationFilePath );
                 }
-            }
 _debug( 'saving script file');
             var file = code + start + app + exec + end;
             try{
                 fs.writeFileSync( applicationFilePath, file );
             }catch( e ){
-                _trace ("W T FFFFFFFFFF", e);
+_trace ("Unable to write script file", e);
             }
 _debug( 'returning executable script');
 			return( file);

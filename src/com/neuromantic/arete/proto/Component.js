@@ -13,6 +13,7 @@ _package( 'com.neuromantic.arete.proto',
 				return this._.height || this._super().height();
 		},
         set_height : function ( value ){
+            this._super().height( value );
 			this._.layout();
 		},
 		private_width : null,
@@ -20,6 +21,7 @@ _package( 'com.neuromantic.arete.proto',
 			return this._.width || this._super().width();
 		},
         set_width : function ( value ){
+            this._super().width( value );
 			this._.layout();
 		},
 		Component : function ( atts ) {

@@ -21,7 +21,7 @@ _package( 'com.grabnetworks.vidify',
             var parent = target.parent(); 
             var style = target.style();
             this.style( style );
-            this.style( { position: 'relative', display: ( style.display === 'inline' ? 'inline-block' : style.display ) } );
+            this.style( { overflow: 'visible', position: 'relative', display: ( style.display === 'inline' ? 'inline-block' : style.display ) } );
             this.width( width );
             this.height( height );
             target.style( { border:0, margin:0, padding: 0 } );

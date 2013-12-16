@@ -24,9 +24,18 @@ _package( 'com.grabnetworks.loading',
             var href = encodeURIComponent( global.location.href.toString() );
             this._super().load( this._.server + '/catalogs/1/videos/search.content?search_debug=1&catalog_id=1&date_weight=25.0&search_algo=match&url=' + href );   
         },
-        loadSimilar : function (){
+        loadRelated : function (){
             var href = encodeURIComponent( global.location.href.toString() );
             this._super().load( this._.server + '/catalogs/1/videos/search.content?search_debug=1&catalog_id=1&date_weight=25.0&grabBoost=20.0&vcl_search=1&url=' + href ); 
+        },
+        loadSearch : function ( search ){
+            var query = '?';
+            for ( var n in search ){
+                query += n + '=' + search[n] + '&';
+            }
+            query.slice(0, - 1)
+            this._super().load( this._.server + '/catalogs/1/videos/search.content' +  query ); 
+            
         }
     })
 );

@@ -23,14 +23,22 @@ _package('com.neuromantic.arete.proto',
                 target = script.parent();
                 target.remove( script );
             }
-    		this._.settings = settings || this._.settings;
+            this.style({ 
+                position: 'relative'
+            });
+    		this._.settings = settings;
             if(target){
                 this.parent( target );
             }
-            this.style({ 
-                position: 'relative',
-            });
             this.exec();
+        },
+        private_layout : function() {
+            if( this._.settings.width && ! this._.width ){
+                this.width( this._.settings.width );
+            }
+            if( this._.settings.height && ! this._.height ){
+                this.height( this._.settings.height );
+            }
         }
     })
 );

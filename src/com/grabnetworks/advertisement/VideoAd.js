@@ -54,7 +54,7 @@ _package( 'com.grabnetworks.advertisement',
             this._.ad.subscribe(AdEvent.LOADED, this._.onadloaded);
             this._.ad.subscribe(AdEvent.ERROR, this._.onaderror);
             this._.ad.initAd(this.width(), this.height(), -1, -1, creativeData, this._.environmentVars);
-            // this._.ad.startAd();
+            this._.tag.play();
         }
     })
 );

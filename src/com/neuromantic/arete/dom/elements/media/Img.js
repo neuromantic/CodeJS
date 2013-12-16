@@ -17,25 +17,33 @@ _package( 'com.neuromantic.arete.dom.elements.media',
         private_loaded: false,
         private_onload : function () {
             this._.loaded = true;
+            var parent = this.parent();
+            this.remove();
             this._.nativeWidth = this._.tag.width;
             this._.nativeHeight = this._.tag.height;
+            this.parent( parent );
             if (this._.height !== null){
                 this.height( this._.height );
+            }else{
+                this.height( this._.nativeHeight );
             }
             if (this._.width !== null){
                 this.width( this._.width );
+            }else{
+                this.width( this._.nativeWidth );
             }
             this._.tag.style.visibility = (this._.visible === false ) ? 'hidden' : 'visible';
             this._.notify( new LoadingEvent( LoadingEvent.COMPLETE ) );
         },
         Img : function ( atts ){
             atts = atts || {};
-            if( atts.src ){
-                atts.style = atts.style || {};
-                atts.style.visibility='hidden';
-            }
+            var src = atts.src;
+            delete atts.src;
             atts.onload = this._.onload;
             this._super( Img.TYPE, atts );
+            if( src ){
+                this.load( src );
+            }
         },
         load : function ( url ){
             this._.tag.style.visibility = 'hidden';

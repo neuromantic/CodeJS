@@ -79,3 +79,5 @@
 {"ts":1371827432027,"patch":[[{"diffs":[[0," );\n"],[-1,"// "],[0,"Code"]],"start1":46,"start2":46,"length1":11,"length2":8}]],"length":1893,"saved":false}
 {"contributors":[],"silentsave":false,"ts":1372092812842,"patch":[[{"diffs":[[0,".js' );\n"],[1,"// "],[0,"Code._.d"]],"start1":42,"start2":42,"length1":16,"length2":19}]],"length":1896,"saved":false}
 {"ts":1372092856824,"patch":[[{"diffs":[[0," );\n"],[-1,"// "],[0,"Code"]],"start1":46,"start2":46,"length1":11,"length2":8}]],"length":1893,"saved":false}
+{"contributors":[],"silentsave":false,"ts":1372175704552,"patch":[[{"diffs":[[0,"els."],[-1,"DEBUG"],[1,"VERBOSE"],[0,";\nva"]],"start1":77,"start2":77,"length1":13,"length2":15}]],"length":1895,"saved":false}
+{"ts":1378426771953,"patch":[[{"diffs":[[0,".js' );\n"],[1,"// "],[0,"Code._.d"]],"start1":42,"start2":42,"length1":16,"length2":19}]],"length":1898,"saved":false}

@@ -14,7 +14,11 @@ _package( 'com.grabnetworks.loading',
         private_environment : 'production',
         private_onCatalogLoaded : function ( event ) {
             var data = { id : 0, videos : event.data.response.results };
-            this._.notify( new LoadingEvent( LoadingEvent.COMPLETE, data ) );
+            if( data.videos.length > 0){
+                this._.notify( new LoadingEvent( LoadingEvent.COMPLETE, data ) );
+            }else{
+_trace( 'No video results found.')
+            }
         },
         private_onContentLoaded : function ( event ) {
             var data;
@@ -36,7 +40,7 @@ _package( 'com.grabnetworks.loading',
                 switch (contentID){
                     case 'MATCH':
 _trace( 'Retreiving matching video...' );
-                        loader = new CatalogLoader( 'test' );
+                        loader = new CatalogLoader(/*'test'*/ );
                         loader.on( LoadingEvent.COMPLETE, this._.onCatalogLoaded );
                         loader.loadMatch();
                         break;
